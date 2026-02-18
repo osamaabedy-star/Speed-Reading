@@ -217,6 +217,53 @@
             border-color: var(--danger);
         }
 
+        /* أنماط خاصة بأسئلة الترتيب */
+        .events-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .event-item {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 40px;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+        }
+        .event-item.dragging {
+            opacity: 0.5;
+        }
+        .event-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .event-btn {
+            background: transparent;
+            border: none;
+            color: var(--primary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        .event-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+        .event-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
         .navigation-buttons {
             display: flex;
             justify-content: space-between;
@@ -340,6 +387,7 @@
             return;
         }
 
+        // استخراج البيانات
         const lessonTitle = sessionData.lessonTitle;
         const grade = sessionData.grade;
         const semester = sessionData.semester;
@@ -347,8 +395,9 @@
         const duration = sessionData.duration;
         const speed = sessionData.speed;
         const errors = sessionData.errors || 0;
-        const questions = sessionData.questions || [];
+        const allQuestions = sessionData.questions || [];
 
+        // عناصر DOM
         const resultCard = document.getElementById('resultCard');
         const questionsSection = document.getElementById('questionsSection');
         const resultSummary = document.getElementById('resultSummary');
@@ -367,11 +416,7 @@
         const resultMessage = document.getElementById('resultMessage');
         const resultEmoji = document.getElementById('resultEmoji');
 
-        let currentQuestionIndex = 0;
-        let userAnswers = new Array(questions.length).fill(null);
-        let quizSubmitted = false;
-        let correctAnswersCount = 0;
-
+        // تطبيق الثيم
         if (sessionData.theme) {
             document.body.setAttribute('data-theme', sessionData.theme);
         } else {
@@ -379,6 +424,7 @@
             document.body.setAttribute('data-theme', savedTheme);
         }
 
+        // عرض بيانات الجلسة
         lessonTitleEl.textContent = lessonTitle;
         metaContainer.innerHTML = `
             <div class="meta-item"><div class="meta-label">الصف</div><div class="meta-value">${escapeHtml(grade)}</div></div>
@@ -389,7 +435,8 @@
             <div class="meta-item"><div class="meta-label">الأخطاء</div><div class="meta-value" style="color:var(--danger);">${errors}</div></div>
         `;
 
-        if (!questions || questions.length === 0) {
+        // إذا لم توجد أسئلة
+        if (!allQuestions || allQuestions.length === 0) {
             questionsSection.innerHTML = '<div class="no-questions"><i class="fas fa-smile-wink fa-4x"></i><h3>لا توجد أسئلة لهذا النص</h3><p>يمكنك العودة للصفحة الرئيسية</p></div>';
             resultCard.classList.remove('hidden');
             comprehensionLevel.textContent = `مستوى الفهم: مكتمل (بدون أسئلة)`;
@@ -400,44 +447,157 @@
             return;
         }
 
+        // ========== اختيار 10 أسئلة عشوائية مع ضمان وجود سؤال ترتيب واحد على الأقل ==========
+        function selectQuestions(questionsArray, count = 10) {
+            // فصل أسئلة الترتيب عن البقية
+            const orderQuestions = questionsArray.filter(q => q.type === 'order');
+            const otherQuestions = questionsArray.filter(q => q.type !== 'order');
+
+            let selected = [];
+
+            // نضمن وجود سؤال ترتيب واحد إذا كان موجودًا
+            if (orderQuestions.length > 0) {
+                // اختر سؤال ترتيب عشوائي
+                const randomOrderIndex = Math.floor(Math.random() * orderQuestions.length);
+                selected.push(orderQuestions[randomOrderIndex]);
+            }
+
+            // العدد المتبقي
+            const remainingCount = count - selected.length;
+
+            // اختر عشوائيًا من باقي الأسئلة (مع إمكانية التكرار إذا كان العدد أقل)
+            if (otherQuestions.length > 0) {
+                for (let i = 0; i < remainingCount; i++) {
+                    const randomIndex = Math.floor(Math.random() * otherQuestions.length);
+                    selected.push(otherQuestions[randomIndex]);
+                }
+            }
+
+            // خلط الأسئلة حتى لا يكون ترتيب الأسئلة ثابتًا
+            selected = shuffleArray(selected);
+
+            return selected;
+        }
+
+        // دالة خلط المصفوفة
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // اختيار الأسئلة
+        const questions = selectQuestions(allQuestions, 10);
+
+        // متغيرات الحالة
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(questions.length).fill(null); // لكل سؤال: إجابة حسب النوع
+        let quizSubmitted = false;
+        let correctAnswersCount = 0;
+
+        // تحديث عداد الأسئلة
         function updateCounter() {
             questionCounter.textContent = `${currentQuestionIndex + 1} / ${questions.length}`;
         }
 
+        // دالة عرض السؤال حسب نوعه
         function renderQuestion() {
             const q = questions[currentQuestionIndex];
-            let optionsHtml = '';
-            q.options.forEach((opt, idx) => {
-                let optionClass = 'option';
-                if (userAnswers[currentQuestionIndex] === idx) optionClass += ' selected';
-                if (quizSubmitted) {
-                    if (idx === q.correct) optionClass += ' correct';
-                    else if (userAnswers[currentQuestionIndex] === idx && idx !== q.correct) optionClass += ' wrong';
-                }
-                optionsHtml += `<div class="${optionClass}" data-opt="${idx}" onclick="selectAnswer(${currentQuestionIndex}, ${idx})">${escapeHtml(opt)}</div>`;
-            });
-            questionContainer.innerHTML = `
-                <div class="question-text">${currentQuestionIndex + 1}. ${escapeHtml(q.text)}</div>
-                <div class="options-grid">
-                    ${optionsHtml}
-                </div>
-            `;
+            let html = `<div class="question-text">${currentQuestionIndex + 1}. ${escapeHtml(q.text)}</div>`;
 
+            if (q.type === 'order') {
+                // سؤال ترتيب
+                let events = q.events || [];
+                // إذا لم تكن الإجابة محفوظة مسبقًا، نستخدم ترتيبًا عشوائيًا
+                let currentOrder;
+                if (userAnswers[currentQuestionIndex] !== null) {
+                    currentOrder = userAnswers[currentQuestionIndex]; // مصفوفة من النصوص بالترتيب الحالي
+                } else {
+                    // نعرض الأحداث بترتيب عشوائي
+                    currentOrder = shuffleArray([...events]);
+                }
+
+                html += `<div class="events-list" id="events-list">`;
+                currentOrder.forEach((eventText, idx) => {
+                    html += `
+                        <div class="event-item" data-index="${idx}">
+                            <span>${escapeHtml(eventText)}</span>
+                            <div class="event-actions">
+                                <button class="event-btn" onclick="moveEvent(${currentQuestionIndex}, ${idx}, 'up')" ${idx === 0 ? 'disabled' : ''}><i class="fas fa-arrow-up"></i></button>
+                                <button class="event-btn" onclick="moveEvent(${currentQuestionIndex}, ${idx}, 'down')" ${idx === currentOrder.length-1 ? 'disabled' : ''}><i class="fas fa-arrow-down"></i></button>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            } else {
+                // أسئلة اختيار من متعدد أو صح/خطأ
+                let optionsHtml = '';
+                q.options.forEach((opt, idx) => {
+                    let optionClass = 'option';
+                    if (userAnswers[currentQuestionIndex] === idx) optionClass += ' selected';
+                    if (quizSubmitted) {
+                        if (idx === q.correct) optionClass += ' correct';
+                        else if (userAnswers[currentQuestionIndex] === idx && idx !== q.correct) optionClass += ' wrong';
+                    }
+                    optionsHtml += `<div class="${optionClass}" data-opt="${idx}" onclick="selectAnswer(${currentQuestionIndex}, ${idx})">${escapeHtml(opt)}</div>`;
+                });
+                html += `<div class="options-grid">${optionsHtml}</div>`;
+            }
+
+            questionContainer.innerHTML = html;
+
+            // تحديث أزرار التنقل
             prevBtn.disabled = currentQuestionIndex === 0;
             nextBtn.disabled = currentQuestionIndex === questions.length - 1;
 
+            // تحديث حالة زر التسليم
             const allAnswered = userAnswers.every(ans => ans !== null);
             submitBtn.disabled = !allAnswered || quizSubmitted;
         }
 
+        // دالة اختيار الإجابة (للأسئلة العادية)
         window.selectAnswer = function(qIdx, optIdx) {
             if (quizSubmitted) return;
             userAnswers[qIdx] = optIdx;
+            renderQuestion(); // إعادة رسم لتحديث التحديد
+        };
+
+        // دالة تحريك عنصر في سؤال الترتيب
+        window.moveEvent = function(qIdx, eventIdx, direction) {
+            if (quizSubmitted) return;
+
+            // الحصول على الترتيب الحالي من userAnswers أو إنشاؤه
+            let currentOrder;
+            if (userAnswers[qIdx] !== null) {
+                currentOrder = [...userAnswers[qIdx]];
+            } else {
+                // إذا لم توجد إجابة، نأخذ الأحداث من السؤال (مع ترتيب عشوائي)
+                const events = questions[qIdx].events || [];
+                currentOrder = shuffleArray([...events]);
+            }
+
+            // تنفيذ الحركة
+            if (direction === 'up' && eventIdx > 0) {
+                [currentOrder[eventIdx - 1], currentOrder[eventIdx]] = [currentOrder[eventIdx], currentOrder[eventIdx - 1]];
+            } else if (direction === 'down' && eventIdx < currentOrder.length - 1) {
+                [currentOrder[eventIdx + 1], currentOrder[eventIdx]] = [currentOrder[eventIdx], currentOrder[eventIdx + 1]];
+            }
+
+            // حفظ الترتيب الجديد
+            userAnswers[qIdx] = currentOrder;
+
+            // إعادة رسم السؤال لتحديث الأزرار
             renderQuestion();
+
+            // التحقق من اكتمال الإجابات (دائمًا مكتمل لأن الترتيب موجود)
             const allAnswered = userAnswers.every(ans => ans !== null);
             submitBtn.disabled = !allAnswered;
         };
 
+        // التنقل بين الأسئلة
         prevBtn.addEventListener('click', () => {
             if (currentQuestionIndex > 0) {
                 currentQuestionIndex--;
@@ -454,22 +614,36 @@
             }
         });
 
+        // تسليم الإجابات
         submitBtn.addEventListener('click', () => {
             if (userAnswers.includes(null)) {
                 alert('يرجى الإجابة على جميع الأسئلة أولاً');
                 return;
             }
 
+            // حساب النتيجة
             correctAnswersCount = 0;
             userAnswers.forEach((ans, idx) => {
-                if (ans === questions[idx].correct) correctAnswersCount++;
+                const q = questions[idx];
+                if (q.type === 'order') {
+                    // مقارنة مصفوفات الترتيب
+                    const correctOrder = q.correctOrder.map(i => q.events[i]); // تحويل الأرقام إلى نصوص
+                    if (JSON.stringify(ans) === JSON.stringify(correctOrder)) {
+                        correctAnswersCount++;
+                    }
+                } else {
+                    // أسئلة عادية
+                    if (ans === q.correct) correctAnswersCount++;
+                }
             });
+
             const score = Math.round((correctAnswersCount / questions.length) * 100);
             let level = '';
             if (score >= 85) level = 'متقدم';
             else if (score >= 65) level = 'متوسط';
             else level = 'مبتدئ';
 
+            // تحديث واجهة النتيجة
             comprehensionLevel.textContent = `مستوى الفهم: ${level} (${score}%)`;
             const wrongCount = questions.length - correctAnswersCount;
             const correctDeg = (correctAnswersCount / questions.length) * 360;
@@ -477,20 +651,28 @@
             correctSpan.textContent = correctAnswersCount;
             wrongSpan.textContent = wrongCount;
 
+            // إظهار بطاقة النتيجة
             resultCard.classList.remove('hidden');
+
+            // إظهار التقييم النهائي
             resultScore.textContent = `${score}%`;
             let emoji = score >= 85 ? '🏆' : (score >= 65 ? '👍' : '💪');
             resultEmoji.textContent = emoji;
             resultMessage.textContent = `أجبت صحيحاً على ${correctAnswersCount} من ${questions.length}`;
             resultSummary.classList.remove('hidden');
 
+            // تلوين الإجابات (بإعادة الرسم)
             quizSubmitted = true;
             renderQuestion();
+
+            // تعطيل زر التسليم
             submitBtn.disabled = true;
 
+            // حفظ الجلسة النهائية
             saveFinalSession({ correct: correctAnswersCount, total: questions.length, score, level });
         });
 
+        // حفظ الجلسة في localStorage
         function saveFinalSession(quizResult) {
             const sessions = JSON.parse(localStorage.getItem(STORAGE_SESSIONS)) || [];
             const newSession = {
@@ -516,6 +698,7 @@
             sessionStorage.removeItem('currentReadingSession');
         }
 
+        // دوال مساعدة
         function formatTime(seconds) {
             const m = Math.floor(seconds / 60).toString().padStart(2, '0');
             const s = Math.floor(seconds % 60).toString().padStart(2, '0');
@@ -532,6 +715,7 @@
             });
         }
 
+        // بدء العرض
         renderQuestion();
         updateCounter();
     })();
