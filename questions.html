@@ -59,6 +59,7 @@
             justify-content: space-between;
             align-items: center;
             border: 1px solid var(--border);
+            position: relative;
         }
 
         .logo {
@@ -84,6 +85,24 @@
             transition: 0.2s;
         }
         .btn-home:hover { background: var(--border); }
+
+        /* مؤقت العد التنازلي */
+        .timer-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--primary);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow);
+        }
 
         .result-card {
             background: var(--card-bg);
@@ -341,6 +360,10 @@
             <span>اختبر فهمك</span>
         </div>
         <a href="index.html" class="btn-home"><i class="fas fa-home"></i> الرئيسية</a>
+        <div class="timer-container" id="timerDisplay">
+            <i class="fas fa-hourglass-half"></i>
+            <span id="timerValue">60</span> ث
+        </div>
     </div>
 
     <div id="resultCard" class="result-card hidden">
@@ -419,6 +442,10 @@
         const resultMessage = document.getElementById('resultMessage');
         const resultEmoji = document.getElementById('resultEmoji');
 
+        // عناصر المؤقت
+        const timerDisplay = document.getElementById('timerDisplay');
+        const timerValue = document.getElementById('timerValue');
+
         // تطبيق الثيم
         if (sessionData.theme) {
             document.body.setAttribute('data-theme', sessionData.theme);
@@ -446,41 +473,94 @@
             pieChart.style.background = `conic-gradient(var(--success) 360deg, var(--border) 0deg)`;
             correctSpan.textContent = '0';
             wrongSpan.textContent = '0';
+            timerDisplay.style.display = 'none';
             saveFinalSession(null);
             return;
         }
 
-        // ========== اختيار 10 أسئلة عشوائية مع ضمان وجود سؤال ترتيب واحد على الأقل ==========
+        // ========== اختيار الأسئلة (بدون تكرار، وآخر سؤال ترتيب) ==========
         function selectQuestions(questionsArray, count = 10) {
-            const orderQuestions = questionsArray.filter(q => q.type === 'order');
-            const otherQuestions = questionsArray.filter(q => q.type !== 'order');
+            // نسخة من المصفوفة لتجنب التعديل على الأصل
+            const questionsCopy = [...questionsArray];
+            
+            // فصل أسئلة الترتيب عن البقية
+            const orderQuestions = questionsCopy.filter(q => q.type === 'order');
+            const otherQuestions = questionsCopy.filter(q => q.type !== 'order');
 
             let selected = [];
 
+            // نضمن أن السؤال الأخير (رقم count) هو سؤال ترتيب إذا كان موجوداً
             if (orderQuestions.length > 0) {
+                // نختار سؤال ترتيب عشوائي واحد
                 const randomOrderIndex = Math.floor(Math.random() * orderQuestions.length);
-                selected.push(orderQuestions[randomOrderIndex]);
-            }
-
-            const remainingCount = count - selected.length;
-            if (otherQuestions.length > 0) {
-                for (let i = 0; i < remainingCount; i++) {
-                    const randomIndex = Math.floor(Math.random() * otherQuestions.length);
-                    selected.push(otherQuestions[randomIndex]);
+                const selectedOrder = orderQuestions[randomOrderIndex];
+                
+                // نختار باقي الأسئلة (9 أسئلة) من otherQuestions بدون تكرار
+                let availableOthers = [...otherQuestions];
+                // نخلطها
+                for (let i = availableOthers.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [availableOthers[i], availableOthers[j]] = [availableOthers[j], availableOthers[i]];
+                }
+                
+                // نأخذ أول 9 أسئلة (إذا كان العدد أقل، نعيد تدويرها)
+                let othersSelected = [];
+                for (let i = 0; i < count - 1; i++) {
+                    if (availableOthers.length > 0) {
+                        othersSelected.push(availableOthers.shift());
+                    } else {
+                        // إذا نفذت، نعيد خلط المصفوفة الأصلية ونبدأ من جديد
+                        availableOthers = [...otherQuestions];
+                        for (let i = availableOthers.length - 1; i > 0; i--) {
+                            const j = Math.floor(Math.random() * (i + 1));
+                            [availableOthers[i], availableOthers[j]] = [availableOthers[j], availableOthers[i]];
+                        }
+                        othersSelected.push(availableOthers.shift());
+                    }
+                }
+                
+                selected = [...othersSelected, selectedOrder];
+            } else {
+                // لا توجد أسئلة ترتيب، نختار count سؤال عشوائي بدون تكرار من allQuestions
+                let availableAll = [...questionsCopy];
+                for (let i = availableAll.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [availableAll[i], availableAll[j]] = [availableAll[j], availableAll[i]];
+                }
+                
+                for (let i = 0; i < count; i++) {
+                    if (availableAll.length > 0) {
+                        selected.push(availableAll.shift());
+                    } else {
+                        availableAll = [...questionsCopy];
+                        for (let i = availableAll.length - 1; i > 0; i--) {
+                            const j = Math.floor(Math.random() * (i + 1));
+                            [availableAll[i], availableAll[j]] = [availableAll[j], availableAll[i]];
+                        }
+                        selected.push(availableAll.shift());
+                    }
                 }
             }
 
-            return shuffleArray(selected);
-        }
-
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
+            // خلط الأسئلة مع بقاء السؤال الأخير (الترتيب) في النهاية إذا كان موجوداً
+            if (orderQuestions.length > 0) {
+                const last = selected.pop();
+                for (let i = selected.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [selected[i], selected[j]] = [selected[j], selected[i]];
+                }
+                selected.push(last);
+            } else {
+                for (let i = selected.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [selected[i], selected[j]] = [selected[j], selected[i]];
+                }
             }
-            return array;
+
+            return selected;
         }
 
+        // اختيار الأسئلة
         const questions = selectQuestions(allQuestions, 10);
 
         // متغيرات الحالة
@@ -488,6 +568,112 @@
         let userAnswers = new Array(questions.length).fill(null);
         let quizSubmitted = false;
         let correctAnswersCount = 0;
+
+        // متغيرات المؤقت
+        let timerInterval = null;
+        let timeLeft = 0;
+        const DEFAULT_TIME = 60; // 60 ثانية للأسئلة العادية
+        const ORDER_TIME = 100;   // 100 ثانية لسؤال الترتيب
+
+        // دالة لبدء المؤقت للسؤال الحالي
+        function startTimerForCurrentQuestion() {
+            // أوقف أي مؤقت سابق
+            if (timerInterval) clearInterval(timerInterval);
+
+            // تحديد الوقت حسب نوع السؤال
+            const q = questions[currentQuestionIndex];
+            timeLeft = (q.type === 'order') ? ORDER_TIME : DEFAULT_TIME;
+            timerValue.textContent = timeLeft;
+
+            timerInterval = setInterval(() => {
+                timeLeft -= 1;
+                timerValue.textContent = timeLeft;
+
+                // إذا انتهى الوقت
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+
+                    // إذا كان السؤال الأخير وتم التسليم بالفعل لا تفعل شيئاً
+                    if (quizSubmitted) return;
+
+                    // إذا كان هذا هو السؤال الأخير، سلم تلقائياً
+                    if (currentQuestionIndex === questions.length - 1) {
+                        // سلم الإجابات (إذا كانت كل الإجابات غير ممتلئة؟ نعم نسلم)
+                        submitAnswers();
+                    } else {
+                        // انتقل للسؤال التالي
+                        goToNextQuestion();
+                    }
+                }
+            }, 1000);
+        }
+
+        // دالة للانتقال للسؤال التالي
+        function goToNextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+                updateCounter();
+                startTimerForCurrentQuestion();
+            }
+        }
+
+        // دالة لتسليم الإجابات (مكررة من كود الزر)
+        function submitAnswers() {
+            if (userAnswers.includes(null)) {
+                // إذا كان هناك أسئلة لم تُجب، نعتبرها خطأ؟ سنعتبرها إجابات خاطئة.
+                // لكن الأفضل أن نكمل التسليم مع احتسابها خطأ.
+                // لا حاجة لمنع التسليم.
+            }
+
+            correctAnswersCount = 0;
+            userAnswers.forEach((ans, idx) => {
+                const q = questions[idx];
+                if (q.type === 'order') {
+                    if (ans) {
+                        const selectedOrder = ans.map(num => q.events[num - 1]);
+                        const correctOrder = q.correctOrder.map(i => q.events[i]);
+                        if (JSON.stringify(selectedOrder) === JSON.stringify(correctOrder)) {
+                            correctAnswersCount++;
+                        }
+                    }
+                    // إذا كانت null تعتبر خطأ (لا تحسب)
+                } else {
+                    if (ans === q.correct) correctAnswersCount++;
+                }
+            });
+
+            const score = Math.round((correctAnswersCount / questions.length) * 100);
+            let level = '';
+            if (score >= 85) level = 'متقدم';
+            else if (score >= 65) level = 'متوسط';
+            else level = 'مبتدئ';
+
+            comprehensionLevel.textContent = `مستوى الفهم: ${level} (${score}%)`;
+            const wrongCount = questions.length - correctAnswersCount;
+            const correctDeg = (correctAnswersCount / questions.length) * 360;
+            pieChart.style.background = `conic-gradient(var(--success) ${correctDeg}deg, var(--border) ${correctDeg}deg)`;
+            correctSpan.textContent = correctAnswersCount;
+            wrongSpan.textContent = wrongCount;
+
+            resultCard.classList.remove('hidden');
+            resultScore.textContent = `${score}%`;
+            let emoji = score >= 85 ? '🏆' : (score >= 65 ? '👍' : '💪');
+            resultEmoji.textContent = emoji;
+            resultMessage.textContent = `أجبت صحيحاً على ${correctAnswersCount} من ${questions.length}`;
+            resultSummary.classList.remove('hidden');
+
+            quizSubmitted = true;
+            renderQuestion();
+            submitBtn.disabled = true;
+
+            // إيقاف المؤقت
+            if (timerInterval) clearInterval(timerInterval);
+            timerDisplay.style.display = 'none';
+
+            saveFinalSession({ correct: correctAnswersCount, total: questions.length, score, level });
+        }
 
         function updateCounter() {
             questionCounter.textContent = `${currentQuestionIndex + 1} / ${questions.length}`;
@@ -499,7 +685,6 @@
             let html = `<div class="question-text">${currentQuestionIndex + 1}. ${escapeHtml(q.text)}</div>`;
 
             if (q.type === 'order') {
-                // سؤال ترتيب بالأزرار الرقمية
                 const events = q.events || [];
                 let currentOrder = userAnswers[currentQuestionIndex] || new Array(events.length).fill(null);
 
@@ -519,7 +704,6 @@
                 });
                 html += `</div>`;
             } else {
-                // أسئلة اختيار من متعدد أو صح/خطأ
                 let optionsHtml = '';
                 q.options.forEach((opt, idx) => {
                     let optionClass = 'option';
@@ -535,13 +719,13 @@
 
             questionContainer.innerHTML = html;
 
-            prevBtn.disabled = currentQuestionIndex === 0;
-            nextBtn.disabled = currentQuestionIndex === questions.length - 1;
+            prevBtn.disabled = currentQuestionIndex === 0 || quizSubmitted;
+            nextBtn.disabled = currentQuestionIndex === questions.length - 1 || quizSubmitted;
 
             // تحديث حالة زر التسليم: كل الإجابات غير null
             const allAnswered = userAnswers.every(ans => {
                 if (Array.isArray(ans)) {
-                    return ans.every(v => v !== null); // للترتيب، كل القيم غير null
+                    return ans.every(v => v !== null);
                 }
                 return ans !== null;
             });
@@ -575,64 +759,29 @@
 
         // التنقل
         prevBtn.addEventListener('click', () => {
-            if (currentQuestionIndex > 0) {
+            if (currentQuestionIndex > 0 && !quizSubmitted) {
+                // إيقاف المؤقت الحالي
+                if (timerInterval) clearInterval(timerInterval);
                 currentQuestionIndex--;
                 renderQuestion();
                 updateCounter();
+                startTimerForCurrentQuestion();
             }
         });
 
         nextBtn.addEventListener('click', () => {
-            if (currentQuestionIndex < questions.length - 1) {
+            if (currentQuestionIndex < questions.length - 1 && !quizSubmitted) {
+                if (timerInterval) clearInterval(timerInterval);
                 currentQuestionIndex++;
                 renderQuestion();
                 updateCounter();
+                startTimerForCurrentQuestion();
             }
         });
 
         // تسليم الإجابات
         submitBtn.addEventListener('click', () => {
-            // التحقق من اكتمال الإجابات (تم التأكيد في renderQuestion)
-            correctAnswersCount = 0;
-            userAnswers.forEach((ans, idx) => {
-                const q = questions[idx];
-                if (q.type === 'order') {
-                    // مقارنة الترتيب: تحويل الأرقام إلى مصفوفة من النصوص بالترتيب المختار
-                    const selectedOrder = ans.map(num => q.events[num - 1]); // الرقم 1 يعني أول حدث
-                    const correctOrder = q.correctOrder.map(i => q.events[i]);
-                    if (JSON.stringify(selectedOrder) === JSON.stringify(correctOrder)) {
-                        correctAnswersCount++;
-                    }
-                } else {
-                    if (ans === q.correct) correctAnswersCount++;
-                }
-            });
-
-            const score = Math.round((correctAnswersCount / questions.length) * 100);
-            let level = '';
-            if (score >= 85) level = 'متقدم';
-            else if (score >= 65) level = 'متوسط';
-            else level = 'مبتدئ';
-
-            comprehensionLevel.textContent = `مستوى الفهم: ${level} (${score}%)`;
-            const wrongCount = questions.length - correctAnswersCount;
-            const correctDeg = (correctAnswersCount / questions.length) * 360;
-            pieChart.style.background = `conic-gradient(var(--success) ${correctDeg}deg, var(--border) ${correctDeg}deg)`;
-            correctSpan.textContent = correctAnswersCount;
-            wrongSpan.textContent = wrongCount;
-
-            resultCard.classList.remove('hidden');
-            resultScore.textContent = `${score}%`;
-            let emoji = score >= 85 ? '🏆' : (score >= 65 ? '👍' : '💪');
-            resultEmoji.textContent = emoji;
-            resultMessage.textContent = `أجبت صحيحاً على ${correctAnswersCount} من ${questions.length}`;
-            resultSummary.classList.remove('hidden');
-
-            quizSubmitted = true;
-            renderQuestion();
-            submitBtn.disabled = true;
-
-            saveFinalSession({ correct: correctAnswersCount, total: questions.length, score, level });
+            submitAnswers();
         });
 
         function saveFinalSession(quizResult) {
@@ -676,8 +825,10 @@
             });
         }
 
+        // بدء العرض
         renderQuestion();
         updateCounter();
+        startTimerForCurrentQuestion();
     })();
 </script>
 </body>
