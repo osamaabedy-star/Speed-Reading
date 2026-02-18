@@ -6,6 +6,7 @@
     <title>أسئلة الفهم · تقييم القراءة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        /* نفس الأنماط السابقة مع إضافة تعديل بسيط للأزرار */
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Cairo',Tahoma,sans-serif; }
 
         :root {
@@ -86,7 +87,6 @@
         }
         .btn-home:hover { background: var(--border); }
 
-        /* مؤقت العد التنازلي */
         .timer-container {
             position: absolute;
             top: 50%;
@@ -236,7 +236,6 @@
             border-color: var(--danger);
         }
 
-        /* أنماط خاصة بأسئلة الترتيب بالأزرار الرقمية */
         .order-list {
             display: flex;
             flex-direction: column;
@@ -465,7 +464,6 @@
             <div class="meta-item"><div class="meta-label">الأخطاء</div><div class="meta-value" style="color:var(--danger);">${errors}</div></div>
         `;
 
-        // إذا لم توجد أسئلة
         if (!allQuestions || allQuestions.length === 0) {
             questionsSection.innerHTML = '<div class="no-questions"><i class="fas fa-smile-wink fa-4x"></i><h3>لا توجد أسئلة لهذا النص</h3><p>يمكنك العودة للصفحة الرئيسية</p></div>';
             resultCard.classList.remove('hidden');
@@ -480,36 +478,27 @@
 
         // ========== اختيار الأسئلة (بدون تكرار، وآخر سؤال ترتيب) ==========
         function selectQuestions(questionsArray, count = 10) {
-            // نسخة من المصفوفة لتجنب التعديل على الأصل
             const questionsCopy = [...questionsArray];
-            
-            // فصل أسئلة الترتيب عن البقية
             const orderQuestions = questionsCopy.filter(q => q.type === 'order');
             const otherQuestions = questionsCopy.filter(q => q.type !== 'order');
 
             let selected = [];
 
-            // نضمن أن السؤال الأخير (رقم count) هو سؤال ترتيب إذا كان موجوداً
             if (orderQuestions.length > 0) {
-                // نختار سؤال ترتيب عشوائي واحد
                 const randomOrderIndex = Math.floor(Math.random() * orderQuestions.length);
                 const selectedOrder = orderQuestions[randomOrderIndex];
                 
-                // نختار باقي الأسئلة (9 أسئلة) من otherQuestions بدون تكرار
                 let availableOthers = [...otherQuestions];
-                // نخلطها
                 for (let i = availableOthers.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [availableOthers[i], availableOthers[j]] = [availableOthers[j], availableOthers[i]];
                 }
                 
-                // نأخذ أول 9 أسئلة (إذا كان العدد أقل، نعيد تدويرها)
                 let othersSelected = [];
                 for (let i = 0; i < count - 1; i++) {
                     if (availableOthers.length > 0) {
                         othersSelected.push(availableOthers.shift());
                     } else {
-                        // إذا نفذت، نعيد خلط المصفوفة الأصلية ونبدأ من جديد
                         availableOthers = [...otherQuestions];
                         for (let i = availableOthers.length - 1; i > 0; i--) {
                             const j = Math.floor(Math.random() * (i + 1));
@@ -521,7 +510,6 @@
                 
                 selected = [...othersSelected, selectedOrder];
             } else {
-                // لا توجد أسئلة ترتيب، نختار count سؤال عشوائي بدون تكرار من allQuestions
                 let availableAll = [...questionsCopy];
                 for (let i = availableAll.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
@@ -572,15 +560,14 @@
         // متغيرات المؤقت
         let timerInterval = null;
         let timeLeft = 0;
-        const DEFAULT_TIME = 60; // 60 ثانية للأسئلة العادية
-        const ORDER_TIME = 100;   // 100 ثانية لسؤال الترتيب
+        const DEFAULT_TIME = 60;
+        const ORDER_TIME = 100;
 
         // دالة لبدء المؤقت للسؤال الحالي
         function startTimerForCurrentQuestion() {
-            // أوقف أي مؤقت سابق
             if (timerInterval) clearInterval(timerInterval);
+            if (quizSubmitted) return;
 
-            // تحديد الوقت حسب نوع السؤال
             const q = questions[currentQuestionIndex];
             timeLeft = (q.type === 'order') ? ORDER_TIME : DEFAULT_TIME;
             timerValue.textContent = timeLeft;
@@ -589,17 +576,14 @@
                 timeLeft -= 1;
                 timerValue.textContent = timeLeft;
 
-                // إذا انتهى الوقت
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
                     timerInterval = null;
-
-                    // إذا كان السؤال الأخير وتم التسليم بالفعل لا تفعل شيئاً
                     if (quizSubmitted) return;
 
-                    // إذا كان هذا هو السؤال الأخير، سلم تلقائياً
+                    // إذا انتهى الوقت ولم يُجب، نعتبر السؤال لم يُجب (يبقى null) وننتقل للتالي
                     if (currentQuestionIndex === questions.length - 1) {
-                        // سلم الإجابات (إذا كانت كل الإجابات غير ممتلئة؟ نعم نسلم)
+                        // إذا كان الأخير، سلم تلقائياً
                         submitAnswers();
                     } else {
                         // انتقل للسؤال التالي
@@ -611,7 +595,9 @@
 
         // دالة للانتقال للسؤال التالي
         function goToNextQuestion() {
-            if (currentQuestionIndex < questions.length - 1) {
+            if (currentQuestionIndex < questions.length - 1 && !quizSubmitted) {
+                // قبل الانتقال، نوقف المؤقت الحالي
+                if (timerInterval) clearInterval(timerInterval);
                 currentQuestionIndex++;
                 renderQuestion();
                 updateCounter();
@@ -619,13 +605,9 @@
             }
         }
 
-        // دالة لتسليم الإجابات (مكررة من كود الزر)
+        // دالة تسليم الإجابات
         function submitAnswers() {
-            if (userAnswers.includes(null)) {
-                // إذا كان هناك أسئلة لم تُجب، نعتبرها خطأ؟ سنعتبرها إجابات خاطئة.
-                // لكن الأفضل أن نكمل التسليم مع احتسابها خطأ.
-                // لا حاجة لمنع التسليم.
-            }
+            if (quizSubmitted) return;
 
             correctAnswersCount = 0;
             userAnswers.forEach((ans, idx) => {
@@ -638,7 +620,6 @@
                             correctAnswersCount++;
                         }
                     }
-                    // إذا كانت null تعتبر خطأ (لا تحسب)
                 } else {
                     if (ans === q.correct) correctAnswersCount++;
                 }
@@ -665,12 +646,13 @@
             resultSummary.classList.remove('hidden');
 
             quizSubmitted = true;
-            renderQuestion();
-            submitBtn.disabled = true;
-
-            // إيقاف المؤقت
             if (timerInterval) clearInterval(timerInterval);
             timerDisplay.style.display = 'none';
+
+            renderQuestion(); // لإظهار الإجابات الصحيحة/الخاطئة بعد التسليم
+            submitBtn.disabled = true;
+            prevBtn.disabled = true;
+            nextBtn.disabled = true;
 
             saveFinalSession({ correct: correctAnswersCount, total: questions.length, score, level });
         }
@@ -688,15 +670,18 @@
                 const events = q.events || [];
                 let currentOrder = userAnswers[currentQuestionIndex] || new Array(events.length).fill(null);
 
-                html += `<div class="order-list" id="order-list">`;
+                html += `<div class="order-list">`;
                 events.forEach((eventText, idx) => {
                     const selectedNum = currentOrder[idx];
                     html += `
                         <div class="order-item">
-                            <div class="order-number-buttons" data-event-idx="${idx}">
-                                ${Array.from({ length: events.length }, (_, i) => i + 1).map(num => `
-                                    <button class="order-number-btn ${selectedNum === num ? 'selected' : ''}" onclick="selectOrderNumber(${currentQuestionIndex}, ${idx}, ${num})">${num}</button>
-                                `).join('')}
+                            <div class="order-number-buttons">
+                                ${Array.from({ length: events.length }, (_, i) => i + 1).map(num => {
+                                    // إذا كان التسليم قد تم، نعطل الأزرار
+                                    const disabled = quizSubmitted ? 'disabled' : '';
+                                    const selectedClass = (selectedNum === num) ? 'selected' : '';
+                                    return `<button class="order-number-btn ${selectedClass}" ${disabled} onclick="selectOrderNumber(${currentQuestionIndex}, ${idx}, ${num})">${num}</button>`;
+                                }).join('')}
                             </div>
                             <span class="order-item-text">${escapeHtml(eventText)}</span>
                         </div>
@@ -712,17 +697,20 @@
                         if (idx === q.correct) optionClass += ' correct';
                         else if (userAnswers[currentQuestionIndex] === idx && idx !== q.correct) optionClass += ' wrong';
                     }
-                    optionsHtml += `<div class="${optionClass}" data-opt="${idx}" onclick="selectAnswer(${currentQuestionIndex}, ${idx})">${escapeHtml(opt)}</div>`;
+                    // إذا كان التسليم قد تم، نعطل النقر
+                    const onClick = quizSubmitted ? '' : `onclick="selectAnswer(${currentQuestionIndex}, ${idx})"`;
+                    optionsHtml += `<div class="${optionClass}" data-opt="${idx}" ${onClick}>${escapeHtml(opt)}</div>`;
                 });
                 html += `<div class="options-grid">${optionsHtml}</div>`;
             }
 
             questionContainer.innerHTML = html;
 
-            prevBtn.disabled = currentQuestionIndex === 0 || quizSubmitted;
-            nextBtn.disabled = currentQuestionIndex === questions.length - 1 || quizSubmitted;
+            // تحديث أزرار التنقل: السابق معطل دائماً (لا رجوع)، التالي مفعل ما لم يكن الأخير
+            prevBtn.disabled = true; // منع الرجوع تماماً
+            nextBtn.disabled = (currentQuestionIndex === questions.length - 1) || quizSubmitted;
 
-            // تحديث حالة زر التسليم: كل الإجابات غير null
+            // تحديث حالة زر التسليم: مفعل فقط إذا كانت كل الإجابات غير null (أي تمت الإجابة على الكل) ولم يتم التسليم بعد
             const allAnswered = userAnswers.every(ans => {
                 if (Array.isArray(ans)) {
                     return ans.every(v => v !== null);
@@ -736,7 +724,9 @@
         window.selectAnswer = function(qIdx, optIdx) {
             if (quizSubmitted) return;
             userAnswers[qIdx] = optIdx;
-            renderQuestion();
+            renderQuestion(); // إعادة رسم لتحديث التحديد
+            
+            // بعد الإجابة، لا ننتقل تلقائياً، يبقى المستخدم في نفس السؤال حتى يضغط التالي
         };
 
         // دالة اختيار رقم لسؤال الترتيب
@@ -745,7 +735,6 @@
             
             let currentOrder = userAnswers[qIdx] ? [...userAnswers[qIdx]] : new Array(questions[qIdx].events.length).fill(null);
             
-            // التأكد من عدم تكرار الرقم: إذا كان الرقم مستخدماً في حدث آخر، نحرره
             const existingEventIdx = currentOrder.findIndex((val, i) => val === num && i !== eventIdx);
             if (existingEventIdx !== -1) {
                 currentOrder[existingEventIdx] = null;
@@ -759,27 +748,13 @@
 
         // التنقل
         prevBtn.addEventListener('click', () => {
-            if (currentQuestionIndex > 0 && !quizSubmitted) {
-                // إيقاف المؤقت الحالي
-                if (timerInterval) clearInterval(timerInterval);
-                currentQuestionIndex--;
-                renderQuestion();
-                updateCounter();
-                startTimerForCurrentQuestion();
-            }
+            // لا يمكن الرجوع
         });
 
         nextBtn.addEventListener('click', () => {
-            if (currentQuestionIndex < questions.length - 1 && !quizSubmitted) {
-                if (timerInterval) clearInterval(timerInterval);
-                currentQuestionIndex++;
-                renderQuestion();
-                updateCounter();
-                startTimerForCurrentQuestion();
-            }
+            goToNextQuestion();
         });
 
-        // تسليم الإجابات
         submitBtn.addEventListener('click', () => {
             submitAnswers();
         });
