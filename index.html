@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Amiri&family=Tajawal:wght@400;700&family=Almarai:wght@400;700&family=Readex+Pro:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* (الأنماط كما هي دون تغيير) */
+        /* الأنماط كما هي دون تغيير */
         :root {
             --primary: #4361ee;
             --secondary: #3f37c9;
@@ -443,7 +443,7 @@
         return semesterNumber === '1' ? 'الفصل الدراسي الأول' : 'الفصل الدراسي الثاني';
     }
 
-    // ========== تحميل الدروس من الملفات الأربعة ==========
+    // ========== تحميل الدروس من الملفات الأربعة وحفظها في localStorage ==========
     async function loadAllLessons() {
         const files = [
             'primary_first.json',
@@ -464,6 +464,11 @@
                     lessonsData.push(lesson);
                 });
             });
+
+            // ===== السطر المهم جداً =====
+            // حفظ الدروس في localStorage ليتمكن ملف read.html من قراءتها
+            localStorage.setItem('reading_app_lessons', JSON.stringify(lessonsData));
+            // ===========================
 
             // عرض الدروس بعد التحميل
             renderLessons();
