@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة القراءة السريعة التفاعلية - مدارس الرياض الإبداع</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Amiri&family=Tajawal:wght@400;700&family=Almarai:wght@400;700&family=Readex+Pro:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* (الأنماط كما هي دون تغيير) */
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4cc9f0;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #2b2d42;
+            --text-light: #64748b;
+            --border: #e9eef2;
+            --shadow: 0 15px 35px rgba(0,0,0,0.05);
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        [data-theme="dark"] {
+            --bg: #1a1a2e;
+            --card-bg: #16213e;
+            --text: #e9eef2;
+            --text-light: #a0aec0;
+            --border: #2d3748;
+            --shadow: 0 15px 35px rgba(0,0,0,0.5);
+        }
+
+        [data-theme="comfort"] {
+            --bg: #e6d5b8;
+            --card-bg: #faf0e6;
+            --text: #5e4b3c;
+            --text-light: #7d6b5a;
+            --border: #d4b89c;
+            --shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            padding: 20px;
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        .header {
+            background: var(--card-bg);
+            border-radius: 30px;
+            padding: 20px 30px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            border: 1px solid var(--border);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .school-logo {
+            height: 80px;
+            width: auto;
+            border-radius: 15px;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 2px;
+        }
+
+        .header p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .theme-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .theme-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--card-bg);
+            color: var(--text);
+            font-size: 1.2rem;
+        }
+        .theme-btn:hover { transform: scale(1.1); }
+        .theme-btn.light { background: #ffffff; border-color: var(--primary); color: #f39c12; }
+        .theme-btn.dark { background: #1a1a2e; border-color: var(--primary); color: #f1c40f; }
+        .theme-btn.comfort { background: #e6d5b8; border-color: var(--primary); color: #27ae60; }
+
+        .main-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 25px; }
+        @media (max-width: 850px) { .main-grid { grid-template-columns: 1fr; } }
+
+        .settings-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .section-title {
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-size: 0.85rem; font-weight: 600; color: var(--text-light); }
+
+        .button-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .option-btn {
+            padding: 6px 12px;
+            border-radius: 30px;
+            border: 2px solid var(--border);
+            background: transparent;
+            color: var(--text);
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            flex: 1 0 auto;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .option-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        input[type=range] {
+            width: 100%;
+            margin: 5px 0;
+        }
+
+        .speed-display {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .font-controls-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg);
+            padding: 8px 12px;
+            border-radius: 40px;
+            border: 1px solid var(--border);
+            margin-top: 10px;
+        }
+
+        .font-controls-bar i {
+            color: var(--primary);
+            font-size: 1rem;
+        }
+
+        .font-selector-mini {
+            display: flex;
+            gap: 5px;
+            overflow-x: auto;
+            padding: 2px;
+            flex: 1;
+        }
+
+        .font-mini-btn {
+            white-space: nowrap;
+            padding: 4px 10px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            color: var(--text);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .font-mini-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .size-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .size-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            color: var(--text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        #fontSizeValue {
+            min-width: 35px;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .lessons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+        }
+
+        .lesson-item {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: 0.3s;
+            text-align: center;
+            position: relative;
+        }
+
+        .lesson-item:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.05); }
+        .lesson-item.selected { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 10%, var(--card-bg)); }
+
+        .lesson-item i { font-size: 1.8rem; color: var(--primary); margin-bottom: 5px; }
+
+        .word-count {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: var(--primary);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+        }
+
+        .btn-launch {
+            width: 100%;
+            padding: 14px;
+            background: var(--gradient);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: 0.3s;
+        }
+        .btn-launch:hover { transform: scale(1.02); box-shadow: 0 10px 20px rgba(67, 97, 238, 0.2); }
+        .btn-launch:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+
+        .badge {
+            background: var(--border);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            margin-top: 3px;
+            display: inline-block;
+            color: var(--text);
+        }
+
+        .filter-section {
+            margin-bottom: 20px;
+        }
+
+        .filter-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .loading-spinner {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 30px;
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body data-theme="light">
+<div class="container">
+    <div class="header">
+        <div class="logo-container">
+            <img src="https://www.wzufa.com/wp-content/uploads/2022/07/Riyadh-Al-Ebdaa-Schools.png" alt="شعار مدارس الرياض الإبداع" class="school-logo">
+            <div>
+                <h1>منصة القراءة السريعة التفاعلية</h1>
+                <p>طوّر سرعتك واستيعابك</p>
+            </div>
+        </div>
+        <div class="theme-buttons">
+            <div class="theme-btn light" onclick="setTheme('light')" title="الوضع النهاري"><i class="fas fa-sun"></i></div>
+            <div class="theme-btn dark" onclick="setTheme('dark')" title="الوضع الليلي"><i class="fas fa-moon"></i></div>
+            <div class="theme-btn comfort" onclick="setTheme('comfort')" title="الوضع المريح"><i class="fas fa-leaf"></i></div>
+        </div>
+    </div>
+
+    <div class="main-grid">
+        <div class="settings-card">
+            <h3 class="section-title"><i class="fas fa-sliders-h"></i> إعدادات القراءة</h3>
+            
+            <div class="font-controls-bar">
+                <i class="fas fa-font"></i>
+                <div class="font-selector-mini" id="miniFontSelector">
+                    <span class="font-mini-btn" data-font="'Cairo', sans-serif" style="font-family: 'Cairo';">كايرو</span>
+                    <span class="font-mini-btn" data-font="'Amiri', serif" style="font-family: 'Amiri';">أميري</span>
+                    <span class="font-mini-btn" data-font="'Tajawal', sans-serif" style="font-family: 'Tajawal';">تجوال</span>
+                    <span class="font-mini-btn" data-font="'Almarai', sans-serif" style="font-family: 'Almarai';">المرائي</span>
+                    <span class="font-mini-btn" data-font="'Readex Pro', sans-serif" style="font-family: 'Readex Pro';">ريدكس</span>
+                </div>
+                <div class="size-controls">
+                    <button class="size-btn" id="decreaseFontSize"><i class="fas fa-minus"></i></button>
+                    <span id="fontSizeValue">16</span>
+                    <button class="size-btn" id="increaseFontSize"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-book-open"></i> وضع القراءة</label>
+                <div class="button-group" id="modeSelector">
+                    <div class="option-btn" data-mode="rsvp">كلمة بكلمة</div>
+                    <div class="option-btn" data-mode="scroll">تمرير انسيابي</div>
+                    <div class="option-btn" data-mode="static">نص ثابت</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-tachometer-alt"></i> السرعة (كلمة/دقيقة)</label>
+                <input type="range" id="speedSlider" min="10" max="400" step="10" value="150">
+                <div class="speed-display"><span id="speedVal">150</span></div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-label"><i class="fas fa-calendar-alt"></i> الفصل الدراسي</div>
+                <div class="button-group" id="semesterSelector">
+                    <div class="option-btn" data-semester="1">الأول</div>
+                    <div class="option-btn" data-semester="2">الثاني</div>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-label"><i class="fas fa-graduation-cap"></i> الصف</div>
+                <div class="button-group" id="gradeSelector" style="display: flex; flex-wrap: wrap; gap: 6px;">
+                    <div class="option-btn" data-grade="1">الأول</div>
+                    <div class="option-btn" data-grade="2">الثاني</div>
+                    <div class="option-btn" data-grade="3">الثالث</div>
+                    <div class="option-btn" data-grade="4">الرابع</div>
+                    <div class="option-btn" data-grade="5">الخامس</div>
+                    <div class="option-btn" data-grade="6">السادس</div>
+                </div>
+            </div>
+
+            <button class="btn-launch" id="startBtn" onclick="launchReader()" disabled>ابدأ القراءة</button>
+            
+            <div style="text-align: center; margin-top: 12px;">
+                <a href="admin.html" style="color: var(--text-light); font-size: 0.75rem; text-decoration: none;"><i class="fas fa-lock"></i> لوحة الإدارة</a>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3 class="section-title"><i class="fas fa-book"></i> النصوص المتاحة</h3>
+            <div id="lessonsGrid" class="lessons-grid">
+                <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> جاري تحميل النصوص...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ========== بيانات الدروس (سيتم تحميلها من الملفات) ==========
+    let lessonsData = [];
+    let selectedLessonId = null;
+    let currentFont = "'Cairo', sans-serif";
+    let currentMode = 'rsvp';
+    let currentSpeed = 150;
+    let currentSemester = '1';
+    let currentGrade = '1';
+    let currentFontSize = 16;
+
+    // عناصر DOM
+    const lessonsGrid = document.getElementById('lessonsGrid');
+    const startBtn = document.getElementById('startBtn');
+
+    // دوال تحويل رقم الصف والفصل إلى النص الكامل
+    function getGradeFullName(gradeNumber) {
+        const grades = [
+            'الأول الابتدائي',
+            'الثاني الابتدائي',
+            'الثالث الابتدائي',
+            'الرابع الابتدائي',
+            'الخامس الابتدائي',
+            'السادس الابتدائي'
+        ];
+        return grades[gradeNumber - 1];
+    }
+
+    function getSemesterFullName(semesterNumber) {
+        return semesterNumber === '1' ? 'الفصل الدراسي الأول' : 'الفصل الدراسي الثاني';
+    }
+
+    // ========== تحميل الدروس من الملفات الأربعة ==========
+    async function loadAllLessons() {
+        const files = [
+            'primary_first.json',
+            'primary_second.json',
+            'upper_first.json',
+            'upper_second.json'
+        ];
+
+        try {
+            // تحميل كل الملفات بالتوازي
+            const promises = files.map(file => fetch(file).then(res => res.json()));
+            const results = await Promise.all(promises);
+
+            // دمج كل الدروس في مصفوفة واحدة
+            lessonsData = [];
+            results.forEach(lessonsArray => {
+                lessonsArray.forEach(lesson => {
+                    lessonsData.push(lesson);
+                });
+            });
+
+            // عرض الدروس بعد التحميل
+            renderLessons();
+        } catch (error) {
+            console.error('خطأ في تحميل الدروس:', error);
+            lessonsGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--danger);">
+                <i class="fas fa-exclamation-triangle fa-3x"></i>
+                <p>فشل تحميل الدروس. تأكد من وجود الملفات الأربعة في نفس المجلد.</p>
+            </div>`;
+        }
+    }
+
+    // عرض الدروس في الشبكة
+    function renderLessons() {
+        const targetGradeName = getGradeFullName(currentGrade);
+        const targetSemesterName = getSemesterFullName(currentSemester);
+        
+        // تصفية الدروس حسب الصف والفصل المختار
+        const filteredLessons = lessonsData.filter(l => 
+            l.grade === targetGradeName && l.semester === targetSemesterName
+        );
+
+        if (filteredLessons.length === 0) {
+            lessonsGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-light);">
+                <i class="fas fa-folder-open fa-3x"></i>
+                <p>لا توجد نصوص للصف ${targetGradeName} في ${targetSemesterName}</p>
+            </div>`;
+            startBtn.disabled = true;
+            return;
+        }
+
+        lessonsGrid.innerHTML = filteredLessons.map(l => {
+            const wordCount = l.content.split(/\s+/).length;
+            return `
+                <div class="lesson-item ${selectedLessonId === l.id ? 'selected' : ''}" onclick="selectLesson('${l.id}')">
+                    <span class="word-count">${wordCount}</span>
+                    <i class="fas fa-file-alt"></i>
+                    <div style="font-weight:700; font-size:0.9rem; margin-top:5px;">${escapeHtml(l.title)}</div>
+                </div>
+            `;
+        }).join('');
+
+        // تحديث حالة الزر
+        startBtn.disabled = !selectedLessonId;
+    }
+
+    window.selectLesson = function(id) {
+        selectedLessonId = id;
+        renderLessons(); // إعادة رسم الشبكة لتحديد الدرس المختار
+    };
+
+    function launchReader() {
+        if (!selectedLessonId) {
+            alert("يرجى اختيار نص أولاً");
+            return;
+        }
+        const lesson = lessonsData.find(l => l.id === selectedLessonId);
+        if (!lesson) return;
+
+        const config = {
+            lessonId: selectedLessonId,
+            speed: currentSpeed,
+            mode: currentMode,
+            font: currentFont,
+            theme: document.body.getAttribute('data-theme'),
+            fontSize: currentFontSize
+        };
+
+        sessionStorage.setItem('reader_config', JSON.stringify(config));
+        window.location.href = 'read.html';
+    }
+
+    // ========== إعدادات المستخدم ==========
+    window.setTheme = function(theme) {
+        document.body.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+    };
+
+    (function loadTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.body.setAttribute('data-theme', savedTheme);
+    })();
+
+    function loadUserPrefs() {
+        const prefs = JSON.parse(localStorage.getItem('USER_PREFS_KEY')) || {};
+        
+        // الخط
+        if (prefs.font) {
+            currentFont = prefs.font;
+            document.querySelectorAll('.font-mini-btn').forEach(btn => {
+                if (btn.dataset.font === prefs.font) btn.classList.add('active');
+            });
+        } else {
+            document.querySelector('.font-mini-btn[data-font="\'Cairo\', sans-serif"]').classList.add('active');
+        }
+        
+        // وضع القراءة
+        if (prefs.mode) {
+            currentMode = prefs.mode;
+            document.querySelectorAll('#modeSelector .option-btn').forEach(btn => {
+                if (btn.dataset.mode === prefs.mode) btn.classList.add('active');
+            });
+        } else {
+            document.querySelector('#modeSelector .option-btn[data-mode="rsvp"]').classList.add('active');
+        }
+        
+        // السرعة
+        if (prefs.speed) {
+            currentSpeed = prefs.speed;
+            document.getElementById('speedSlider').value = currentSpeed;
+            document.getElementById('speedVal').innerText = currentSpeed;
+        }
+        
+        // الفصل الدراسي
+        if (prefs.semester) {
+            currentSemester = prefs.semester;
+        }
+        document.querySelectorAll('#semesterSelector .option-btn').forEach(btn => {
+            if (btn.dataset.semester === currentSemester) btn.classList.add('active');
+        });
+        
+        // الصف
+        if (prefs.grade) {
+            currentGrade = prefs.grade;
+        }
+        document.querySelectorAll('#gradeSelector .option-btn').forEach(btn => {
+            if (btn.dataset.grade === currentGrade) btn.classList.add('active');
+        });
+        
+        // حجم الخط
+        if (prefs.fontSize) {
+            currentFontSize = prefs.fontSize;
+            document.getElementById('fontSizeValue').innerText = currentFontSize;
+        }
+    }
+
+    function saveUserPrefs() {
+        const prefs = {
+            font: currentFont,
+            mode: currentMode,
+            speed: currentSpeed,
+            semester: currentSemester,
+            grade: currentGrade,
+            fontSize: currentFontSize
+        };
+        localStorage.setItem('USER_PREFS_KEY', JSON.stringify(prefs));
+    }
+
+    // ========== Event Listeners ==========
+    document.getElementById('speedSlider').addEventListener('input', function(e) {
+        currentSpeed = e.target.value;
+        document.getElementById('speedVal').innerText = currentSpeed;
+        saveUserPrefs();
+    });
+
+    document.querySelectorAll('.font-mini-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.font-mini-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentFont = this.dataset.font;
+            saveUserPrefs();
+        });
+    });
+
+    document.getElementById('increaseFontSize').addEventListener('click', () => {
+        currentFontSize += 2;
+        document.getElementById('fontSizeValue').innerText = currentFontSize;
+        saveUserPrefs();
+    });
+    document.getElementById('decreaseFontSize').addEventListener('click', () => {
+        if (currentFontSize > 10) {
+            currentFontSize -= 2;
+            document.getElementById('fontSizeValue').innerText = currentFontSize;
+            saveUserPrefs();
+        }
+    });
+
+    document.querySelectorAll('#modeSelector .option-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('#modeSelector .option-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentMode = this.dataset.mode;
+            saveUserPrefs();
+        });
+    });
+
+    document.querySelectorAll('#semesterSelector .option-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('#semesterSelector .option-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentSemester = this.dataset.semester;
+            saveUserPrefs();
+            selectedLessonId = null; // إلغاء الاختيار السابق
+            renderLessons();
+        });
+    });
+
+    document.querySelectorAll('#gradeSelector .option-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('#gradeSelector .option-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentGrade = this.dataset.grade;
+            saveUserPrefs();
+            selectedLessonId = null; // إلغاء الاختيار السابق
+            renderLessons();
+        });
+    });
+
+    function escapeHtml(unsafe) {
+        return unsafe.replace(/[&<>"]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            if (m === '"') return '&quot;';
+            return m;
+        });
+    }
+
+    // التهيئة
+    window.onload = () => {
+        loadUserPrefs();
+        loadAllLessons(); // تحميل الدروس من الملفات الأربعة
+        startBtn.disabled = true; // في البداية لا يوجد درس مختار
+    };
+</script>
+</body>
+</html>

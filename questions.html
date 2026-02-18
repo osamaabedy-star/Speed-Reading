@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أسئلة الفهم · تقييم القراءة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Cairo',Tahoma,sans-serif; }
+
+        :root {
+            --bg: #f4f7fb;
+            --card-bg: #ffffff;
+            --text: #1e2b3c;
+            --text-light: #64748b;
+            --primary: #2563eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --border: #e9eef2;
+            --shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        [data-theme="dark"] {
+            --bg: #1a1a2e;
+            --card-bg: #16213e;
+            --text: #e9eef2;
+            --text-light: #a0aec0;
+            --border: #2d3748;
+            --shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        [data-theme="comfort"] {
+            --bg: #e6d5b8;
+            --card-bg: #faf0e6;
+            --text: #5e4b3c;
+            --text-light: #7d6b5a;
+            --border: #d4b89c;
+            --shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            padding: 20px;
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; }
+
+        .header {
+            background: var(--card-bg);
+            border-radius: 30px;
+            padding: 15px 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .btn-home {
+            background: transparent;
+            color: var(--text);
+            border: 2px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 40px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .btn-home:hover { background: var(--border); }
+
+        .result-card {
+            background: var(--card-bg);
+            border-radius: 40px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+        .lesson-title {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            background: var(--bg);
+            border-radius: 30px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .meta-item { text-align: center; }
+        .meta-label { color: var(--text-light); font-size: 0.85rem; }
+        .meta-value { font-weight: 700; font-size: 1.2rem; color: var(--primary); }
+
+        .comprehension-level {
+            background: linear-gradient(135deg, var(--primary), var(--success));
+            color: white;
+            border-radius: 50px;
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 15px 0;
+        }
+
+        .progress-chart {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: var(--bg);
+            border-radius: 30px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .pie {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: conic-gradient(var(--success) 0deg, var(--border) 0deg);
+            transition: background 0.5s;
+        }
+
+        .legend {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .legend-item { display: flex; align-items: center; gap: 8px; }
+        .color-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot-success { background: var(--success); }
+        .dot-border { background: var(--border); }
+
+        .questions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .question-counter {
+            background: var(--primary);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+        }
+
+        .question-box {
+            background: var(--card-bg);
+            border-radius: 30px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .option {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 40px;
+            padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 500;
+        }
+        .option:hover { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 5%, var(--bg)); }
+        .option.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .option.correct {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        .option.wrong {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .nav-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .nav-btn:hover:not(:disabled) { background: var(--primary); color: white; }
+        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        .submit-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 40px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            margin: 20px 0;
+            transition: 0.2s;
+        }
+        .submit-btn:hover { transform: scale(1.02); box-shadow: 0 10px 20px rgba(16,185,129,0.3); }
+        .submit-btn:disabled { background: var(--border); cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .result-summary {
+            background: var(--card-bg);
+            border-radius: 40px;
+            padding: 30px;
+            text-align: center;
+            border: 2px solid var(--success);
+            margin-top: 20px;
+        }
+
+        .result-emoji { font-size: 4rem; margin-bottom: 10px; }
+        .result-score { font-size: 3rem; font-weight: 800; color: var(--success); }
+        .result-message { font-size: 1.2rem; color: var(--text-light); }
+
+        .no-questions {
+            background: var(--card-bg);
+            border-radius: 40px;
+            padding: 50px;
+            text-align: center;
+            color: var(--text-light);
+            border: 1px solid var(--border);
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body data-theme="light">
+<div class="container">
+    <div class="header">
+        <div class="logo">
+            <i class="fas fa-question-circle"></i>
+            <span>اختبر فهمك</span>
+        </div>
+        <a href="index.html" class="btn-home"><i class="fas fa-home"></i> الرئيسية</a>
+    </div>
+
+    <div id="resultCard" class="result-card hidden">
+        <h2 class="lesson-title" id="lessonTitle"></h2>
+        <div class="meta-grid" id="metaContainer"></div>
+        <div class="comprehension-level" id="comprehensionLevel">مستوى الفهم: --</div>
+        <div class="progress-chart" id="progressChart">
+            <div class="pie" id="pieChart"></div>
+            <div class="legend">
+                <div class="legend-item"><span class="color-dot dot-success"></span> <span id="correctCount">0</span> إجابات صحيحة</div>
+                <div class="legend-item"><span class="color-dot dot-border"></span> <span id="wrongCount">0</span> إجابات خاطئة</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="questionsSection">
+        <div class="questions-header">
+            <h3><i class="fas fa-pencil-alt"></i> أجب عن الأسئلة</h3>
+            <span class="question-counter" id="questionCounter">1 / 0</span>
+        </div>
+        <div id="questionContainer" class="question-box"></div>
+        <div class="navigation-buttons">
+            <button class="nav-btn" id="prevBtn" disabled><i class="fas fa-arrow-right"></i> السابق</button>
+            <button class="nav-btn" id="nextBtn">التالي <i class="fas fa-arrow-left"></i></button>
+        </div>
+        <button class="submit-btn" id="submitBtn" disabled>سلم الإجابات</button>
+    </div>
+
+    <div id="resultSummary" class="result-summary hidden">
+        <div class="result-emoji" id="resultEmoji">🏆</div>
+        <div class="result-score" id="resultScore">0%</div>
+        <div class="result-message" id="resultMessage"></div>
+        <div style="margin-top: 20px;">
+            <a href="index.html" class="btn-home"><i class="fas fa-book"></i> اقرأ نصاً آخر</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const STORAGE_SESSIONS = 'reading_sessions';
+        const sessionData = JSON.parse(sessionStorage.getItem('currentReadingSession'));
+
+        if (!sessionData) {
+            alert('لا توجد بيانات جلسة قراءة، سيتم تحويلك للرئيسية');
+            window.location.href = 'index.html';
+            return;
+        }
+
+        const lessonTitle = sessionData.lessonTitle;
+        const grade = sessionData.grade;
+        const semester = sessionData.semester;
+        const totalWords = sessionData.totalWords;
+        const duration = sessionData.duration;
+        const speed = sessionData.speed;
+        const errors = sessionData.errors || 0;
+        const questions = sessionData.questions || [];
+
+        const resultCard = document.getElementById('resultCard');
+        const questionsSection = document.getElementById('questionsSection');
+        const resultSummary = document.getElementById('resultSummary');
+        const lessonTitleEl = document.getElementById('lessonTitle');
+        const metaContainer = document.getElementById('metaContainer');
+        const comprehensionLevel = document.getElementById('comprehensionLevel');
+        const pieChart = document.getElementById('pieChart');
+        const correctSpan = document.getElementById('correctCount');
+        const wrongSpan = document.getElementById('wrongCount');
+        const questionContainer = document.getElementById('questionContainer');
+        const questionCounter = document.getElementById('questionCounter');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const resultScore = document.getElementById('resultScore');
+        const resultMessage = document.getElementById('resultMessage');
+        const resultEmoji = document.getElementById('resultEmoji');
+
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let quizSubmitted = false;
+        let correctAnswersCount = 0;
+
+        if (sessionData.theme) {
+            document.body.setAttribute('data-theme', sessionData.theme);
+        } else {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+        }
+
+        lessonTitleEl.textContent = lessonTitle;
+        metaContainer.innerHTML = `
+            <div class="meta-item"><div class="meta-label">الصف</div><div class="meta-value">${escapeHtml(grade)}</div></div>
+            <div class="meta-item"><div class="meta-label">الفصل</div><div class="meta-value">${escapeHtml(semester)}</div></div>
+            <div class="meta-item"><div class="meta-label">عدد الكلمات</div><div class="meta-value">${totalWords}</div></div>
+            <div class="meta-item"><div class="meta-label">زمن القراءة</div><div class="meta-value">${formatTime(duration)}</div></div>
+            <div class="meta-item"><div class="meta-label">السرعة</div><div class="meta-value">${speed} ك/د</div></div>
+            <div class="meta-item"><div class="meta-label">الأخطاء</div><div class="meta-value" style="color:var(--danger);">${errors}</div></div>
+        `;
+
+        if (!questions || questions.length === 0) {
+            questionsSection.innerHTML = '<div class="no-questions"><i class="fas fa-smile-wink fa-4x"></i><h3>لا توجد أسئلة لهذا النص</h3><p>يمكنك العودة للصفحة الرئيسية</p></div>';
+            resultCard.classList.remove('hidden');
+            comprehensionLevel.textContent = `مستوى الفهم: مكتمل (بدون أسئلة)`;
+            pieChart.style.background = `conic-gradient(var(--success) 360deg, var(--border) 0deg)`;
+            correctSpan.textContent = '0';
+            wrongSpan.textContent = '0';
+            saveFinalSession(null);
+            return;
+        }
+
+        function updateCounter() {
+            questionCounter.textContent = `${currentQuestionIndex + 1} / ${questions.length}`;
+        }
+
+        function renderQuestion() {
+            const q = questions[currentQuestionIndex];
+            let optionsHtml = '';
+            q.options.forEach((opt, idx) => {
+                let optionClass = 'option';
+                if (userAnswers[currentQuestionIndex] === idx) optionClass += ' selected';
+                if (quizSubmitted) {
+                    if (idx === q.correct) optionClass += ' correct';
+                    else if (userAnswers[currentQuestionIndex] === idx && idx !== q.correct) optionClass += ' wrong';
+                }
+                optionsHtml += `<div class="${optionClass}" data-opt="${idx}" onclick="selectAnswer(${currentQuestionIndex}, ${idx})">${escapeHtml(opt)}</div>`;
+            });
+            questionContainer.innerHTML = `
+                <div class="question-text">${currentQuestionIndex + 1}. ${escapeHtml(q.text)}</div>
+                <div class="options-grid">
+                    ${optionsHtml}
+                </div>
+            `;
+
+            prevBtn.disabled = currentQuestionIndex === 0;
+            nextBtn.disabled = currentQuestionIndex === questions.length - 1;
+
+            const allAnswered = userAnswers.every(ans => ans !== null);
+            submitBtn.disabled = !allAnswered || quizSubmitted;
+        }
+
+        window.selectAnswer = function(qIdx, optIdx) {
+            if (quizSubmitted) return;
+            userAnswers[qIdx] = optIdx;
+            renderQuestion();
+            const allAnswered = userAnswers.every(ans => ans !== null);
+            submitBtn.disabled = !allAnswered;
+        };
+
+        prevBtn.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+                updateCounter();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+                updateCounter();
+            }
+        });
+
+        submitBtn.addEventListener('click', () => {
+            if (userAnswers.includes(null)) {
+                alert('يرجى الإجابة على جميع الأسئلة أولاً');
+                return;
+            }
+
+            correctAnswersCount = 0;
+            userAnswers.forEach((ans, idx) => {
+                if (ans === questions[idx].correct) correctAnswersCount++;
+            });
+            const score = Math.round((correctAnswersCount / questions.length) * 100);
+            let level = '';
+            if (score >= 85) level = 'متقدم';
+            else if (score >= 65) level = 'متوسط';
+            else level = 'مبتدئ';
+
+            comprehensionLevel.textContent = `مستوى الفهم: ${level} (${score}%)`;
+            const wrongCount = questions.length - correctAnswersCount;
+            const correctDeg = (correctAnswersCount / questions.length) * 360;
+            pieChart.style.background = `conic-gradient(var(--success) ${correctDeg}deg, var(--border) ${correctDeg}deg)`;
+            correctSpan.textContent = correctAnswersCount;
+            wrongSpan.textContent = wrongCount;
+
+            resultCard.classList.remove('hidden');
+            resultScore.textContent = `${score}%`;
+            let emoji = score >= 85 ? '🏆' : (score >= 65 ? '👍' : '💪');
+            resultEmoji.textContent = emoji;
+            resultMessage.textContent = `أجبت صحيحاً على ${correctAnswersCount} من ${questions.length}`;
+            resultSummary.classList.remove('hidden');
+
+            quizSubmitted = true;
+            renderQuestion();
+            submitBtn.disabled = true;
+
+            saveFinalSession({ correct: correctAnswersCount, total: questions.length, score, level });
+        });
+
+        function saveFinalSession(quizResult) {
+            const sessions = JSON.parse(localStorage.getItem(STORAGE_SESSIONS)) || [];
+            const newSession = {
+                id: Date.now().toString(),
+                lessonId: sessionData.lessonId,
+                lessonTitle: sessionData.lessonTitle,
+                grade: sessionData.grade,
+                semester: sessionData.semester,
+                startTime: sessionData.startTime,
+                endTime: sessionData.endTime,
+                duration: sessionData.duration,
+                speed: sessionData.speed,
+                wordsRead: sessionData.totalWords,
+                totalWords: sessionData.totalWords,
+                errors: sessionData.errors,
+                status: 'completed',
+                questionsAnswered: quizResult ? quizResult.total : 0,
+                questionsCorrect: quizResult ? quizResult.correct : 0,
+                comprehensionLevel: quizResult ? quizResult.level : ''
+            };
+            sessions.push(newSession);
+            localStorage.setItem(STORAGE_SESSIONS, JSON.stringify(sessions));
+            sessionStorage.removeItem('currentReadingSession');
+        }
+
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const s = Math.floor(seconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        function escapeHtml(unsafe) {
+            return unsafe.replace(/[&<>"]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                if (m === '"') return '&quot;';
+                return m;
+            });
+        }
+
+        renderQuestion();
+        updateCounter();
+    })();
+</script>
+</body>
+</html>
