@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Amiri&family=Tajawal:wght@400;700&family=Almarai:wght@400;700&family=Readex+Pro:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* الأنماط كما هي مع إضافة زر الخطأ */
+        /* الأنماط كما هي مع إضافة تحكمات جديدة */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
         body * { font-family: inherit; }
 
@@ -250,6 +250,31 @@
             margin-top: 5px;
         }
 
+        /* تحكمات عدد الكلمات في السطر (للتمرير فقط) */
+        .words-per-line-control {
+            border-top: 2px solid var(--border);
+            padding-top: 10px;
+            margin-top: 5px;
+            text-align: center;
+            display: none; /* يظهر فقط في وضع التمرير */
+        }
+        .words-per-line-control span {
+            font-size: 0.8rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .wpl-buttons {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+            align-items: center;
+        }
+        #wordsPerLineValue {
+            min-width: 30px;
+            text-align: center;
+            font-weight: bold;
+        }
+
         .error-btn {
             background-color: var(--accent);
             color: white;
@@ -420,7 +445,7 @@
     <div id="static-container"><div class="static-content" id="static-content"></div></div>
 </div>
 
-<!-- لوحة التحكم الجانبية مع زر الخطأ -->
+<!-- لوحة التحكم الجانبية مع زر الخطأ وتحكم عدد الكلمات لكل سطر -->
 <div class="control-panel">
     <button class="control-btn" id="playPauseBtn" title="تشغيل/إيقاف"><i class="fas fa-play"></i></button>
     <button class="control-btn" id="stopBtn" title="إنهاء"><i class="fas fa-stop"></i></button>
@@ -429,6 +454,17 @@
     <button class="control-btn" id="speedDownBtn" title="خفض السرعة"><i class="fas fa-minus"></i></button>
     <!-- زر الخطأ (يظهر في RSVP والانسيابي فقط) -->
     <button class="error-btn" id="errorBtn" title="تسجيل خطأ في الكلمة الحالية" style="display: none;"><i class="fas fa-exclamation-circle"></i></button>
+    
+    <!-- تحكم عدد الكلمات لكل سطر (يظهر فقط في وضع التمرير) -->
+    <div class="words-per-line-control" id="wplControl">
+        <span>كلمات/سطر</span>
+        <div class="wpl-buttons">
+            <button class="control-btn" id="wplDown"><i class="fas fa-minus"></i></button>
+            <span id="wordsPerLineValue">5</span>
+            <button class="control-btn" id="wplUp"><i class="fas fa-plus"></i></button>
+        </div>
+    </div>
+
     <div class="font-controls">
         <button class="control-btn" id="fontIncreaseBtn" title="تكبير الخط"><i class="fas fa-search-plus"></i></button>
         <button class="control-btn" id="fontDecreaseBtn" title="تصغير الخط"><i class="fas fa-search-minus"></i></button>
@@ -444,7 +480,7 @@
             document.getElementById('loadingScreen').style.display = 'none';
         });
 
-        // دالة لتقسيم النص إلى أسطر بعدد كلمات ثابت
+        // دالة لتقسيم النص إلى أسطر بعدد كلمات متغير
         function formatTextToFixedWords(text, wordsPerLine = 5) {
             const words = text.split(/\s+/);
             let lines = [];
@@ -458,18 +494,16 @@
         // قراءة الإعدادات
         const config = JSON.parse(sessionStorage.getItem('reader_config'));
         if (!config) {
-            showMessage('لم يتم تحديد إعدادات القراءة. سيتم تحويلك للصفحة الرئيسية.', 'خطأ', 'error', () => {
-                window.location.href = 'index.html';
-            });
+            alert('لم يتم تحديد إعدادات القراءة. سيتم تحويلك للصفحة الرئيسية.');
+            window.location.href = 'index.html';
             return;
         }
 
         const allLessons = JSON.parse(localStorage.getItem('reading_app_lessons')) || [];
         const lesson = allLessons.find(l => l.id === config.lessonId);
         if (!lesson) {
-            showMessage('النص المطلوب غير موجود.', 'خطأ', 'error', () => {
-                window.location.href = 'index.html';
-            });
+            alert('النص المطلوب غير موجود.');
+            window.location.href = 'index.html';
             return;
         }
 
@@ -481,12 +515,18 @@
         let timerInterval = null;
         let rafId = null;
         let currentSpeed = parseInt(config.speed) || 150;
-        let expectedNextTime = null;
+        // متغيرات RSVP محسنة
         let rsvpTimer = null;
+        let wordTimeMs = 60000 / currentSpeed; // زمن كل كلمة بالملي ثانية
+        
+        // متغيرات التمرير
         let scrollLastTimestamp = 0;
         let scrollCurrentY = 0;
         let scrollTotalDistance = 0;
         let scrollPixelsPerSecond = 0;
+        
+        // عدد الكلمات في السطر (للتمرير)
+        let currentWordsPerLine = 10; // تم تغيير الافتراضي إلى 10
         
         // الأخطاء
         let totalErrors = 0;
@@ -526,6 +566,10 @@
         const lineHeightIncreaseBtn = document.getElementById('lineHeightIncreaseBtn');
         const lineHeightDecreaseBtn = document.getElementById('lineHeightDecreaseBtn');
         const errorBtn = document.getElementById('errorBtn');
+        const wplControl = document.getElementById('wplControl');
+        const wplUp = document.getElementById('wplUp');
+        const wplDown = document.getElementById('wplDown');
+        const wordsPerLineValue = document.getElementById('wordsPerLineValue');
 
         // عناصر المودال
         const messageModal = document.getElementById('messageModal');
@@ -599,15 +643,18 @@
             rsvpContainer.style.display = 'block';
             rsvpContainer.style.fontSize = currentFontSize + 'px';
             errorBtn.style.display = 'flex'; // إظهار زر الخطأ
+            wplControl.style.display = 'none'; // إخفاء تحكم عدد الكلمات
         } else if (config.mode === 'scroll') {
             scrollContainer.style.display = 'block';
-            scrollContainer.innerText = formatTextToFixedWords(lesson.content, 10);
+            scrollContainer.innerText = formatTextToFixedWords(lesson.content, currentWordsPerLine);
             scrollContainer.style.fontSize = currentFontSize + 'px';
             scrollContainer.style.lineHeight = currentLineHeight;
             const viewportHeight = window.innerHeight;
             scrollCurrentY = viewportHeight;
             scrollContainer.style.transform = `translateY(${scrollCurrentY}px)`;
             errorBtn.style.display = 'flex'; // إظهار زر الخطأ
+            wplControl.style.display = 'block'; // إظهار تحكم عدد الكلمات
+            wordsPerLineValue.innerText = currentWordsPerLine;
             setTimeout(() => {
                 recalcScrollDistance();
             }, 100);
@@ -618,6 +665,7 @@
             staticContainer.style.lineHeight = currentLineHeight;
             enableErrorSelection();
             errorBtn.style.display = 'none'; // إخفاء زر الخطأ (يستخدم النقر على الكلمة)
+            wplControl.style.display = 'none';
         }
 
         function updateFontSizeDisplay() {
@@ -663,6 +711,7 @@
         function updateSpeedDisplay() {
             speedTagEl.innerText = currentSpeed;
             speedDisplay.innerText = currentSpeed;
+            wordTimeMs = 60000 / currentSpeed; // تحديث زمن الكلمة
         }
 
         function formatTime(seconds) {
@@ -679,7 +728,6 @@
 
             if (config.mode === 'rsvp') {
                 currentIndex = 0;
-                expectedNextTime = performance.now();
                 scheduleNextRSVP();
             } else if (config.mode === 'scroll') {
                 scrollLastTimestamp = 0;
@@ -691,23 +739,24 @@
             return word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?؟،…]/g, '');
         }
 
+        // دالة RSVP محسنة - تعتمد على setTimeout المتسلسل
         function scheduleNextRSVP() {
             if (!isPlaying || currentIndex >= words.length) {
                 if (currentIndex >= words.length) finish();
                 return;
             }
 
+            // عرض الكلمة الحالية
             displayWord(currentIndex);
             progressBar.style.width = ((currentIndex + 1) / words.length) * 100 + '%';
             currentIndex++;
 
             if (currentIndex < words.length) {
-                const delay = (60 / currentSpeed) * 1000;
-                expectedNextTime += delay;
-                const actualDelay = Math.max(0, expectedNextTime - performance.now());
-                rsvpTimer = setTimeout(scheduleNextRSVP, actualDelay);
+                // جدولة الكلمة التالية بعد الوقت المحدد
+                rsvpTimer = setTimeout(scheduleNextRSVP, wordTimeMs);
             } else {
-                finish();
+                // انتهى النص
+                setTimeout(finish, wordTimeMs); // نعطي وقت لآخر كلمة
             }
         }
 
@@ -752,12 +801,10 @@
             if (!isPlaying) return;
             totalErrors++;
             if (config.mode === 'rsvp' && currentIndex > 0) {
-                // سجل الكلمة الحالية (التي تم عرضها آخر مرة)
-                const errorWord = words[currentIndex - 1]; // لأن currentIndex تم زيادته بعد العرض
+                // سجل الكلمة التي تم عرضها آخر مرة (currentIndex-1 لأن currentIndex يشير للكلمة التالية)
+                const errorWord = words[currentIndex - 1];
                 errorWordsList.push(errorWord);
             } else if (config.mode === 'scroll') {
-                // في وضع التمرير، لا يمكن تحديد الكلمة بدقة، نسجل فقط العدد
-                // يمكن إضافة كلمة عامة مثل "خطأ في التمرير"
                 errorWordsList.push('خطأ (غير محدد)');
             }
         }
@@ -812,15 +859,21 @@
 
             if (isPlaying) {
                 if (config.mode === 'rsvp') {
-                    expectedNextTime = performance.now();
+                    // استئناف الجدولة من حيث توقفت
                     scheduleNextRSVP();
                 } else if (config.mode === 'scroll') {
                     scrollLastTimestamp = 0;
                     rafId = requestAnimationFrame(scrollStep);
                 }
             } else {
-                if (rsvpTimer) clearTimeout(rsvpTimer);
-                if (rafId) cancelAnimationFrame(rafId);
+                if (rsvpTimer) {
+                    clearTimeout(rsvpTimer);
+                    rsvpTimer = null;
+                }
+                if (rafId) {
+                    cancelAnimationFrame(rafId);
+                    rafId = null;
+                }
             }
         }
 
@@ -832,8 +885,14 @@
 
         function finish() {
             clearInterval(timerInterval);
-            if (rsvpTimer) clearTimeout(rsvpTimer);
-            if (rafId) cancelAnimationFrame(rafId);
+            if (rsvpTimer) {
+                clearTimeout(rsvpTimer);
+                rsvpTimer = null;
+            }
+            if (rafId) {
+                cancelAnimationFrame(rafId);
+                rafId = null;
+            }
             isPlaying = false;
 
             const endTime = Date.now();
@@ -888,19 +947,18 @@
         playPauseBtn.addEventListener('click', togglePlay);
         stopBtn.addEventListener('click', stopReading);
 
+        // تعديل مستمعي السرعة: لا نعيد جدولة RSVP مباشرة، فقط نغير السرعة
+        // وسيتم استخدام السرعة الجديدة في الكلمة التالية تلقائياً لأن wordTimeMs سيتم تحديثه
         speedUpBtn.addEventListener('click', () => {
             let newSpeed = Number(currentSpeed) + 10;
             if (newSpeed > 400) newSpeed = 400;
             currentSpeed = newSpeed;
             updateSpeedDisplay();
-            if (config.mode === 'rsvp' && isPlaying) {
-                clearTimeout(rsvpTimer);
-                expectedNextTime = performance.now();
-                scheduleNextRSVP();
-            } else if (config.mode === 'scroll' && isPlaying) {
+            if (config.mode === 'scroll' && isPlaying) {
                 const totalSeconds = (words.length / currentSpeed) * 60;
                 scrollPixelsPerSecond = scrollTotalDistance / totalSeconds;
             }
+            // في RSVP لا حاجة لإعادة الجدولة، فقط تحديث wordTimeMs سيؤثر على الكلمات التالية
         });
 
         speedDownBtn.addEventListener('click', () => {
@@ -908,13 +966,32 @@
             if (newSpeed < 10) newSpeed = 10;
             currentSpeed = newSpeed;
             updateSpeedDisplay();
-            if (config.mode === 'rsvp' && isPlaying) {
-                clearTimeout(rsvpTimer);
-                expectedNextTime = performance.now();
-                scheduleNextRSVP();
-            } else if (config.mode === 'scroll' && isPlaying) {
+            if (config.mode === 'scroll' && isPlaying) {
                 const totalSeconds = (words.length / currentSpeed) * 60;
                 scrollPixelsPerSecond = scrollTotalDistance / totalSeconds;
+            }
+        });
+
+        // تحكم عدد الكلمات لكل سطر (للتمرير فقط)
+        wplUp.addEventListener('click', () => {
+            if (currentWordsPerLine < 20) {
+                currentWordsPerLine++;
+                wordsPerLineValue.innerText = currentWordsPerLine;
+                if (config.mode === 'scroll') {
+                    scrollContainer.innerText = formatTextToFixedWords(lesson.content, currentWordsPerLine);
+                    recalcScrollDistance();
+                }
+            }
+        });
+
+        wplDown.addEventListener('click', () => {
+            if (currentWordsPerLine > 1) {
+                currentWordsPerLine--;
+                wordsPerLineValue.innerText = currentWordsPerLine;
+                if (config.mode === 'scroll') {
+                    scrollContainer.innerText = formatTextToFixedWords(lesson.content, currentWordsPerLine);
+                    recalcScrollDistance();
+                }
             }
         });
 
@@ -1001,5 +1078,4 @@
     })();
 </script>
 </body>
-
 </html>
