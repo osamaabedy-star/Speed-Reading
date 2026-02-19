@@ -445,17 +445,27 @@
     <div id="static-container"><div class="static-content" id="static-content"></div></div>
 </div>
 
-<!-- لوحة التحكم الجانبية مع زر الخطأ وتحكم عدد الكلمات لكل سطر -->
+<!-- لوحة التحكم الجانبية مع إعادة الترتيب (تم تعديل الترتيب هنا) -->
 <div class="control-panel">
+    <!-- مجموعة التحكم الرئيسية -->
     <button class="control-btn" id="playPauseBtn" title="تشغيل/إيقاف"><i class="fas fa-play"></i></button>
     <button class="control-btn" id="stopBtn" title="إنهاء"><i class="fas fa-stop"></i></button>
     <span class="speed-indicator" id="speedDisplay">150</span>
     <button class="control-btn" id="speedUpBtn" title="زيادة السرعة"><i class="fas fa-plus"></i></button>
     <button class="control-btn" id="speedDownBtn" title="خفض السرعة"><i class="fas fa-minus"></i></button>
-    <!-- زر الخطأ (يظهر في RSVP والانسيابي فقط) -->
+    
+    <!-- زر الخطأ (يظهر في RSVP والانسيابي فقط) - تم وضعه بعد أزرار السرعة -->
     <button class="error-btn" id="errorBtn" title="تسجيل خطأ في الكلمة الحالية" style="display: none;"><i class="fas fa-exclamation-circle"></i></button>
     
-    <!-- تحكم عدد الكلمات لكل سطر (يظهر فقط في وضع التمرير) -->
+    <!-- مجموعة تحكمات الخط (كما هي) -->
+    <div class="font-controls">
+        <button class="control-btn" id="fontIncreaseBtn" title="تكبير الخط"><i class="fas fa-search-plus"></i></button>
+        <button class="control-btn" id="fontDecreaseBtn" title="تصغير الخط"><i class="fas fa-search-minus"></i></button>
+        <button class="control-btn" id="lineHeightIncreaseBtn" title="زيادة التباعد"><i class="fas fa-arrows-alt-v"></i></button>
+        <button class="control-btn" id="lineHeightDecreaseBtn" title="تقليل التباعد"><i class="fas fa-compress-alt"></i></button>
+    </div>
+
+    <!-- تحكم عدد الكلمات لكل سطر (يظهر فقط في وضع التمرير) - تم وضعه بعد مجموعة الخط -->
     <div class="words-per-line-control" id="wplControl">
         <span>كلمات/سطر</span>
         <div class="wpl-buttons">
@@ -463,13 +473,6 @@
             <span id="wordsPerLineValue">5</span>
             <button class="control-btn" id="wplUp"><i class="fas fa-plus"></i></button>
         </div>
-    </div>
-
-    <div class="font-controls">
-        <button class="control-btn" id="fontIncreaseBtn" title="تكبير الخط"><i class="fas fa-search-plus"></i></button>
-        <button class="control-btn" id="fontDecreaseBtn" title="تصغير الخط"><i class="fas fa-search-minus"></i></button>
-        <button class="control-btn" id="lineHeightIncreaseBtn" title="زيادة التباعد"><i class="fas fa-arrows-alt-v"></i></button>
-        <button class="control-btn" id="lineHeightDecreaseBtn" title="تقليل التباعد"><i class="fas fa-compress-alt"></i></button>
     </div>
 </div>
 
@@ -739,7 +742,12 @@
             return word.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?؟،…]/g, '');
         }
 
-        // دالة RSVP محسنة - تعتمد على setTimeout المتسلسل
+        // دالة للتحقق مما إذا كانت الكلمة تنتهي بعلامة ترقيم (توقف)
+        function hasPunctuation(word) {
+            return /[.!?،؛:]$/.test(word); // نقطة، علامة استفهام، تعجب، فاصلة عربية، فاصلة منقوطة، نقطتان
+        }
+
+        // دالة RSVP محسنة - تعتمد على setTimeout المتسلسل مع توقف عند علامات الترقيم
         function scheduleNextRSVP() {
             if (!isPlaying || currentIndex >= words.length) {
                 if (currentIndex >= words.length) finish();
@@ -749,11 +757,19 @@
             // عرض الكلمة الحالية
             displayWord(currentIndex);
             progressBar.style.width = ((currentIndex + 1) / words.length) * 100 + '%';
+            
+            // الحصول على الكلمة التي تم عرضها للتو
+            const currentWord = words[currentIndex];
             currentIndex++;
 
             if (currentIndex < words.length) {
-                // جدولة الكلمة التالية بعد الوقت المحدد
-                rsvpTimer = setTimeout(scheduleNextRSVP, wordTimeMs);
+                // حساب وقت التأخير: إذا كانت الكلمة الحالية تحتوي على علامة ترقيم في نهايتها، نضيف وقتًا إضافيًا
+                let delay = wordTimeMs;
+                if (hasPunctuation(currentWord)) {
+                    delay *= 1.5; // زيادة 50% عند علامات الترقيم
+                }
+                // جدولة الكلمة التالية بعد الوقت المحسوب
+                rsvpTimer = setTimeout(scheduleNextRSVP, delay);
             } else {
                 // انتهى النص
                 setTimeout(finish, wordTimeMs); // نعطي وقت لآخر كلمة
@@ -1079,4 +1095,3 @@
 </script>
 </body>
 </html>
-
