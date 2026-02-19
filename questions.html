@@ -6,7 +6,7 @@
     <title>أسئلة الفهم · تقييم القراءة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* الأنماط الأساسية مع إضافة أنماط المودال */
+        /* نفس الأنماط السابقة مع إضافة تحسينات بسيطة */
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Cairo',Tahoma,sans-serif; }
 
         :root {
@@ -104,7 +104,6 @@
             box-shadow: var(--shadow);
         }
 
-        /* أنماط المودال */
         .modal {
             display: none;
             position: fixed;
@@ -291,7 +290,6 @@
             border-color: var(--danger);
         }
 
-        /* أنماط الترتيب بالسحب */
         .order-list {
             display: flex;
             flex-direction: column;
@@ -372,10 +370,7 @@
         .submit-btn:hover { transform: scale(1.02); box-shadow: 0 10px 20px rgba(16,185,129,0.3); }
         .submit-btn:disabled { background: var(--border); cursor: not-allowed; transform: none; box-shadow: none; }
 
-        /* تم إخفاء result-summary القديم واستبداله بالمودال */
-        .result-summary {
-            display: none;
-        }
+        .result-summary { display: none; }
 
         .no-questions {
             background: var(--card-bg);
@@ -429,7 +424,6 @@
         <button class="submit-btn" id="submitBtn" disabled>سلم الإجابات</button>
     </div>
 
-    <!-- مودال التقرير النهائي -->
     <div id="reportModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" id="closeModalBtn">&times;</span>
@@ -485,6 +479,8 @@
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
         const submitBtn = document.getElementById('submitBtn');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const timerValue = document.getElementById('timerValue');
 
         // عناصر المودال
         const reportModal = document.getElementById('reportModal');
@@ -496,10 +492,6 @@
         const modalWrongCount = document.getElementById('modalWrongCount');
         const closeModalBtn = document.getElementById('closeModalBtn');
         const modalCloseBtn = document.getElementById('modalCloseBtn');
-
-        // عناصر المؤقت
-        const timerDisplay = document.getElementById('timerDisplay');
-        const timerValue = document.getElementById('timerValue');
 
         // تطبيق الثيم
         if (sessionData.theme) {
@@ -532,13 +524,31 @@
             return;
         }
 
+        // دالة للتحقق من صحة السؤال (تجنب الأخطاء)
+        function validateQuestion(q) {
+            if (!q) return false;
+            if (q.type === 'order') {
+                return q.events && Array.isArray(q.events) && q.events.length > 0 && q.correctOrder && Array.isArray(q.correctOrder);
+            } else {
+                // mcq or truefalse
+                return q.options && Array.isArray(q.options) && q.options.length > 0 && q.correct !== undefined;
+            }
+        }
+
+        // تصفية الأسئلة الصحيحة فقط
+        const validQuestions = allQuestions.filter(q => validateQuestion(q));
+        if (validQuestions.length === 0) {
+            questionsSection.innerHTML = '<div class="no-questions"><i class="fas fa-exclamation-triangle fa-4x"></i><h3>جميع الأسئلة غير صالحة أو ناقصة</h3><p>يرجى مراجعة ملف البيانات.</p></div>';
+            return;
+        }
+
         // ========== اختيار الأسئلة ==========
         function selectQuestions(questionsArray, count = 10) {
             if (!Array.isArray(questionsArray) || questionsArray.length === 0) return [];
 
             const questionsCopy = [...questionsArray];
-            const orderQuestions = questionsCopy.filter(q => q && q.type === 'order');
-            const otherQuestions = questionsCopy.filter(q => q && q.type !== 'order');
+            const orderQuestions = questionsCopy.filter(q => q.type === 'order');
+            const otherQuestions = questionsCopy.filter(q => q.type !== 'order');
 
             let selected = [];
 
@@ -597,7 +607,7 @@
             return selected;
         }
 
-        let questions = selectQuestions(allQuestions, 10);
+        let questions = selectQuestions(validQuestions, 10);
         if (questions.length < 10 && questions.length > 0) {
             const needed = 10 - questions.length;
             for (let i = 0; i < needed; i++) {
@@ -658,7 +668,6 @@
             }
         }
 
-        // دالة تسليم الإجابات (تظهر المودال بدلاً من resultSummary)
         function submitAnswers() {
             if (quizSubmitted) return;
 
@@ -685,7 +694,7 @@
             else if (score >= 65) level = 'متوسط';
             else level = 'مبتدئ';
 
-            // تحديث عناصر المودال
+            // تحديث المودال
             modalResultScore.textContent = `${score}%`;
             let emoji = score >= 85 ? '🏆' : (score >= 65 ? '👍' : '💪');
             modalResultEmoji.textContent = emoji;
@@ -697,10 +706,9 @@
             modalCorrectCount.textContent = correctAnswersCount;
             modalWrongCount.textContent = wrongCount;
 
-            // إظهار المودال
             reportModal.classList.add('show');
 
-            // تحديث بطاقة النتيجة (إذا أردت إبقاءها مخفية، لكننا نخفيها)
+            // تحديث البطاقة العلوية (قد تكون مخفية)
             resultCard.classList.add('hidden');
             comprehensionLevel.textContent = `مستوى الفهم: ${level} (${score}%)`;
             pieChart.style.background = `conic-gradient(var(--success) ${correctDeg}deg, var(--border) ${correctDeg}deg)`;
@@ -829,7 +837,7 @@
             } else {
                 const options = q.options || [];
                 if (options.length === 0) {
-                    html += `<p>لا توجد خيارات لهذا السؤال</p>`;
+                    html += `<p class="error-message">⚠️ لا توجد خيارات لهذا السؤال. يرجى إبلاغ المشرف.</p>`;
                 } else {
                     let optionsHtml = '';
                     options.forEach((opt, idx) => {
