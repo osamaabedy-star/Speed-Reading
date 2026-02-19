@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Amiri&family=Tajawal:wght@400;700&family=Almarai:wght@400;700&family=Readex+Pro:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* الأنماط كما هي مع إضافة تحكمات جديدة */
+        /* الأنماط الأساسية كما هي */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
         body * { font-family: inherit; }
 
@@ -194,32 +194,34 @@
             z-index: 200;
         }
 
+        /* ===== لوحة التحكم الجانبية المعاد تصميمها ===== */
         .control-panel {
             position: fixed;
-            right: 20px;
-            top: 55%;
+            right: 15px;
+            top: 50%;
             transform: translateY(-50%);
             background: var(--panel);
             backdrop-filter: blur(10px);
-            border-radius: 50px;
-            padding: 15px 10px;
+            border-radius: 30px;
+            padding: 12px 8px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 10px;
             align-items: center;
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
             z-index: 150;
+            width: 55px; /* أضيق من السابق */
         }
 
         .control-btn {
             background: transparent;
             border: none;
             color: var(--text);
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             cursor: pointer;
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -235,65 +237,96 @@
         .speed-indicator {
             font-weight: 700;
             color: var(--primary);
-            min-width: 60px;
+            font-size: 0.9rem;
+            background: var(--bg);
+            padding: 4px 0;
+            width: 100%;
             text-align: center;
+            border-radius: 20px;
+        }
+
+        /* مجموعة تحكم الخطوط بشكل أفقي لتوفير المساحة */
+        .font-controls {
+            display: flex;
+            flex-direction: row;
+            gap: 2px;
+            border-top: 2px solid var(--border);
+            padding-top: 8px;
+            margin-top: 5px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .font-controls .control-btn {
+            width: 32px;
+            height: 32px;
             font-size: 1rem;
         }
 
-        .font-controls {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            align-items: center;
-            border-top: 2px solid var(--border);
-            padding-top: 10px;
-            margin-top: 5px;
-        }
-
-        /* تحكمات عدد الكلمات في السطر (للتمرير فقط) */
+        /* تحكم عدد الكلمات في السطر (يظهر فقط في التمرير) */
         .words-per-line-control {
             border-top: 2px solid var(--border);
-            padding-top: 10px;
+            padding-top: 8px;
             margin-top: 5px;
             text-align: center;
-            display: none; /* يظهر فقط في وضع التمرير */
+            display: none; /* يظهر حسب الوضع */
+            width: 100%;
         }
+
         .words-per-line-control span {
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
+            color: var(--text);
         }
+
         .wpl-buttons {
             display: flex;
-            gap: 5px;
+            gap: 2px;
             justify-content: center;
             align-items: center;
         }
-        #wordsPerLineValue {
-            min-width: 30px;
-            text-align: center;
-            font-weight: bold;
+
+        .wpl-buttons .control-btn {
+            width: 28px;
+            height: 28px;
+            font-size: 0.9rem;
         }
 
-        .error-btn {
+        #wordsPerLineValue {
+            min-width: 26px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* ===== زر الأخطاء المنفصل (خارج القائمة) ===== */
+        .floating-error-btn {
+            position: fixed;
+            bottom: 25px;
+            left: 25px; /* في الأسفل يسارًا */
             background-color: var(--accent);
             color: white;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 60px;
+            height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: 0.2s;
             border: none;
-            font-size: 1.2rem;
-        }
-        .error-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 10px var(--accent);
+            font-size: 1.8rem;
+            box-shadow: 0 4px 15px rgba(247, 37, 133, 0.4);
+            z-index: 200;
         }
 
+        .floating-error-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(247, 37, 133, 0.6);
+        }
+
+        /* باقي الأنماط كما هي */
         .loading {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -377,7 +410,7 @@
 <body data-theme="light">
 <div class="loading" id="loadingScreen"><i class="fas fa-spinner fa-spin"></i> جاري التجهيز...</div>
 
-<!-- مودال الرسائل -->
+<!-- المودالات (كما هي) -->
 <div class="custom-modal" id="messageModal">
     <div class="modal-content">
         <i class="fas fa-info-circle" style="font-size: 3rem; color: var(--primary);" id="modalIcon"></i>
@@ -389,7 +422,6 @@
     </div>
 </div>
 
-<!-- مودال التأكيد -->
 <div class="custom-modal" id="confirmModal">
     <div class="modal-content">
         <i class="fas fa-question-circle" style="font-size: 3rem; color: var(--warning);"></i>
@@ -402,7 +434,6 @@
     </div>
 </div>
 
-<!-- مودال التقرير النهائي -->
 <div class="custom-modal" id="reportModal">
     <div class="modal-content">
         <i class="fas fa-chart-bar" style="font-size: 3rem; color: var(--primary);"></i>
@@ -445,19 +476,20 @@
     <div id="static-container"><div class="static-content" id="static-content"></div></div>
 </div>
 
-<!-- لوحة التحكم الجانبية مع إعادة الترتيب (تم تعديل الترتيب هنا) -->
+<!-- زر الأخطاء المنفصل (يظهر فقط في وضعي RSVP والانسيابي) -->
+<button class="floating-error-btn" id="errorBtn" title="تسجيل خطأ في الكلمة الحالية" style="display: none;">
+    <i class="fas fa-exclamation-circle"></i>
+</button>
+
+<!-- لوحة التحكم الجانبية المصغرة -->
 <div class="control-panel">
-    <!-- مجموعة التحكم الرئيسية -->
     <button class="control-btn" id="playPauseBtn" title="تشغيل/إيقاف"><i class="fas fa-play"></i></button>
     <button class="control-btn" id="stopBtn" title="إنهاء"><i class="fas fa-stop"></i></button>
     <span class="speed-indicator" id="speedDisplay">150</span>
     <button class="control-btn" id="speedUpBtn" title="زيادة السرعة"><i class="fas fa-plus"></i></button>
     <button class="control-btn" id="speedDownBtn" title="خفض السرعة"><i class="fas fa-minus"></i></button>
-    
-    <!-- زر الخطأ (يظهر في RSVP والانسيابي فقط) - تم وضعه بعد أزرار السرعة -->
-    <button class="error-btn" id="errorBtn" title="تسجيل خطأ في الكلمة الحالية" style="display: none;"><i class="fas fa-exclamation-circle"></i></button>
-    
-    <!-- مجموعة تحكمات الخط (كما هي) -->
+
+    <!-- مجموعة تحكمات الخط (مرتبة أفقيًا) -->
     <div class="font-controls">
         <button class="control-btn" id="fontIncreaseBtn" title="تكبير الخط"><i class="fas fa-search-plus"></i></button>
         <button class="control-btn" id="fontDecreaseBtn" title="تصغير الخط"><i class="fas fa-search-minus"></i></button>
@@ -465,12 +497,12 @@
         <button class="control-btn" id="lineHeightDecreaseBtn" title="تقليل التباعد"><i class="fas fa-compress-alt"></i></button>
     </div>
 
-    <!-- تحكم عدد الكلمات لكل سطر (يظهر فقط في وضع التمرير) - تم وضعه بعد مجموعة الخط -->
+    <!-- تحكم عدد الكلمات لكل سطر (يظهر فقط في وضع التمرير) -->
     <div class="words-per-line-control" id="wplControl">
         <span>كلمات/سطر</span>
         <div class="wpl-buttons">
             <button class="control-btn" id="wplDown"><i class="fas fa-minus"></i></button>
-            <span id="wordsPerLineValue">5</span>
+            <span id="wordsPerLineValue">10</span>
             <button class="control-btn" id="wplUp"><i class="fas fa-plus"></i></button>
         </div>
     </div>
@@ -645,7 +677,7 @@
         if (config.mode === 'rsvp') {
             rsvpContainer.style.display = 'block';
             rsvpContainer.style.fontSize = currentFontSize + 'px';
-            errorBtn.style.display = 'flex'; // إظهار زر الخطأ
+            errorBtn.style.display = 'flex'; // إظهار زر الخطأ المنفصل
             wplControl.style.display = 'none'; // إخفاء تحكم عدد الكلمات
         } else if (config.mode === 'scroll') {
             scrollContainer.style.display = 'block';
@@ -655,7 +687,7 @@
             const viewportHeight = window.innerHeight;
             scrollCurrentY = viewportHeight;
             scrollContainer.style.transform = `translateY(${scrollCurrentY}px)`;
-            errorBtn.style.display = 'flex'; // إظهار زر الخطأ
+            errorBtn.style.display = 'flex'; // إظهار زر الخطأ المنفصل
             wplControl.style.display = 'block'; // إظهار تحكم عدد الكلمات
             wordsPerLineValue.innerText = currentWordsPerLine;
             setTimeout(() => {
@@ -825,7 +857,7 @@
             }
         }
 
-        // ربط زر الخطأ
+        // ربط زر الخطأ المنفصل
         errorBtn.addEventListener('click', recordError);
 
         // تفعيل تحديد الأخطاء في النص الثابت
@@ -963,8 +995,7 @@
         playPauseBtn.addEventListener('click', togglePlay);
         stopBtn.addEventListener('click', stopReading);
 
-        // تعديل مستمعي السرعة: لا نعيد جدولة RSVP مباشرة، فقط نغير السرعة
-        // وسيتم استخدام السرعة الجديدة في الكلمة التالية تلقائياً لأن wordTimeMs سيتم تحديثه
+        // تعديل مستمعي السرعة
         speedUpBtn.addEventListener('click', () => {
             let newSpeed = Number(currentSpeed) + 10;
             if (newSpeed > 400) newSpeed = 400;
@@ -974,7 +1005,6 @@
                 const totalSeconds = (words.length / currentSpeed) * 60;
                 scrollPixelsPerSecond = scrollTotalDistance / totalSeconds;
             }
-            // في RSVP لا حاجة لإعادة الجدولة، فقط تحديث wordTimeMs سيؤثر على الكلمات التالية
         });
 
         speedDownBtn.addEventListener('click', () => {
