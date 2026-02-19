@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>منصة القراءة السريعة التفاعلية - مدارس الرياض الإبداع</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Amiri&family=Tajawal:wght@400;700&family=Almarai:wght@400;700&family=Readex+Pro:wght@400;700&display=swap" rel="stylesheet">
+    <!-- استيراد الخطوط الجديدة -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Amiri&family=Tajawal:wght@400;700&family=Almarai:wght@400;700&family=Readex+Pro:wght@400;700&family=Katibeh&family=Lalezar&family=Markazi+Text:wght@400;700&family=Scheherazade+New:wght@400;700&family=Harmattan:wght@400;700&family=El+Messiri:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* الأنماط كما هي دون تغيير */
+        /* الأنماط كما هي مع إضافة تنسيقات مربع المعاينة */
         :root {
             --primary: #4361ee;
             --secondary: #3f37c9;
@@ -176,6 +177,7 @@
             color: var(--primary);
         }
 
+        /* شريط التحكم بالخطوط */
         .font-controls-bar {
             display: flex;
             align-items: center;
@@ -185,6 +187,7 @@
             border-radius: 40px;
             border: 1px solid var(--border);
             margin-top: 10px;
+            flex-wrap: wrap;
         }
 
         .font-controls-bar i {
@@ -198,6 +201,7 @@
             overflow-x: auto;
             padding: 2px;
             flex: 1;
+            flex-wrap: wrap;
         }
 
         .font-mini-btn {
@@ -210,6 +214,7 @@
             font-size: 0.75rem;
             cursor: pointer;
             transition: 0.2s;
+            font-family: inherit;
         }
 
         .font-mini-btn.active {
@@ -243,6 +248,29 @@
             text-align: center;
             font-size: 0.85rem;
             font-weight: 600;
+        }
+
+        /* مربع معاينة الخط */
+        .font-preview-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: var(--bg);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+        .font-preview-box p {
+            margin-bottom: 5px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        .font-preview-text {
+            font-size: 28px;
+            line-height: 1.5;
+            color: var(--primary);
+            font-weight: 500;
+            transition: font-family 0.2s, font-size 0.2s;
+            word-break: break-word;
         }
 
         .lessons-grid {
@@ -347,17 +375,31 @@
             <div class="font-controls-bar">
                 <i class="fas fa-font"></i>
                 <div class="font-selector-mini" id="miniFontSelector">
+                    <!-- الخطوط الأساسية -->
                     <span class="font-mini-btn" data-font="'Cairo', sans-serif" style="font-family: 'Cairo';">كايرو</span>
                     <span class="font-mini-btn" data-font="'Amiri', serif" style="font-family: 'Amiri';">أميري</span>
                     <span class="font-mini-btn" data-font="'Tajawal', sans-serif" style="font-family: 'Tajawal';">تجوال</span>
                     <span class="font-mini-btn" data-font="'Almarai', sans-serif" style="font-family: 'Almarai';">المرائي</span>
                     <span class="font-mini-btn" data-font="'Readex Pro', sans-serif" style="font-family: 'Readex Pro';">ريدكس</span>
+                    <!-- الخطوط الجديدة التي طلبتها -->
+                    <span class="font-mini-btn" data-font="'Katibeh', cursive" style="font-family: 'Katibeh';">كايور</span>
+                    <span class="font-mini-btn" data-font="'Harmattan', sans-serif" style="font-family: 'Harmattan';">همنان</span>
+                    <span class="font-mini-btn" data-font="'El Messiri', sans-serif" style="font-family: 'El Messiri';">مركزي</span>
+                    <span class="font-mini-btn" data-font="'Lalezar', cursive" style="font-family: 'Lalezar';">لطيف</span>
+                    <span class="font-mini-btn" data-font="'Markazi Text', serif" style="font-family: 'Markazi Text';">ليازار</span>
+                    <span class="font-mini-btn" data-font="'Scheherazade New', serif" style="font-family: 'Scheherazade New';">شهزاد</span>
                 </div>
                 <div class="size-controls">
                     <button class="size-btn" id="decreaseFontSize"><i class="fas fa-minus"></i></button>
-                    <span id="fontSizeValue">16</span>
+                    <span id="fontSizeValue">28</span>
                     <button class="size-btn" id="increaseFontSize"><i class="fas fa-plus"></i></button>
                 </div>
+            </div>
+
+            <!-- مربع معاينة الخط والحجم (يظهر أسفل أزرار الخطوط) -->
+            <div class="font-preview-box">
+                <p>معاينة الخط:</p>
+                <div class="font-preview-text" id="fontPreview">نص تجريبي لعرض الخط</div>
             </div>
 
             <div class="form-group">
@@ -412,7 +454,7 @@
 </div>
 
 <script>
-    // ========== بيانات الدروس (سيتم تحميلها من الملفات) ==========
+    // ========== بيانات الدروس ==========
     let lessonsData = [];
     let selectedLessonId = null;
     let currentFont = "'Cairo', sans-serif";
@@ -420,11 +462,12 @@
     let currentSpeed = 150;
     let currentSemester = '1';
     let currentGrade = '1';
-    let currentFontSize = 16;
+    let currentFontSize = 28;
 
     // عناصر DOM
     const lessonsGrid = document.getElementById('lessonsGrid');
     const startBtn = document.getElementById('startBtn');
+    const fontPreview = document.getElementById('fontPreview');
 
     // دوال تحويل رقم الصف والفصل إلى النص الكامل
     function getGradeFullName(gradeNumber) {
@@ -443,7 +486,13 @@
         return semesterNumber === '1' ? 'الفصل الدراسي الأول' : 'الفصل الدراسي الثاني';
     }
 
-    // ========== تحميل الدروس من الملفات الأربعة وحفظها في localStorage ==========
+    // تحديث معاينة الخط
+    function updateFontPreview() {
+        fontPreview.style.fontFamily = currentFont;
+        fontPreview.style.fontSize = currentFontSize + 'px';
+    }
+
+    // ========== تحميل الدروس وحفظها في localStorage ==========
     async function loadAllLessons() {
         const files = [
             'primary_first.json',
@@ -453,11 +502,9 @@
         ];
 
         try {
-            // تحميل كل الملفات بالتوازي
             const promises = files.map(file => fetch(file).then(res => res.json()));
             const results = await Promise.all(promises);
 
-            // دمج كل الدروس في مصفوفة واحدة
             lessonsData = [];
             results.forEach(lessonsArray => {
                 lessonsArray.forEach(lesson => {
@@ -465,12 +512,9 @@
                 });
             });
 
-            // ===== السطر المهم جداً =====
-            // حفظ الدروس في localStorage ليتمكن ملف read.html من قراءتها
+            // حفظ الدروس في localStorage لصفحة read.html
             localStorage.setItem('reading_app_lessons', JSON.stringify(lessonsData));
-            // ===========================
 
-            // عرض الدروس بعد التحميل
             renderLessons();
         } catch (error) {
             console.error('خطأ في تحميل الدروس:', error);
@@ -486,7 +530,6 @@
         const targetGradeName = getGradeFullName(currentGrade);
         const targetSemesterName = getSemesterFullName(currentSemester);
         
-        // تصفية الدروس حسب الصف والفصل المختار
         const filteredLessons = lessonsData.filter(l => 
             l.grade === targetGradeName && l.semester === targetSemesterName
         );
@@ -511,13 +554,12 @@
             `;
         }).join('');
 
-        // تحديث حالة الزر
         startBtn.disabled = !selectedLessonId;
     }
 
     window.selectLesson = function(id) {
         selectedLessonId = id;
-        renderLessons(); // إعادة رسم الشبكة لتحديد الدرس المختار
+        renderLessons();
     };
 
     function launchReader() {
@@ -555,7 +597,6 @@
     function loadUserPrefs() {
         const prefs = JSON.parse(localStorage.getItem('USER_PREFS_KEY')) || {};
         
-        // الخط
         if (prefs.font) {
             currentFont = prefs.font;
             document.querySelectorAll('.font-mini-btn').forEach(btn => {
@@ -565,7 +606,6 @@
             document.querySelector('.font-mini-btn[data-font="\'Cairo\', sans-serif"]').classList.add('active');
         }
         
-        // وضع القراءة
         if (prefs.mode) {
             currentMode = prefs.mode;
             document.querySelectorAll('#modeSelector .option-btn').forEach(btn => {
@@ -575,14 +615,12 @@
             document.querySelector('#modeSelector .option-btn[data-mode="rsvp"]').classList.add('active');
         }
         
-        // السرعة
         if (prefs.speed) {
             currentSpeed = prefs.speed;
             document.getElementById('speedSlider').value = currentSpeed;
             document.getElementById('speedVal').innerText = currentSpeed;
         }
         
-        // الفصل الدراسي
         if (prefs.semester) {
             currentSemester = prefs.semester;
         }
@@ -590,7 +628,6 @@
             if (btn.dataset.semester === currentSemester) btn.classList.add('active');
         });
         
-        // الصف
         if (prefs.grade) {
             currentGrade = prefs.grade;
         }
@@ -598,11 +635,13 @@
             if (btn.dataset.grade === currentGrade) btn.classList.add('active');
         });
         
-        // حجم الخط
         if (prefs.fontSize) {
             currentFontSize = prefs.fontSize;
             document.getElementById('fontSizeValue').innerText = currentFontSize;
         }
+
+        // تحديث المعاينة
+        updateFontPreview();
     }
 
     function saveUserPrefs() {
@@ -629,6 +668,7 @@
             document.querySelectorAll('.font-mini-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             currentFont = this.dataset.font;
+            updateFontPreview();
             saveUserPrefs();
         });
     });
@@ -636,12 +676,14 @@
     document.getElementById('increaseFontSize').addEventListener('click', () => {
         currentFontSize += 2;
         document.getElementById('fontSizeValue').innerText = currentFontSize;
+        updateFontPreview();
         saveUserPrefs();
     });
     document.getElementById('decreaseFontSize').addEventListener('click', () => {
-        if (currentFontSize > 10) {
+        if (currentFontSize > 12) {
             currentFontSize -= 2;
             document.getElementById('fontSizeValue').innerText = currentFontSize;
+            updateFontPreview();
             saveUserPrefs();
         }
     });
@@ -661,7 +703,7 @@
             this.classList.add('active');
             currentSemester = this.dataset.semester;
             saveUserPrefs();
-            selectedLessonId = null; // إلغاء الاختيار السابق
+            selectedLessonId = null;
             renderLessons();
         });
     });
@@ -672,7 +714,7 @@
             this.classList.add('active');
             currentGrade = this.dataset.grade;
             saveUserPrefs();
-            selectedLessonId = null; // إلغاء الاختيار السابق
+            selectedLessonId = null;
             renderLessons();
         });
     });
@@ -690,8 +732,8 @@
     // التهيئة
     window.onload = () => {
         loadUserPrefs();
-        loadAllLessons(); // تحميل الدروس من الملفات الأربعة
-        startBtn.disabled = true; // في البداية لا يوجد درس مختار
+        loadAllLessons();
+        startBtn.disabled = true;
     };
 </script>
 </body>
