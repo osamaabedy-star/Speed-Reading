@@ -601,7 +601,7 @@
             errorBtn.style.display = 'flex'; // إظهار زر الخطأ
         } else if (config.mode === 'scroll') {
             scrollContainer.style.display = 'block';
-            scrollContainer.innerText = formatTextToFixedWords(lesson.content, 5);
+            scrollContainer.innerText = formatTextToFixedWords(lesson.content, 10);
             scrollContainer.style.fontSize = currentFontSize + 'px';
             scrollContainer.style.lineHeight = currentLineHeight;
             const viewportHeight = window.innerHeight;
@@ -1001,4 +1001,5 @@
     })();
 </script>
 </body>
+
 </html>
