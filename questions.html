@@ -6,7 +6,7 @@
     <title>أسئلة الفهم · تقييم القراءة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* نفس الأنماط السابقة مع إضافة تعديل بسيط للأزرار */
+        /* الأنماط الأساسية كما هي مع إضافة أنماط للسحب */
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Cairo',Tahoma,sans-serif; }
 
         :root {
@@ -236,53 +236,44 @@
             border-color: var(--danger);
         }
 
+        /* أنماط الترتيب بالسحب */
         .order-list {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 10px;
             margin: 20px 0;
         }
         .order-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
             background: var(--bg);
             border: 2px solid var(--border);
             border-radius: 40px;
             padding: 15px 20px;
+            cursor: grab;
+            user-select: none;
+            transition: background 0.2s, transform 0.1s;
+            position: relative;
+            box-shadow: var(--shadow);
         }
-        .order-number-buttons {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
+        .order-item.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
         }
-        .order-number-btn {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            border: 2px solid var(--border);
-            background: var(--card-bg);
-            color: var(--text);
-            font-weight: 700;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .order-number-btn.selected {
-            background: var(--primary);
-            color: white;
+        .order-item.drag-over {
             border-color: var(--primary);
-        }
-        .order-number-btn.disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
+            transform: scale(1.02);
         }
         .order-item-text {
-            flex: 1;
             font-size: 1.1rem;
+            pointer-events: none; /* لمنع تداخل النص مع السحب */
+        }
+        .drag-handle {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-size: 1.2rem;
+            cursor: grab;
         }
 
         .navigation-buttons {
@@ -476,13 +467,9 @@
             return;
         }
 
-        // ========== اختيار الأسئلة (بدون تكرار، وآخر سؤال ترتيب) مع تحسينات ==========
+        // ========== اختيار الأسئلة ==========
         function selectQuestions(questionsArray, count = 10) {
-            // التأكد من أن questionsArray مصفوفة
-            if (!Array.isArray(questionsArray) || questionsArray.length === 0) {
-                console.warn('مصفوفة الأسئلة فارغة أو غير صالحة');
-                return [];
-            }
+            if (!Array.isArray(questionsArray) || questionsArray.length === 0) return [];
 
             const questionsCopy = [...questionsArray];
             const orderQuestions = questionsCopy.filter(q => q && q.type === 'order');
@@ -495,7 +482,6 @@
                 const selectedOrder = orderQuestions[randomOrderIndex];
                 
                 let availableOthers = [...otherQuestions];
-                // خلط
                 for (let i = availableOthers.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [availableOthers[i], availableOthers[j]] = [availableOthers[j], availableOthers[i]];
@@ -506,22 +492,14 @@
                     if (availableOthers.length > 0) {
                         othersSelected.push(availableOthers.shift());
                     } else {
-                        // إذا نفذت، نعيد تعبئة المصفوفة من otherQuestions (مسموح بالتكرار بعد استنفاد الجميع)
                         availableOthers = [...otherQuestions];
                         for (let i = availableOthers.length - 1; i > 0; i--) {
                             const j = Math.floor(Math.random() * (i + 1));
                             [availableOthers[i], availableOthers[j]] = [availableOthers[j], availableOthers[i]];
                         }
-                        if (availableOthers.length > 0) {
-                            othersSelected.push(availableOthers.shift());
-                        } else {
-                            // إذا كان otherQuestions فارغاً، ندفع selectedOrder مكرر؟ لا نريد تكرار ترتيب.
-                            // نضيف عنصر placeholder (لن يحدث لأن otherQuestions.length >0? لكن للسلامة)
-                            console.warn('لا توجد أسئلة أخرى كافية');
-                        }
+                        if (availableOthers.length > 0) othersSelected.push(availableOthers.shift());
                     }
                 }
-                
                 selected = [...othersSelected, selectedOrder];
             } else {
                 let availableAll = [...questionsCopy];
@@ -529,68 +507,39 @@
                     const j = Math.floor(Math.random() * (i + 1));
                     [availableAll[i], availableAll[j]] = [availableAll[j], availableAll[i]];
                 }
-                
                 for (let i = 0; i < count; i++) {
-                    if (availableAll.length > 0) {
-                        selected.push(availableAll.shift());
-                    } else {
+                    if (availableAll.length > 0) selected.push(availableAll.shift());
+                    else {
                         availableAll = [...questionsCopy];
                         for (let i = availableAll.length - 1; i > 0; i--) {
                             const j = Math.floor(Math.random() * (i + 1));
                             [availableAll[i], availableAll[j]] = [availableAll[j], availableAll[i]];
                         }
-                        if (availableAll.length > 0) {
-                            selected.push(availableAll.shift());
-                        }
+                        if (availableAll.length > 0) selected.push(availableAll.shift());
                     }
                 }
             }
 
-            // إزالة أي عناصر غير معرفة (undefined) من المصفوفة المختارة
             selected = selected.filter(q => q !== undefined && q !== null);
 
-            // خلط الأسئلة مع بقاء السؤال الأخير (الترتيب) في النهاية إذا كان موجوداً
-            if (orderQuestions.length > 0 && selected.length > 0) {
-                // نفرض أن آخر عنصر هو الترتيب (قد لا يكون إذا كان عدد المختار أقل)
-                // نبحث عن سؤال الترتيب في selected ونضعه في النهاية
-                const orderIndex = selected.findIndex(q => q.type === 'order');
-                if (orderIndex !== -1 && orderIndex !== selected.length - 1) {
-                    const orderQ = selected.splice(orderIndex, 1)[0];
-                    selected.push(orderQ);
-                }
-                // خلط البقية (عدا الأخير)
-                if (selected.length > 1) {
-                    const last = selected.pop();
-                    for (let i = selected.length - 1; i > 0; i--) {
-                        const j = Math.floor(Math.random() * (i + 1));
-                        [selected[i], selected[j]] = [selected[j], selected[i]];
-                    }
-                    selected.push(last);
-                }
-            } else {
-                for (let i = selected.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [selected[i], selected[j]] = [selected[j], selected[i]];
-                }
+            // وضع سؤال الترتيب في النهاية
+            const orderIndex = selected.findIndex(q => q.type === 'order');
+            if (orderIndex !== -1 && orderIndex !== selected.length - 1) {
+                const orderQ = selected.splice(orderIndex, 1)[0];
+                selected.push(orderQ);
             }
 
             return selected;
         }
 
-        // اختيار الأسئلة
         let questions = selectQuestions(allQuestions, 10);
-        
-        // إذا كان العدد أقل من 10 (مثلاً بسبب نقص الأسئلة)، نكرر الأسئلة لضمان 10
         if (questions.length < 10 && questions.length > 0) {
             const needed = 10 - questions.length;
             for (let i = 0; i < needed; i++) {
-                // نكرر عشوائياً من الأسئلة الموجودة
                 const randomIndex = Math.floor(Math.random() * questions.length);
-                questions.push({...questions[randomIndex]}); // نسخة سطحية
+                questions.push({...questions[randomIndex]});
             }
         }
-
-        console.log('الأسئلة المختارة:', questions);
 
         // متغيرات الحالة
         let currentQuestionIndex = 0;
@@ -604,14 +553,13 @@
         const DEFAULT_TIME = 60;
         const ORDER_TIME = 100;
 
-        // دالة لبدء المؤقت للسؤال الحالي
+        // متغيرات السحب
+        let dragSourceIndex = null;
+
         function startTimerForCurrentQuestion() {
             if (timerInterval) clearInterval(timerInterval);
             if (quizSubmitted) return;
-            if (!questions[currentQuestionIndex]) {
-                console.error('السؤال الحالي غير موجود!');
-                return;
-            }
+            if (!questions[currentQuestionIndex]) return;
 
             const q = questions[currentQuestionIndex];
             timeLeft = (q.type === 'order') ? ORDER_TIME : DEFAULT_TIME;
@@ -635,7 +583,6 @@
             }, 1000);
         }
 
-        // دالة للانتقال للسؤال التالي
         function goToNextQuestion() {
             if (currentQuestionIndex < questions.length - 1 && !quizSubmitted) {
                 if (timerInterval) clearInterval(timerInterval);
@@ -646,7 +593,6 @@
             }
         }
 
-        // دالة تسليم الإجابات
         function submitAnswers() {
             if (quizSubmitted) return;
 
@@ -656,7 +602,7 @@
                 if (!q) return;
                 if (q.type === 'order') {
                     if (ans && Array.isArray(ans) && q.events && q.correctOrder) {
-                        const selectedOrder = ans.map(num => q.events[num - 1]);
+                        const selectedOrder = ans;
                         const correctOrder = q.correctOrder.map(i => q.events[i]);
                         if (JSON.stringify(selectedOrder) === JSON.stringify(correctOrder)) {
                             correctAnswersCount++;
@@ -703,7 +649,65 @@
             questionCounter.textContent = `${currentQuestionIndex + 1} / ${questions.length}`;
         }
 
-        // دالة عرض السؤال حسب نوعه
+        // دوال السحب والإفلات
+        function handleDragStart(e, index) {
+            if (quizSubmitted) {
+                e.preventDefault();
+                return;
+            }
+            dragSourceIndex = index;
+            e.dataTransfer.setData('text/plain', index);
+            e.target.classList.add('dragging');
+        }
+
+        function handleDragOver(e, index) {
+            e.preventDefault();
+            if (quizSubmitted) return;
+            e.target.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.target.classList.remove('drag-over');
+        }
+
+        function handleDrop(e, targetIndex) {
+            e.preventDefault();
+            e.target.classList.remove('drag-over');
+            if (quizSubmitted || dragSourceIndex === null) return;
+
+            const sourceIndex = dragSourceIndex;
+            if (sourceIndex === targetIndex) {
+                dragSourceIndex = null;
+                return;
+            }
+
+            // إعادة ترتيب الأحداث
+            const q = questions[currentQuestionIndex];
+            if (!q || q.type !== 'order') return;
+
+            const currentOrder = userAnswers[currentQuestionIndex] ? [...userAnswers[currentQuestionIndex]] : [...q.events];
+            
+            // تبديل العناصر
+            const [movedItem] = currentOrder.splice(sourceIndex, 1);
+            currentOrder.splice(targetIndex, 0, movedItem);
+            
+            userAnswers[currentQuestionIndex] = currentOrder;
+            
+            // إعادة رسم السؤال لتحديث الترتيب
+            renderQuestion();
+            
+            dragSourceIndex = null;
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            document.querySelectorAll('.order-item').forEach(item => {
+                item.classList.remove('drag-over');
+            });
+            dragSourceIndex = null;
+        }
+
+        // دالة عرض السؤال
         function renderQuestion() {
             const q = questions[currentQuestionIndex];
             if (!q) {
@@ -718,21 +722,25 @@
                 if (events.length === 0) {
                     html += `<p>لا توجد أحداث لترتيبها</p>`;
                 } else {
-                    let currentOrder = userAnswers[currentQuestionIndex] || new Array(events.length).fill(null);
+                    // الحصول على الترتيب الحالي من userAnswers أو الترتيب الافتراضي
+                    let currentOrder = userAnswers[currentQuestionIndex];
+                    if (!currentOrder) {
+                        // إذا لم يكن هناك إجابة محفوظة، نعرض الأحداث بالترتيب الأصلي (أو نخلطها؟ نفضل الأصلي)
+                        currentOrder = [...events];
+                        userAnswers[currentQuestionIndex] = currentOrder; // نخزن الإجابة الافتراضية (بدون ترتيب)
+                    }
 
-                    html += `<div class="order-list">`;
-                    events.forEach((eventText, idx) => {
-                        const selectedNum = currentOrder[idx];
+                    html += `<div class="order-list" id="order-list-${currentQuestionIndex}">`;
+                    currentOrder.forEach((eventText, idx) => {
                         html += `
-                            <div class="order-item">
-                                <div class="order-number-buttons">
-                                    ${Array.from({ length: events.length }, (_, i) => i + 1).map(num => {
-                                        const disabled = quizSubmitted ? 'disabled' : '';
-                                        const selectedClass = (selectedNum === num) ? 'selected' : '';
-                                        return `<button class="order-number-btn ${selectedClass}" ${disabled} onclick="selectOrderNumber(${currentQuestionIndex}, ${idx}, ${num})">${num}</button>`;
-                                    }).join('')}
-                                </div>
+                            <div class="order-item" draggable="${!quizSubmitted}" 
+                                 ondragstart="handleDragStart(event, ${idx})"
+                                 ondragover="handleDragOver(event, ${idx})"
+                                 ondragleave="handleDragLeave(event)"
+                                 ondrop="handleDrop(event, ${idx})"
+                                 ondragend="handleDragEnd(event)">
                                 <span class="order-item-text">${escapeHtml(eventText)}</span>
+                                <span class="drag-handle"><i class="fas fa-grip-vertical"></i></span>
                             </div>
                         `;
                     });
@@ -764,42 +772,28 @@
             nextBtn.disabled = (currentQuestionIndex === questions.length - 1) || quizSubmitted;
 
             const allAnswered = userAnswers.every(ans => {
-                if (Array.isArray(ans)) {
-                    return ans.every(v => v !== null);
-                }
+                if (Array.isArray(ans)) return ans.length > 0; // الترتيب دائماً له إجابة افتراضية
                 return ans !== null;
             });
             submitBtn.disabled = !allAnswered || quizSubmitted;
         }
 
-        // دالة اختيار الإجابة للأسئلة العادية
+        // دوال اختيار الإجابة للأسئلة العادية
         window.selectAnswer = function(qIdx, optIdx) {
             if (quizSubmitted) return;
             userAnswers[qIdx] = optIdx;
             renderQuestion();
         };
 
-        // دالة اختيار رقم لسؤال الترتيب
-        window.selectOrderNumber = function(qIdx, eventIdx, num) {
-            if (quizSubmitted) return;
-            const q = questions[qIdx];
-            if (!q || !q.events) return;
-            
-            let currentOrder = userAnswers[qIdx] ? [...userAnswers[qIdx]] : new Array(q.events.length).fill(null);
-            
-            const existingEventIdx = currentOrder.findIndex((val, i) => val === num && i !== eventIdx);
-            if (existingEventIdx !== -1) {
-                currentOrder[existingEventIdx] = null;
-            }
-            
-            currentOrder[eventIdx] = num;
-            userAnswers[qIdx] = currentOrder;
-            
-            renderQuestion();
-        };
+        // ربط دوال السحب بالنطاق العام
+        window.handleDragStart = handleDragStart;
+        window.handleDragOver = handleDragOver;
+        window.handleDragLeave = handleDragLeave;
+        window.handleDrop = handleDrop;
+        window.handleDragEnd = handleDragEnd;
 
         // التنقل
-        prevBtn.addEventListener('click', () => {}); // لا شيء
+        prevBtn.addEventListener('click', () => {});
 
         nextBtn.addEventListener('click', () => {
             goToNextQuestion();
