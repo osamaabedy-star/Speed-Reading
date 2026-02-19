@@ -476,11 +476,17 @@
             return;
         }
 
-        // ========== اختيار الأسئلة (بدون تكرار، وآخر سؤال ترتيب) ==========
+        // ========== اختيار الأسئلة (بدون تكرار، وآخر سؤال ترتيب) مع تحسينات ==========
         function selectQuestions(questionsArray, count = 10) {
+            // التأكد من أن questionsArray مصفوفة
+            if (!Array.isArray(questionsArray) || questionsArray.length === 0) {
+                console.warn('مصفوفة الأسئلة فارغة أو غير صالحة');
+                return [];
+            }
+
             const questionsCopy = [...questionsArray];
-            const orderQuestions = questionsCopy.filter(q => q.type === 'order');
-            const otherQuestions = questionsCopy.filter(q => q.type !== 'order');
+            const orderQuestions = questionsCopy.filter(q => q && q.type === 'order');
+            const otherQuestions = questionsCopy.filter(q => q && q.type !== 'order');
 
             let selected = [];
 
@@ -489,6 +495,7 @@
                 const selectedOrder = orderQuestions[randomOrderIndex];
                 
                 let availableOthers = [...otherQuestions];
+                // خلط
                 for (let i = availableOthers.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [availableOthers[i], availableOthers[j]] = [availableOthers[j], availableOthers[i]];
@@ -499,12 +506,19 @@
                     if (availableOthers.length > 0) {
                         othersSelected.push(availableOthers.shift());
                     } else {
+                        // إذا نفذت، نعيد تعبئة المصفوفة من otherQuestions (مسموح بالتكرار بعد استنفاد الجميع)
                         availableOthers = [...otherQuestions];
                         for (let i = availableOthers.length - 1; i > 0; i--) {
                             const j = Math.floor(Math.random() * (i + 1));
                             [availableOthers[i], availableOthers[j]] = [availableOthers[j], availableOthers[i]];
                         }
-                        othersSelected.push(availableOthers.shift());
+                        if (availableOthers.length > 0) {
+                            othersSelected.push(availableOthers.shift());
+                        } else {
+                            // إذا كان otherQuestions فارغاً، ندفع selectedOrder مكرر؟ لا نريد تكرار ترتيب.
+                            // نضيف عنصر placeholder (لن يحدث لأن otherQuestions.length >0? لكن للسلامة)
+                            console.warn('لا توجد أسئلة أخرى كافية');
+                        }
                     }
                 }
                 
@@ -525,19 +539,34 @@
                             const j = Math.floor(Math.random() * (i + 1));
                             [availableAll[i], availableAll[j]] = [availableAll[j], availableAll[i]];
                         }
-                        selected.push(availableAll.shift());
+                        if (availableAll.length > 0) {
+                            selected.push(availableAll.shift());
+                        }
                     }
                 }
             }
 
+            // إزالة أي عناصر غير معرفة (undefined) من المصفوفة المختارة
+            selected = selected.filter(q => q !== undefined && q !== null);
+
             // خلط الأسئلة مع بقاء السؤال الأخير (الترتيب) في النهاية إذا كان موجوداً
-            if (orderQuestions.length > 0) {
-                const last = selected.pop();
-                for (let i = selected.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [selected[i], selected[j]] = [selected[j], selected[i]];
+            if (orderQuestions.length > 0 && selected.length > 0) {
+                // نفرض أن آخر عنصر هو الترتيب (قد لا يكون إذا كان عدد المختار أقل)
+                // نبحث عن سؤال الترتيب في selected ونضعه في النهاية
+                const orderIndex = selected.findIndex(q => q.type === 'order');
+                if (orderIndex !== -1 && orderIndex !== selected.length - 1) {
+                    const orderQ = selected.splice(orderIndex, 1)[0];
+                    selected.push(orderQ);
                 }
-                selected.push(last);
+                // خلط البقية (عدا الأخير)
+                if (selected.length > 1) {
+                    const last = selected.pop();
+                    for (let i = selected.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [selected[i], selected[j]] = [selected[j], selected[i]];
+                    }
+                    selected.push(last);
+                }
             } else {
                 for (let i = selected.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
@@ -549,7 +578,19 @@
         }
 
         // اختيار الأسئلة
-        const questions = selectQuestions(allQuestions, 10);
+        let questions = selectQuestions(allQuestions, 10);
+        
+        // إذا كان العدد أقل من 10 (مثلاً بسبب نقص الأسئلة)، نكرر الأسئلة لضمان 10
+        if (questions.length < 10 && questions.length > 0) {
+            const needed = 10 - questions.length;
+            for (let i = 0; i < needed; i++) {
+                // نكرر عشوائياً من الأسئلة الموجودة
+                const randomIndex = Math.floor(Math.random() * questions.length);
+                questions.push({...questions[randomIndex]}); // نسخة سطحية
+            }
+        }
+
+        console.log('الأسئلة المختارة:', questions);
 
         // متغيرات الحالة
         let currentQuestionIndex = 0;
@@ -567,6 +608,10 @@
         function startTimerForCurrentQuestion() {
             if (timerInterval) clearInterval(timerInterval);
             if (quizSubmitted) return;
+            if (!questions[currentQuestionIndex]) {
+                console.error('السؤال الحالي غير موجود!');
+                return;
+            }
 
             const q = questions[currentQuestionIndex];
             timeLeft = (q.type === 'order') ? ORDER_TIME : DEFAULT_TIME;
@@ -581,12 +626,9 @@
                     timerInterval = null;
                     if (quizSubmitted) return;
 
-                    // إذا انتهى الوقت ولم يُجب، نعتبر السؤال لم يُجب (يبقى null) وننتقل للتالي
                     if (currentQuestionIndex === questions.length - 1) {
-                        // إذا كان الأخير، سلم تلقائياً
                         submitAnswers();
                     } else {
-                        // انتقل للسؤال التالي
                         goToNextQuestion();
                     }
                 }
@@ -596,7 +638,6 @@
         // دالة للانتقال للسؤال التالي
         function goToNextQuestion() {
             if (currentQuestionIndex < questions.length - 1 && !quizSubmitted) {
-                // قبل الانتقال، نوقف المؤقت الحالي
                 if (timerInterval) clearInterval(timerInterval);
                 currentQuestionIndex++;
                 renderQuestion();
@@ -612,8 +653,9 @@
             correctAnswersCount = 0;
             userAnswers.forEach((ans, idx) => {
                 const q = questions[idx];
+                if (!q) return;
                 if (q.type === 'order') {
-                    if (ans) {
+                    if (ans && Array.isArray(ans) && q.events && q.correctOrder) {
                         const selectedOrder = ans.map(num => q.events[num - 1]);
                         const correctOrder = q.correctOrder.map(i => q.events[i]);
                         if (JSON.stringify(selectedOrder) === JSON.stringify(correctOrder)) {
@@ -649,7 +691,7 @@
             if (timerInterval) clearInterval(timerInterval);
             timerDisplay.style.display = 'none';
 
-            renderQuestion(); // لإظهار الإجابات الصحيحة/الخاطئة بعد التسليم
+            renderQuestion();
             submitBtn.disabled = true;
             prevBtn.disabled = true;
             nextBtn.disabled = true;
@@ -664,53 +706,63 @@
         // دالة عرض السؤال حسب نوعه
         function renderQuestion() {
             const q = questions[currentQuestionIndex];
-            let html = `<div class="question-text">${currentQuestionIndex + 1}. ${escapeHtml(q.text)}</div>`;
+            if (!q) {
+                questionContainer.innerHTML = `<div class="question-text">خطأ: السؤال غير متوفر</div>`;
+                return;
+            }
+
+            let html = `<div class="question-text">${currentQuestionIndex + 1}. ${escapeHtml(q.text || '')}</div>`;
 
             if (q.type === 'order') {
                 const events = q.events || [];
-                let currentOrder = userAnswers[currentQuestionIndex] || new Array(events.length).fill(null);
+                if (events.length === 0) {
+                    html += `<p>لا توجد أحداث لترتيبها</p>`;
+                } else {
+                    let currentOrder = userAnswers[currentQuestionIndex] || new Array(events.length).fill(null);
 
-                html += `<div class="order-list">`;
-                events.forEach((eventText, idx) => {
-                    const selectedNum = currentOrder[idx];
-                    html += `
-                        <div class="order-item">
-                            <div class="order-number-buttons">
-                                ${Array.from({ length: events.length }, (_, i) => i + 1).map(num => {
-                                    // إذا كان التسليم قد تم، نعطل الأزرار
-                                    const disabled = quizSubmitted ? 'disabled' : '';
-                                    const selectedClass = (selectedNum === num) ? 'selected' : '';
-                                    return `<button class="order-number-btn ${selectedClass}" ${disabled} onclick="selectOrderNumber(${currentQuestionIndex}, ${idx}, ${num})">${num}</button>`;
-                                }).join('')}
+                    html += `<div class="order-list">`;
+                    events.forEach((eventText, idx) => {
+                        const selectedNum = currentOrder[idx];
+                        html += `
+                            <div class="order-item">
+                                <div class="order-number-buttons">
+                                    ${Array.from({ length: events.length }, (_, i) => i + 1).map(num => {
+                                        const disabled = quizSubmitted ? 'disabled' : '';
+                                        const selectedClass = (selectedNum === num) ? 'selected' : '';
+                                        return `<button class="order-number-btn ${selectedClass}" ${disabled} onclick="selectOrderNumber(${currentQuestionIndex}, ${idx}, ${num})">${num}</button>`;
+                                    }).join('')}
+                                </div>
+                                <span class="order-item-text">${escapeHtml(eventText)}</span>
                             </div>
-                            <span class="order-item-text">${escapeHtml(eventText)}</span>
-                        </div>
-                    `;
-                });
-                html += `</div>`;
+                        `;
+                    });
+                    html += `</div>`;
+                }
             } else {
-                let optionsHtml = '';
-                q.options.forEach((opt, idx) => {
-                    let optionClass = 'option';
-                    if (userAnswers[currentQuestionIndex] === idx) optionClass += ' selected';
-                    if (quizSubmitted) {
-                        if (idx === q.correct) optionClass += ' correct';
-                        else if (userAnswers[currentQuestionIndex] === idx && idx !== q.correct) optionClass += ' wrong';
-                    }
-                    // إذا كان التسليم قد تم، نعطل النقر
-                    const onClick = quizSubmitted ? '' : `onclick="selectAnswer(${currentQuestionIndex}, ${idx})"`;
-                    optionsHtml += `<div class="${optionClass}" data-opt="${idx}" ${onClick}>${escapeHtml(opt)}</div>`;
-                });
-                html += `<div class="options-grid">${optionsHtml}</div>`;
+                const options = q.options || [];
+                if (options.length === 0) {
+                    html += `<p>لا توجد خيارات لهذا السؤال</p>`;
+                } else {
+                    let optionsHtml = '';
+                    options.forEach((opt, idx) => {
+                        let optionClass = 'option';
+                        if (userAnswers[currentQuestionIndex] === idx) optionClass += ' selected';
+                        if (quizSubmitted) {
+                            if (idx === q.correct) optionClass += ' correct';
+                            else if (userAnswers[currentQuestionIndex] === idx && idx !== q.correct) optionClass += ' wrong';
+                        }
+                        const onClick = quizSubmitted ? '' : `onclick="selectAnswer(${currentQuestionIndex}, ${idx})"`;
+                        optionsHtml += `<div class="${optionClass}" data-opt="${idx}" ${onClick}>${escapeHtml(opt)}</div>`;
+                    });
+                    html += `<div class="options-grid">${optionsHtml}</div>`;
+                }
             }
 
             questionContainer.innerHTML = html;
 
-            // تحديث أزرار التنقل: السابق معطل دائماً (لا رجوع)، التالي مفعل ما لم يكن الأخير
-            prevBtn.disabled = true; // منع الرجوع تماماً
+            prevBtn.disabled = true;
             nextBtn.disabled = (currentQuestionIndex === questions.length - 1) || quizSubmitted;
 
-            // تحديث حالة زر التسليم: مفعل فقط إذا كانت كل الإجابات غير null (أي تمت الإجابة على الكل) ولم يتم التسليم بعد
             const allAnswered = userAnswers.every(ans => {
                 if (Array.isArray(ans)) {
                     return ans.every(v => v !== null);
@@ -724,16 +776,16 @@
         window.selectAnswer = function(qIdx, optIdx) {
             if (quizSubmitted) return;
             userAnswers[qIdx] = optIdx;
-            renderQuestion(); // إعادة رسم لتحديث التحديد
-            
-            // بعد الإجابة، لا ننتقل تلقائياً، يبقى المستخدم في نفس السؤال حتى يضغط التالي
+            renderQuestion();
         };
 
         // دالة اختيار رقم لسؤال الترتيب
         window.selectOrderNumber = function(qIdx, eventIdx, num) {
             if (quizSubmitted) return;
+            const q = questions[qIdx];
+            if (!q || !q.events) return;
             
-            let currentOrder = userAnswers[qIdx] ? [...userAnswers[qIdx]] : new Array(questions[qIdx].events.length).fill(null);
+            let currentOrder = userAnswers[qIdx] ? [...userAnswers[qIdx]] : new Array(q.events.length).fill(null);
             
             const existingEventIdx = currentOrder.findIndex((val, i) => val === num && i !== eventIdx);
             if (existingEventIdx !== -1) {
@@ -747,9 +799,7 @@
         };
 
         // التنقل
-        prevBtn.addEventListener('click', () => {
-            // لا يمكن الرجوع
-        });
+        prevBtn.addEventListener('click', () => {}); // لا شيء
 
         nextBtn.addEventListener('click', () => {
             goToNextQuestion();
@@ -791,6 +841,7 @@
         }
 
         function escapeHtml(unsafe) {
+            if (typeof unsafe !== 'string') return '';
             return unsafe.replace(/[&<>"]/g, function(m) {
                 if (m === '&') return '&amp;';
                 if (m === '<') return '&lt;';
