@@ -6,7 +6,7 @@
     <title>أسئلة الفهم · تقييم القراءة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* الأنماط الأساسية كما هي مع إضافة أنماط للسحب */
+        /* الأنماط الأساسية مع إضافة أنماط المودال */
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Cairo',Tahoma,sans-serif; }
 
         :root {
@@ -104,6 +104,59 @@
             box-shadow: var(--shadow);
         }
 
+        /* أنماط المودال */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.show {
+            display: flex;
+        }
+        .modal-content {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            box-shadow: var(--shadow);
+        }
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+        .close-modal:hover {
+            color: var(--danger);
+        }
+        .modal-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 40px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: 0.2s;
+        }
+        .modal-btn:hover {
+            background: var(--secondary);
+            transform: scale(1.05);
+        }
+
         .result-card {
             background: var(--card-bg);
             border-radius: 40px;
@@ -152,6 +205,7 @@
             border-radius: 30px;
             padding: 15px;
             margin-top: 15px;
+            justify-content: center;
         }
 
         .pie {
@@ -166,6 +220,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
+            text-align: right;
         }
         .legend-item { display: flex; align-items: center; gap: 8px; }
         .color-dot { width: 12px; height: 12px; border-radius: 50%; }
@@ -264,7 +319,7 @@
         }
         .order-item-text {
             font-size: 1.1rem;
-            pointer-events: none; /* لمنع تداخل النص مع السحب */
+            pointer-events: none;
         }
         .drag-handle {
             position: absolute;
@@ -317,18 +372,10 @@
         .submit-btn:hover { transform: scale(1.02); box-shadow: 0 10px 20px rgba(16,185,129,0.3); }
         .submit-btn:disabled { background: var(--border); cursor: not-allowed; transform: none; box-shadow: none; }
 
+        /* تم إخفاء result-summary القديم واستبداله بالمودال */
         .result-summary {
-            background: var(--card-bg);
-            border-radius: 40px;
-            padding: 30px;
-            text-align: center;
-            border: 2px solid var(--success);
-            margin-top: 20px;
+            display: none;
         }
-
-        .result-emoji { font-size: 4rem; margin-bottom: 10px; }
-        .result-score { font-size: 3rem; font-weight: 800; color: var(--success); }
-        .result-message { font-size: 1.2rem; color: var(--text-light); }
 
         .no-questions {
             background: var(--card-bg);
@@ -382,12 +429,23 @@
         <button class="submit-btn" id="submitBtn" disabled>سلم الإجابات</button>
     </div>
 
-    <div id="resultSummary" class="result-summary hidden">
-        <div class="result-emoji" id="resultEmoji">🏆</div>
-        <div class="result-score" id="resultScore">0%</div>
-        <div class="result-message" id="resultMessage"></div>
-        <div style="margin-top: 20px;">
-            <a href="index.html" class="btn-home"><i class="fas fa-book"></i> اقرأ نصاً آخر</a>
+    <!-- مودال التقرير النهائي -->
+    <div id="reportModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeModalBtn">&times;</span>
+            <h2>📊 تقرير الأداء</h2>
+            <div class="result-emoji" id="modalResultEmoji">🏆</div>
+            <div class="result-score" id="modalResultScore">0%</div>
+            <div class="result-message" id="modalResultMessage"></div>
+            <div class="progress-chart">
+                <div class="pie" id="modalPieChart"></div>
+                <div class="legend">
+                    <div class="legend-item"><span class="color-dot dot-success"></span> <span id="modalCorrectCount">0</span> إجابات صحيحة</div>
+                    <div class="legend-item"><span class="color-dot dot-border"></span> <span id="modalWrongCount">0</span> إجابات خاطئة</div>
+                </div>
+            </div>
+            <button class="modal-btn" id="modalCloseBtn">إغلاق</button>
+            <a href="index.html" class="btn-home" style="display: inline-block; margin-top: 10px;"><i class="fas fa-book"></i> اقرأ نصاً آخر</a>
         </div>
     </div>
 </div>
@@ -416,7 +474,6 @@
         // عناصر DOM
         const resultCard = document.getElementById('resultCard');
         const questionsSection = document.getElementById('questionsSection');
-        const resultSummary = document.getElementById('resultSummary');
         const lessonTitleEl = document.getElementById('lessonTitle');
         const metaContainer = document.getElementById('metaContainer');
         const comprehensionLevel = document.getElementById('comprehensionLevel');
@@ -428,9 +485,17 @@
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
         const submitBtn = document.getElementById('submitBtn');
-        const resultScore = document.getElementById('resultScore');
-        const resultMessage = document.getElementById('resultMessage');
-        const resultEmoji = document.getElementById('resultEmoji');
+
+        // عناصر المودال
+        const reportModal = document.getElementById('reportModal');
+        const modalResultEmoji = document.getElementById('modalResultEmoji');
+        const modalResultScore = document.getElementById('modalResultScore');
+        const modalResultMessage = document.getElementById('modalResultMessage');
+        const modalPieChart = document.getElementById('modalPieChart');
+        const modalCorrectCount = document.getElementById('modalCorrectCount');
+        const modalWrongCount = document.getElementById('modalWrongCount');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
 
         // عناصر المؤقت
         const timerDisplay = document.getElementById('timerDisplay');
@@ -593,6 +658,7 @@
             }
         }
 
+        // دالة تسليم الإجابات (تظهر المودال بدلاً من resultSummary)
         function submitAnswers() {
             if (quizSubmitted) return;
 
@@ -619,19 +685,27 @@
             else if (score >= 65) level = 'متوسط';
             else level = 'مبتدئ';
 
-            comprehensionLevel.textContent = `مستوى الفهم: ${level} (${score}%)`;
+            // تحديث عناصر المودال
+            modalResultScore.textContent = `${score}%`;
+            let emoji = score >= 85 ? '🏆' : (score >= 65 ? '👍' : '💪');
+            modalResultEmoji.textContent = emoji;
+            modalResultMessage.textContent = `أجبت صحيحاً على ${correctAnswersCount} من ${questions.length}`;
+            
             const wrongCount = questions.length - correctAnswersCount;
             const correctDeg = (correctAnswersCount / questions.length) * 360;
+            modalPieChart.style.background = `conic-gradient(var(--success) ${correctDeg}deg, var(--border) ${correctDeg}deg)`;
+            modalCorrectCount.textContent = correctAnswersCount;
+            modalWrongCount.textContent = wrongCount;
+
+            // إظهار المودال
+            reportModal.classList.add('show');
+
+            // تحديث بطاقة النتيجة (إذا أردت إبقاءها مخفية، لكننا نخفيها)
+            resultCard.classList.add('hidden');
+            comprehensionLevel.textContent = `مستوى الفهم: ${level} (${score}%)`;
             pieChart.style.background = `conic-gradient(var(--success) ${correctDeg}deg, var(--border) ${correctDeg}deg)`;
             correctSpan.textContent = correctAnswersCount;
             wrongSpan.textContent = wrongCount;
-
-            resultCard.classList.remove('hidden');
-            resultScore.textContent = `${score}%`;
-            let emoji = score >= 85 ? '🏆' : (score >= 65 ? '👍' : '💪');
-            resultEmoji.textContent = emoji;
-            resultMessage.textContent = `أجبت صحيحاً على ${correctAnswersCount} من ${questions.length}`;
-            resultSummary.classList.remove('hidden');
 
             quizSubmitted = true;
             if (timerInterval) clearInterval(timerInterval);
@@ -644,6 +718,17 @@
 
             saveFinalSession({ correct: correctAnswersCount, total: questions.length, score, level });
         }
+
+        // إغلاق المودال
+        function closeModal() {
+            reportModal.classList.remove('show');
+        }
+
+        closeModalBtn.addEventListener('click', closeModal);
+        modalCloseBtn.addEventListener('click', closeModal);
+        window.addEventListener('click', (e) => {
+            if (e.target === reportModal) closeModal();
+        });
 
         function updateCounter() {
             questionCounter.textContent = `${currentQuestionIndex + 1} / ${questions.length}`;
@@ -681,19 +766,16 @@
                 return;
             }
 
-            // إعادة ترتيب الأحداث
             const q = questions[currentQuestionIndex];
             if (!q || q.type !== 'order') return;
 
             const currentOrder = userAnswers[currentQuestionIndex] ? [...userAnswers[currentQuestionIndex]] : [...q.events];
             
-            // تبديل العناصر
             const [movedItem] = currentOrder.splice(sourceIndex, 1);
             currentOrder.splice(targetIndex, 0, movedItem);
             
             userAnswers[currentQuestionIndex] = currentOrder;
             
-            // إعادة رسم السؤال لتحديث الترتيب
             renderQuestion();
             
             dragSourceIndex = null;
@@ -722,12 +804,10 @@
                 if (events.length === 0) {
                     html += `<p>لا توجد أحداث لترتيبها</p>`;
                 } else {
-                    // الحصول على الترتيب الحالي من userAnswers أو الترتيب الافتراضي
                     let currentOrder = userAnswers[currentQuestionIndex];
                     if (!currentOrder) {
-                        // إذا لم يكن هناك إجابة محفوظة، نعرض الأحداث بالترتيب الأصلي (أو نخلطها؟ نفضل الأصلي)
                         currentOrder = [...events];
-                        userAnswers[currentQuestionIndex] = currentOrder; // نخزن الإجابة الافتراضية (بدون ترتيب)
+                        userAnswers[currentQuestionIndex] = currentOrder;
                     }
 
                     html += `<div class="order-list" id="order-list-${currentQuestionIndex}">`;
@@ -772,7 +852,7 @@
             nextBtn.disabled = (currentQuestionIndex === questions.length - 1) || quizSubmitted;
 
             const allAnswered = userAnswers.every(ans => {
-                if (Array.isArray(ans)) return ans.length > 0; // الترتيب دائماً له إجابة افتراضية
+                if (Array.isArray(ans)) return ans.length > 0;
                 return ans !== null;
             });
             submitBtn.disabled = !allAnswered || quizSubmitted;
