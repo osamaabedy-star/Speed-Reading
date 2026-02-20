@@ -3,58 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>أسئلة الفهم · تقييم القراءة</title>
+    <title>أسئلة · مغامرة القراءة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* === تصميم مضغوط وواضح === */
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Cairo',Tahoma,sans-serif; }
+        /* === تصميم مشوق للصغار مع ألوان مبهجة === */
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', 'Segoe UI', Tahoma, sans-serif; }
 
         :root {
-            --bg: #f4f7fb;
+            --bg: #f0f9ff;
             --card-bg: #ffffff;
-            --text: #1e2b3c;
-            --text-light: #64748b;
+            --text: #1e293b;
+            --text-light: #475569;
             --primary: #2563eb;
+            --primary-light: #3b82f6;
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
-            --border: #e9eef2;
-            --shadow: 0 4px 10px rgba(0,0,0,0.03);
+            --border: #e2e8f0;
+            --shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
         [data-theme="dark"] {
-            --bg: #1a1a2e;
-            --card-bg: #16213e;
-            --text: #e9eef2;
-            --text-light: #a0aec0;
-            --border: #2d3748;
-            --shadow: 0 4px 10px rgba(0,0,0,0.5);
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f1f5f9;
+            --text-light: #94a3b8;
+            --border: #334155;
         }
 
         [data-theme="comfort"] {
-            --bg: #e6d5b8;
-            --card-bg: #faf0e6;
-            --text: #5e4b3c;
-            --text-light: #7d6b5a;
-            --border: #d4b89c;
-            --shadow: 0 4px 10px rgba(0,0,0,0.1);
+            --bg: #fef9c3;
+            --card-bg: #fffbeb;
+            --text: #78350f;
+            --text-light: #92400e;
+            --border: #fcd34d;
         }
 
         body {
             background: var(--bg);
             color: var(--text);
-            padding: 15px;
+            padding: 12px;
             min-height: 100vh;
             transition: background 0.3s, color 0.3s;
-            font-size: 14px; /* تصغير الخط الأساسي */
+            font-size: 15px;
         }
 
         .container { max-width: 950px; margin: 0 auto; }
 
-        /* الهيدر بدون مؤقت */
+        /* الهيدر مع اسم الدرس */
         .header {
             background: var(--card-bg);
-            border-radius: 40px;
+            border-radius: 60px;
             padding: 10px 20px;
             margin-bottom: 15px;
             box-shadow: var(--shadow);
@@ -69,15 +68,15 @@
             align-items: center;
             gap: 8px;
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             color: var(--primary);
         }
 
         .lesson-name {
             background: var(--bg);
-            padding: 5px 15px;
+            padding: 5px 18px;
             border-radius: 40px;
-            font-size: 0.9rem;
+            font-size: 1rem;
             font-weight: 600;
             color: var(--primary);
             border: 1px solid var(--border);
@@ -99,40 +98,112 @@
         }
         .btn-home:hover { background: var(--border); }
 
-        /* ===== سؤال الترتيب الجديد مع ترقيم ثابت ===== */
+        /* عدّاد الأسئلة */
+        .questions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            background: var(--card-bg);
+            padding: 8px 20px;
+            border-radius: 40px;
+            border: 1px solid var(--border);
+        }
+
+        .question-counter {
+            background: var(--primary);
+            color: white;
+            padding: 4px 16px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* بطاقة السؤال */
+        .question-box {
+            background: var(--card-bg);
+            border-radius: 40px;
+            padding: 22px;
+            border: 2px solid var(--border);
+            box-shadow: var(--shadow);
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        /* === أنماط الأسئلة المتنوعة === */
+
+        /* 1. اختيار من متعدد (mcq) */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 15px 0;
+        }
+        .option-btn {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 60px;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .option-btn:hover { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 8%, var(--bg)); }
+        .option-btn.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .option-btn.correct {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        .option-btn.wrong {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        /* 2. ترتيب المقاطع / الجمل */
         .order-container {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            margin: 15px 0;
+            gap: 12px;
+            margin: 20px 0;
         }
-
         .order-item-row {
             display: flex;
             align-items: center;
             gap: 12px;
-            background: var(--card-bg); /* لون أغمق قليلاً */
+            background: color-mix(in srgb, var(--bg) 80%, black 5%);
             border-radius: 50px;
-            padding: 10px 15px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
+            padding: 12px 18px;
+            border: 2px solid var(--border);
             cursor: grab;
-            transition: background 0.2s, transform 0.1s;
-            background-color: color-mix(in srgb, var(--bg) 70%, black 5%); /* أغمق قليلاً */
+            transition: all 0.2s;
+            box-shadow: var(--shadow);
         }
         .order-item-row.dragging {
-            opacity: 0.7;
+            opacity: 0.6;
             cursor: grabbing;
-            transform: scale(1.01);
+            transform: scale(1.02);
         }
         .order-item-row.drag-over {
             border-color: var(--primary);
-            border-width: 2px;
+            border-width: 3px;
         }
-
         .order-number {
-            width: 32px;
-            height: 32px;
+            width: 35px;
+            height: 35px;
             border-radius: 50%;
             background: var(--primary);
             color: white;
@@ -140,136 +211,239 @@
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 1.1rem;
             flex-shrink: 0;
         }
-
         .order-item-text {
             flex: 1;
-            font-size: 0.95rem;
+            font-size: 1.1rem;
             font-weight: 500;
         }
-
         .drag-handle {
             color: var(--text-light);
-            font-size: 1.1rem;
+            font-size: 1.3rem;
             cursor: grab;
-            padding: 0 5px;
         }
 
-        /* أسئلة الاختيار */
-        .options-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin: 15px 0;
+        /* 3. تحديد الحرف الناقص */
+        .missing-letters {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            font-size: 2rem;
+            font-weight: 700;
         }
-
-        .option {
-            background: var(--card-bg);
+        .missing-word {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--bg);
+            padding: 10px 20px;
+            border-radius: 60px;
             border: 2px solid var(--border);
-            border-radius: 40px;
-            padding: 10px 8px;
-            text-align: center;
+        }
+        .missing-letter {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 2px dashed var(--primary);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
             cursor: pointer;
             transition: 0.2s;
-            font-weight: 500;
-            font-size: 0.9rem;
         }
-        .option:hover { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 8%, var(--bg)); }
-        .option.selected {
+        .missing-letter.selected {
             background: var(--primary);
             color: white;
             border-color: var(--primary);
         }
-        .option.correct {
-            background: var(--success);
-            color: white;
-            border-color: var(--success);
-        }
-        .option.wrong {
-            background: var(--danger);
-            color: white;
-            border-color: var(--danger);
-        }
-
-        /* بطاقة السؤال */
-        .question-box {
-            background: var(--card-bg);
-            border-radius: 30px;
-            padding: 18px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            margin-bottom: 15px;
-        }
-
-        .question-text {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-        }
-
-        /* عداد الأسئلة */
-        .questions-header {
+        .letter-options {
             display: flex;
-            justify-content: space-between;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+        .letter-option {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            display: flex;
             align-items: center;
-            margin-bottom: 12px;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .letter-option:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            color: white;
+        }
+        .letter-option.disabled {
+            opacity: 0.3;
+            pointer-events: none;
         }
 
-        .question-counter {
+        /* 4. صح أم خطأ */
+        .truefalse-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .tf-btn {
+            padding: 15px 30px;
+            border-radius: 60px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            border: 2px solid var(--border);
+            background: var(--bg);
+            cursor: pointer;
+            min-width: 120px;
+            text-align: center;
+        }
+        .tf-btn.true:hover { border-color: var(--success); background: color-mix(in srgb, var(--success) 15%, var(--bg)); }
+        .tf-btn.false:hover { border-color: var(--danger); background: color-mix(in srgb, var(--danger) 15%, var(--bg)); }
+        .tf-btn.selected.true { background: var(--success); color: white; border-color: var(--success); }
+        .tf-btn.selected.false { background: var(--danger); color: white; border-color: var(--danger); }
+
+        /* 5. تصنيف حسب عدد المقاطع */
+        .syllable-sort {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .syllable-words {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .word-card {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 40px;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: grab;
+        }
+        .word-card.dragging { opacity: 0.5; }
+        .category-boxes {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        .category-box {
+            flex: 1;
+            background: var(--card-bg);
+            border: 2px dashed var(--border);
+            border-radius: 30px;
+            padding: 15px;
+            min-height: 100px;
+            text-align: center;
+        }
+        .category-box.drag-over { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 10%, var(--bg)); }
+        .category-title { font-weight: 700; margin-bottom: 10px; }
+        .category-items { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+
+        /* 6. مطابقة الحرف الأول */
+        .match-first {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .match-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        .match-word {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 40px;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+        }
+        .match-letters {
+            display: flex;
+            gap: 8px;
+        }
+        .match-letter {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            cursor: pointer;
+        }
+        .match-letter.selected {
             background: var(--primary);
             color: white;
-            padding: 3px 12px;
-            border-radius: 30px;
-            font-size: 0.8rem;
-            font-weight: 600;
+            border-color: var(--primary);
         }
 
         /* أزرار التنقل */
         .navigation-buttons {
             display: flex;
             justify-content: space-between;
-            gap: 10px;
+            gap: 12px;
             margin: 15px 0;
         }
-
         .nav-btn {
-            padding: 8px 18px;
+            padding: 10px 22px;
             border: none;
-            border-radius: 40px;
-            font-size: 0.9rem;
+            border-radius: 50px;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 6px;
-            transition: 0.2s;
-            background: var(--bg);
+            gap: 8px;
+            background: var(--card-bg);
             color: var(--text);
-            border: 1px solid var(--border);
+            border: 2px solid var(--border);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
         .nav-btn:hover:not(:disabled) { background: var(--primary); color: white; }
-        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
         /* زر التسليم */
         .submit-btn {
             background: var(--success);
             color: white;
             border: none;
-            padding: 12px 25px;
-            border-radius: 40px;
-            font-size: 1.1rem;
+            padding: 14px 25px;
+            border-radius: 60px;
+            font-size: 1.2rem;
             font-weight: 700;
             cursor: pointer;
             width: 100%;
-            margin: 10px 0 5px;
+            margin: 10px 0;
             transition: 0.2s;
+            box-shadow: 0 4px 12px rgba(16,185,129,0.4);
         }
-        .submit-btn:hover:not(:disabled) { transform: scale(1.01); box-shadow: 0 5px 15px rgba(16,185,129,0.3); }
-        .submit-btn:disabled { background: var(--border); cursor: not-allowed; opacity: 0.6; }
+        .submit-btn:hover:not(:disabled) { transform: scale(1.02); }
+        .submit-btn:disabled { background: var(--border); cursor: not-allowed; opacity: 0.7; }
 
-        /* المودال النهائي المحسن */
+        /* مودال التقرير */
         .modal {
             display: none;
             position: fixed;
@@ -284,128 +458,94 @@
             padding: 15px;
         }
         .modal.show { display: flex; }
-
         .modal-content {
             background: var(--card-bg);
-            padding: 20px;
-            border-radius: 30px;
+            padding: 25px;
+            border-radius: 50px;
             max-width: 550px;
             width: 100%;
-            max-height: 80vh;
+            max-height: 85vh;
             overflow-y: auto;
             text-align: center;
             position: relative;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
+            border: 2px solid var(--border);
         }
-
         .close-modal {
             position: absolute;
-            top: 10px;
-            left: 15px;
-            font-size: 1.8rem;
+            top: 15px;
+            left: 20px;
+            font-size: 2rem;
             cursor: pointer;
             color: var(--text-light);
         }
         .close-modal:hover { color: var(--danger); }
-
-        .modal-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 8px 25px;
-            border-radius: 40px;
-            font-size: 0.95rem;
-            cursor: pointer;
-            margin: 10px 0;
-        }
 
         .report-header {
             display: flex;
             justify-content: space-around;
             background: var(--bg);
             border-radius: 40px;
-            padding: 10px;
+            padding: 12px;
             margin: 15px 0;
             flex-wrap: wrap;
-            gap: 8px;
         }
-
         .report-stat {
             display: flex;
             align-items: center;
-            gap: 5px;
-            font-size: 0.9rem;
+            gap: 6px;
+            font-size: 1rem;
         }
-
         .error-details {
             text-align: right;
             margin: 15px 0;
-            max-height: 180px;
+            max-height: 200px;
             overflow-y: auto;
         }
-
         .error-item {
             background: var(--bg);
-            border-radius: 20px;
-            padding: 8px 12px;
-            margin-bottom: 6px;
-            border-right: 4px solid var(--danger);
+            border-radius: 30px;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-right: 5px solid var(--danger);
         }
-
-        .error-question {
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 3px;
-        }
-
-        .error-answers {
-            font-size: 0.8rem;
-            display: flex;
-            gap: 12px;
-            color: var(--text-light);
-        }
-
-        .result-emoji { font-size: 2.5rem; }
-        .result-score { font-size: 2rem; font-weight: 700; color: var(--primary); }
-
         .pie {
-            width: 70px;
-            height: 70px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             background: conic-gradient(var(--success) 0deg, var(--border) 0deg);
-            transition: background 0.5s;
         }
+        .result-emoji { font-size: 3rem; }
+        .result-score { font-size: 2.2rem; font-weight: 700; color: var(--primary); }
 
-        .legend { font-size: 0.8rem; }
-
-        /* لا حاجة لشريط التقرير العلوي أثناء الأسئلة */
-        #readingInfoBar { display: none; }
-        .result-card { display: none; } /* نخفي البطاقة العلوية */
-
-        /* تحسين مظهر الأزرار */
-        .nav-btn, .submit-btn, .btn-home, .modal-btn {
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        /* لون أزرار أغمق قليلاً */
-        .nav-btn {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            color: var(--text);
+        /* رسالة الترحيب للصف الأول */
+        .grade1-welcome {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            border-radius: 60px;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            box-shadow: 0 6px 14px rgba(245,158,11,0.3);
         }
     </style>
 </head>
 <body data-theme="light">
 <div class="container">
-    <!-- هيدر بسيط: اسم الدرس فقط -->
+    <!-- هيدر مع اسم الدرس -->
     <div class="header">
         <div class="logo">
-            <i class="fas fa-question-circle"></i>
-            <span>اختبر نفسك</span>
+            <i class="fas fa-star" style="color: #fbbf24;"></i>
+            <span>مغامرة الأسئلة</span>
         </div>
-        <div class="lesson-name" id="headerLessonName"></div>
+        <div class="lesson-name" id="headerLessonName">...</div>
         <a href="index.html" class="btn-home"><i class="fas fa-home"></i> الرئيسية</a>
+    </div>
+
+    <!-- رسالة ترحيب للصف الأول (تظهر فقط إذا كان الدرس للصف الأول) -->
+    <div id="grade1Welcome" class="grade1-welcome" style="display: none;">
+        <i class="fas fa-smile-beam"></i> مرحباً يا بطل! استعد لمغامرة الحروف والكلمات <i class="fas fa-smile-beam"></i>
     </div>
 
     <!-- منطقة الأسئلة -->
@@ -422,34 +562,29 @@
         <button class="submit-btn" id="submitBtn" disabled>سلم الإجابات</button>
     </div>
 
-    <!-- مودال التقرير المحسن -->
+    <!-- مودال التقرير -->
     <div id="reportModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" id="closeModalBtn">&times;</span>
             <h2>📊 تقرير الأداء</h2>
-            
             <div class="report-header">
                 <div class="report-stat"><i class="fas fa-tachometer-alt"></i> السرعة: <span id="reportSpeed">0</span> ك/د</div>
                 <div class="report-stat"><i class="fas fa-exclamation-triangle" style="color:var(--danger);"></i> الأخطاء: <span id="reportErrors">0</span></div>
-                <div class="report-stat"><i class="fas fa-clock"></i> الزمن: <span id="reportDuration">00</span> ث</div>
+                <div class="report-stat"><i class="fas fa-clock"></i> الزمن: <span id="reportDuration">0</span> ث</div>
             </div>
-            
             <div class="result-emoji" id="modalResultEmoji">🏆</div>
             <div class="result-score" id="modalResultScore">0%</div>
             <div class="result-message" id="modalResultMessage"></div>
-            
-            <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin: 10px 0;">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin: 15px 0;">
                 <div class="pie" id="modalPieChart"></div>
-                <div class="legend">
-                    <div class="legend-item"><span class="color-dot" style="background:var(--success); width:12px; height:12px; border-radius:50%; display:inline-block;"></span> <span id="modalCorrectCount">0</span> صحيح</div>
-                    <div class="legend-item"><span class="color-dot" style="background:var(--border); width:12px; height:12px; border-radius:50%; display:inline-block;"></span> <span id="modalWrongCount">0</span> خطأ</div>
+                <div>
+                    <div><span style="color:var(--success);">●</span> <span id="modalCorrectCount">0</span> صحيح</div>
+                    <div><span style="color:var(--border);">●</span> <span id="modalWrongCount">0</span> خطأ</div>
                 </div>
             </div>
-
             <div id="errorDetailsContainer" class="error-details"></div>
-
-            <button class="modal-btn" id="modalCloseBtn">إغلاق</button>
-            <a href="index.html" class="btn-home" style="display: inline-block; margin-top: 8px;"><i class="fas fa-book"></i> نص آخر</a>
+            <button class="modal-btn" id="modalCloseBtn" style="background:var(--primary); color:white; border:none; padding:10px 25px; border-radius:40px;">إغلاق</button>
+            <a href="index.html" class="btn-home" style="display:inline-block; margin-top:10px;"><i class="fas fa-book"></i> نص آخر</a>
         </div>
     </div>
 </div>
@@ -465,83 +600,69 @@
             return;
         }
 
-        // استخراج البيانات
         const lessonTitle = sessionData.lessonTitle;
+        const grade = sessionData.grade; // مثل "الأول الابتدائي"
         const speed = sessionData.speed;
         const errorsCount = sessionData.errors || 0;
         const duration = sessionData.duration; // بالثواني
         const allQuestions = sessionData.questions || [];
 
-        // عرض اسم الدرس في الهيدر
+        // عرض اسم الدرس
         document.getElementById('headerLessonName').textContent = lessonTitle;
 
+        // رسالة ترحيب للصف الأول
+        if (grade && grade.includes('الأول')) {
+            document.getElementById('grade1Welcome').style.display = 'block';
+        }
+
         if (!allQuestions || allQuestions.length === 0) {
-            document.getElementById('questionsSection').innerHTML = '<div class="no-questions"><i class="fas fa-smile-wink fa-4x"></i><h3>لا توجد أسئلة</h3></div>';
+            document.getElementById('questionsSection').innerHTML = '<div style="background:var(--card-bg); border-radius:60px; padding:40px; text-align:center;"><i class="fas fa-smile-wink fa-4x"></i><h3>لا توجد أسئلة لهذا النص</h3></div>';
             return;
         }
 
         // دالة التحقق من صحة السؤال
         function validateQuestion(q) {
             if (!q) return false;
-            if (q.type === 'order') {
-                return q.events && Array.isArray(q.events) && q.events.length > 0 && q.correctOrder && Array.isArray(q.correctOrder);
-            } else {
-                return q.options && Array.isArray(q.options) && q.options.length > 0 && q.correct !== undefined;
+            switch (q.type) {
+                case 'mcq': return q.options && Array.isArray(q.options) && q.correct !== undefined;
+                case 'order': return q.items && Array.isArray(q.items) && q.correctOrder && Array.isArray(q.correctOrder);
+                case 'missing_letter': return q.word && q.missingIndex !== undefined && q.options && Array.isArray(q.options);
+                case 'truefalse': return q.statement && q.correct !== undefined; // true/false
+                case 'syllable_sort': return q.words && Array.isArray(q.words) && q.categories && Array.isArray(q.categories);
+                case 'match_first': return q.words && Array.isArray(q.words) && q.letters && Array.isArray(q.letters);
+                case 'sentence_order': return q.words && Array.isArray(q.words) && q.correctOrder && Array.isArray(q.correctOrder);
+                default: return false;
             }
         }
 
+        // تصفية الأسئلة الصحيحة
         const validQuestions = allQuestions.filter(q => validateQuestion(q));
         if (validQuestions.length === 0) {
-            document.getElementById('questionsSection').innerHTML = '<div class="no-questions"><i class="fas fa-exclamation-triangle fa-4x"></i><h3>الأسئلة غير صالحة</h3></div>';
+            document.getElementById('questionsSection').innerHTML = '<div style="background:var(--card-bg); border-radius:60px; padding:40px; text-align:center;"><i class="fas fa-exclamation-triangle fa-4x"></i><h3>الأسئلة غير صالحة</h3></div>';
             return;
         }
 
-        // اختيار 10 أسئلة عشوائية (مع وضع سؤال الترتيب في النهاية)
+        // اختيار 10 أسئلة عشوائية
         function selectQuestions(questionsArray, count = 10) {
-            const copy = [...questionsArray];
-            const orderQ = copy.filter(q => q.type === 'order');
-            const otherQ = copy.filter(q => q.type !== 'order');
-            let selected = [];
-
-            // خلط الأسئلة الأخرى
-            for (let i = otherQ.length - 1; i > 0; i--) {
+            const shuffled = [...questionsArray];
+            for (let i = shuffled.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [otherQ[i], otherQ[j]] = [otherQ[j], otherQ[i]];
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
             }
-
-            // نأخذ 9 أسئلة من الأخرى (أو أقل)
-            const othersNeeded = count - (orderQ.length > 0 ? 1 : 0);
-            for (let i = 0; i < othersNeeded; i++) {
-                if (otherQ.length > 0) selected.push(otherQ.shift());
-                else break;
-            }
-
-            // نضيف سؤال الترتيب إذا وجد
-            if (orderQ.length > 0) {
-                selected.push(orderQ[0]);
-            }
-
-            // إذا العدد أقل من 10، نكرر بعض الأسئلة
-            while (selected.length < count) {
-                const extra = [...selected];
-                selected = selected.concat(extra);
-            }
-            selected = selected.slice(0, count);
-
-            // نقل سؤال الترتيب للنهاية
-            const orderIdx = selected.findIndex(q => q.type === 'order');
-            if (orderIdx !== -1 && orderIdx !== selected.length - 1) {
-                const [orderItem] = selected.splice(orderIdx, 1);
-                selected.push(orderItem);
+            let selected = shuffled.slice(0, count);
+            if (selected.length < count) {
+                while (selected.length < count) {
+                    selected.push({ ...selected[0] }); // تكرار أول سؤال
+                }
             }
             return selected;
         }
 
         let questions = selectQuestions(validQuestions, 10);
-        let currentQuestionIndex = 0;
+        let currentIndex = 0;
         let userAnswers = new Array(questions.length).fill(null);
         let quizSubmitted = false;
-        let correctAnswersCount = 0;
+        let correctCount = 0;
 
         // عناصر DOM
         const questionContainer = document.getElementById('questionContainer');
@@ -549,8 +670,6 @@
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
         const submitBtn = document.getElementById('submitBtn');
-
-        // عناصر المودال
         const reportModal = document.getElementById('reportModal');
         const modalResultEmoji = document.getElementById('modalResultEmoji');
         const modalResultScore = document.getElementById('modalResultScore');
@@ -558,261 +677,322 @@
         const modalPieChart = document.getElementById('modalPieChart');
         const modalCorrectCount = document.getElementById('modalCorrectCount');
         const modalWrongCount = document.getElementById('modalWrongCount');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        const modalCloseBtn = document.getElementById('modalCloseBtn');
         const reportSpeed = document.getElementById('reportSpeed');
         const reportErrors = document.getElementById('reportErrors');
         const reportDuration = document.getElementById('reportDuration');
         const errorDetailsContainer = document.getElementById('errorDetailsContainer');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+        // تطبيق الثيم
+        if (sessionData.theme) document.body.setAttribute('data-theme', sessionData.theme);
+        else {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+        }
 
         // تحديث العداد
         function updateCounter() {
-            questionCounter.textContent = `${currentQuestionIndex + 1} / ${questions.length}`;
+            questionCounter.textContent = `${currentIndex + 1} / ${questions.length}`;
         }
 
-        // متغيرات السحب والإفلات
-        let dragSourceIndex = null;
-
-        function handleDragStart(e, index) {
-            if (quizSubmitted) { e.preventDefault(); return; }
-            dragSourceIndex = index;
-            e.dataTransfer.setData('text/plain', index);
-            e.target.classList.add('dragging');
-        }
-
-        function handleDragOver(e, index) {
-            e.preventDefault();
-            if (quizSubmitted) return;
-            e.target.classList.add('drag-over');
-        }
-
-        function handleDragLeave(e) {
-            e.target.classList.remove('drag-over');
-        }
-
-        function handleDrop(e, targetIndex) {
-            e.preventDefault();
-            e.target.classList.remove('drag-over');
-            if (quizSubmitted || dragSourceIndex === null) return;
-
-            const sourceIndex = dragSourceIndex;
-            if (sourceIndex === targetIndex) {
-                dragSourceIndex = null;
-                return;
-            }
-
-            const q = questions[currentQuestionIndex];
-            if (!q || q.type !== 'order') return;
-
-            const currentOrder = userAnswers[currentQuestionIndex] ? [...userAnswers[currentQuestionIndex]] : [...q.events];
-            const [movedItem] = currentOrder.splice(sourceIndex, 1);
-            currentOrder.splice(targetIndex, 0, movedItem);
-            userAnswers[currentQuestionIndex] = currentOrder;
-            renderQuestion();
-            dragSourceIndex = null;
-        }
-
-        function handleDragEnd(e) {
-            e.target.classList.remove('dragging');
-            document.querySelectorAll('.order-item-row').forEach(el => el.classList.remove('drag-over'));
-            dragSourceIndex = null;
-        }
-
-        // ربط الدوال بالعام
-        window.handleDragStart = handleDragStart;
-        window.handleDragOver = handleDragOver;
-        window.handleDragLeave = handleDragLeave;
-        window.handleDrop = handleDrop;
-        window.handleDragEnd = handleDragEnd;
-
-        // دالة عرض السؤال
+        // ========== عرض السؤال حسب النوع ==========
         function renderQuestion() {
-            const q = questions[currentQuestionIndex];
+            const q = questions[currentIndex];
             if (!q) return;
 
-            let html = `<div class="question-text">${currentQuestionIndex + 1}. ${escapeHtml(q.text || '')}</div>`;
+            let html = `<div class="question-text">${currentIndex + 1}. ${escapeHtml(q.text || '')}</div>`;
 
-            if (q.type === 'order') {
-                const events = q.events || [];
-                if (events.length === 0) {
-                    html += `<p>لا توجد أحداث</p>`;
-                } else {
-                    let currentOrder = userAnswers[currentQuestionIndex];
-                    if (!currentOrder) {
-                        currentOrder = [...events];
-                        userAnswers[currentQuestionIndex] = currentOrder;
-                    }
-
-                    html += `<div class="order-container">`;
-                    currentOrder.forEach((eventText, idx) => {
-                        html += `
-                            <div class="order-item-row" draggable="${!quizSubmitted}" 
-                                 ondragstart="handleDragStart(event, ${idx})"
-                                 ondragover="handleDragOver(event, ${idx})"
-                                 ondragleave="handleDragLeave(event)"
-                                 ondrop="handleDrop(event, ${idx})"
-                                 ondragend="handleDragEnd(event)">
-                                <span class="order-number">${idx + 1}</span>
-                                <span class="order-item-text">${escapeHtml(eventText)}</span>
-                                <span class="drag-handle"><i class="fas fa-grip-vertical"></i></span>
-                            </div>
-                        `;
-                    });
-                    html += `</div>`;
-                }
-            } else {
-                const options = q.options || [];
-                if (options.length === 0) {
-                    html += `<p>⚠️ لا توجد خيارات</p>`;
-                } else {
-                    html += `<div class="options-grid">`;
-                    options.forEach((opt, idx) => {
-                        let cls = 'option';
-                        if (userAnswers[currentQuestionIndex] === idx) cls += ' selected';
-                        if (quizSubmitted) {
-                            if (idx === q.correct) cls += ' correct';
-                            else if (userAnswers[currentQuestionIndex] === idx) cls += ' wrong';
-                        }
-                        const onClick = quizSubmitted ? '' : `selectAnswer(${currentQuestionIndex}, ${idx})`;
-                        html += `<div class="${cls}" onclick="${onClick}">${escapeHtml(opt)}</div>`;
-                    });
-                    html += `</div>`;
-                }
+            switch (q.type) {
+                case 'mcq':
+                    html += renderMCQ(q);
+                    break;
+                case 'order':
+                case 'sentence_order':
+                    html += renderOrder(q);
+                    break;
+                case 'missing_letter':
+                    html += renderMissingLetter(q);
+                    break;
+                case 'truefalse':
+                    html += renderTrueFalse(q);
+                    break;
+                case 'syllable_sort':
+                    html += renderSyllableSort(q);
+                    break;
+                case 'match_first':
+                    html += renderMatchFirst(q);
+                    break;
+                default:
+                    html += `<p>نوع السؤال غير مدعوم</p>`;
             }
 
             questionContainer.innerHTML = html;
 
             // تحديث حالة الأزرار
-            prevBtn.disabled = (currentQuestionIndex === 0) || quizSubmitted;
-            nextBtn.disabled = (currentQuestionIndex === questions.length - 1) || quizSubmitted;
+            prevBtn.disabled = (currentIndex === 0) || quizSubmitted;
+            nextBtn.disabled = (currentIndex === questions.length - 1) || quizSubmitted;
 
             const allAnswered = userAnswers.every(ans => {
-                if (Array.isArray(ans)) return ans.length > 0;
-                return ans !== null;
+                if (ans === null) return false;
+                if (Array.isArray(ans)) return ans.length > 0 && ans.every(a => a !== null);
+                return true;
             });
             submitBtn.disabled = !allAnswered || quizSubmitted;
         }
 
-        // اختيار إجابة عادية
-        window.selectAnswer = function(qIdx, optIdx) {
+        // دوال مساعدة لعرض كل نوع
+        function renderMCQ(q) {
+            const options = q.options || [];
+            let optsHtml = '<div class="options-grid">';
+            options.forEach((opt, idx) => {
+                let cls = 'option-btn';
+                if (userAnswers[currentIndex] === idx) cls += ' selected';
+                if (quizSubmitted) {
+                    if (idx === q.correct) cls += ' correct';
+                    else if (userAnswers[currentIndex] === idx) cls += ' wrong';
+                }
+                const onClick = quizSubmitted ? '' : `selectMCQ(${currentIndex}, ${idx})`;
+                optsHtml += `<div class="${cls}" onclick="${onClick}">${escapeHtml(opt)}</div>`;
+            });
+            optsHtml += '</div>';
+            return optsHtml;
+        }
+
+        function renderOrder(q) {
+            const items = q.items || q.words || [];
+            if (items.length === 0) return '<p>لا توجد عناصر</p>';
+            let currentOrder = userAnswers[currentIndex];
+            if (!currentOrder) {
+                currentOrder = [...items];
+                userAnswers[currentIndex] = currentOrder;
+            }
+            let html = '<div class="order-container">';
+            currentOrder.forEach((item, idx) => {
+                html += `
+                    <div class="order-item-row" draggable="${!quizSubmitted}" 
+                         ondragstart="dragStart(event, ${idx})"
+                         ondragover="dragOver(event, ${idx})"
+                         ondragleave="dragLeave(event)"
+                         ondrop="drop(event, ${idx})"
+                         ondragend="dragEnd(event)">
+                        <span class="order-number">${idx + 1}</span>
+                        <span class="order-item-text">${escapeHtml(item)}</span>
+                        <span class="drag-handle"><i class="fas fa-grip-vertical"></i></span>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            return html;
+        }
+
+        function renderMissingLetter(q) {
+            const word = q.word || '';
+            const missingIdx = q.missingIndex || 0;
+            const options = q.options || [];
+            let currentAnswer = userAnswers[currentIndex];
+            if (currentAnswer === null) currentAnswer = null;
+            let html = `<div class="missing-letters">`;
+            for (let i = 0; i < word.length; i++) {
+                if (i === missingIdx) {
+                    html += `<span class="missing-letter" onclick="selectMissing(${currentIndex})">${currentAnswer !== null ? currentAnswer : '?'}</span>`;
+                } else {
+                    html += `<span style="font-size:2rem;">${word[i]}</span>`;
+                }
+            }
+            html += '</div><div class="letter-options">';
+            options.forEach((opt, idx) => {
+                const disabled = (currentAnswer !== null) ? 'disabled' : '';
+                html += `<span class="letter-option ${disabled}" onclick="chooseMissing(${currentIndex}, '${opt}')">${opt}</span>`;
+            });
+            html += '</div>';
+            return html;
+        }
+
+        function renderTrueFalse(q) {
+            let selected = userAnswers[currentIndex];
+            let trueCls = 'tf-btn true';
+            let falseCls = 'tf-btn false';
+            if (selected === true) trueCls += ' selected';
+            if (selected === false) falseCls += ' selected';
+            if (quizSubmitted) {
+                if (q.correct === true) trueCls += ' correct';
+                else if (q.correct === false) falseCls += ' correct';
+                if (selected === true && q.correct !== true) trueCls += ' wrong';
+                if (selected === false && q.correct !== false) falseCls += ' wrong';
+            }
+            return `
+                <div class="truefalse-container">
+                    <div class="${trueCls}" onclick="selectTF(${currentIndex}, true)">✅ صح</div>
+                    <div class="${falseCls}" onclick="selectTF(${currentIndex}, false)">❌ خطأ</div>
+                </div>
+            `;
+        }
+
+        function renderSyllableSort(q) {
+            // بسيط: نسخة مبسطة بدون سحب معقد
+            return `<p>سؤال تصنيف المقاطع (قيد التطوير)</p>`;
+        }
+
+        function renderMatchFirst(q) {
+            return `<p>سؤال مطابقة الحرف الأول (قيد التطوير)</p>`;
+        }
+
+        // ========== دوال التفاعل ==========
+        window.selectMCQ = function(qIdx, optIdx) {
             if (quizSubmitted) return;
             userAnswers[qIdx] = optIdx;
             renderQuestion();
         };
 
+        window.selectTF = function(qIdx, value) {
+            if (quizSubmitted) return;
+            userAnswers[qIdx] = value;
+            renderQuestion();
+        };
+
+        window.selectMissing = function(qIdx) {
+            // فقط للتنبيه، يتم اختيار الحرف من الخيارات
+        };
+
+        window.chooseMissing = function(qIdx, letter) {
+            if (quizSubmitted) return;
+            userAnswers[qIdx] = letter;
+            renderQuestion();
+        };
+
+        // دوال السحب والإفلات
+        let dragSourceIndex = null;
+
+        window.dragStart = function(e, index) {
+            if (quizSubmitted) { e.preventDefault(); return; }
+            dragSourceIndex = index;
+            e.dataTransfer.setData('text/plain', index);
+            e.target.classList.add('dragging');
+        };
+
+        window.dragOver = function(e, index) {
+            e.preventDefault();
+            if (quizSubmitted) return;
+            e.target.closest('.order-item-row').classList.add('drag-over');
+        };
+
+        window.dragLeave = function(e) {
+            e.target.closest('.order-item-row').classList.remove('drag-over');
+        };
+
+        window.drop = function(e, targetIndex) {
+            e.preventDefault();
+            e.target.closest('.order-item-row').classList.remove('drag-over');
+            if (quizSubmitted || dragSourceIndex === null) return;
+            const source = dragSourceIndex;
+            if (source === targetIndex) { dragSourceIndex = null; return; }
+            const q = questions[currentIndex];
+            const currentOrder = [...userAnswers[currentIndex]];
+            const [moved] = currentOrder.splice(source, 1);
+            currentOrder.splice(targetIndex, 0, moved);
+            userAnswers[currentIndex] = currentOrder;
+            renderQuestion();
+            dragSourceIndex = null;
+        };
+
+        window.dragEnd = function(e) {
+            e.target.classList.remove('dragging');
+            document.querySelectorAll('.order-item-row').forEach(el => el.classList.remove('drag-over'));
+            dragSourceIndex = null;
+        };
+
         // التنقل
         prevBtn.addEventListener('click', () => {
-            if (currentQuestionIndex > 0 && !quizSubmitted) {
-                currentQuestionIndex--;
+            if (currentIndex > 0 && !quizSubmitted) {
+                currentIndex--;
                 renderQuestion();
                 updateCounter();
             }
         });
 
         nextBtn.addEventListener('click', () => {
-            if (currentQuestionIndex < questions.length - 1 && !quizSubmitted) {
-                currentQuestionIndex++;
+            if (currentIndex < questions.length - 1 && !quizSubmitted) {
+                currentIndex++;
                 renderQuestion();
                 updateCounter();
             }
         });
 
         // تسليم الإجابات
-        function submitAnswers() {
+        submitBtn.addEventListener('click', () => {
             if (quizSubmitted) return;
 
-            correctAnswersCount = 0;
+            correctCount = 0;
             const wrongDetails = [];
 
             userAnswers.forEach((ans, idx) => {
                 const q = questions[idx];
                 if (!q) return;
                 let isCorrect = false;
-                if (q.type === 'order') {
-                    if (ans && Array.isArray(ans)) {
-                        const correctOrderIndices = q.correctOrder; // مصفوفة من الأرقام تمثل الترتيب الصحيح (مثلاً [0,2,1,3] يعني العنصر الأول في المصفوفة يجب أن يكون في الموضع 0؟)
-                        // نفترض أن q.correctOrder هو ترتيب الأحداث الصحيح (مصفوفة من الأحداث نفسها أو indices)
-                        // في بياناتك، قد يكون q.correctOrder هو مصفوفة من النصوص (الأحداث مرتبة) أو indices
-                        // سنقارن المصفوفة الحالية مع المصفوفة الصحيحة (نصوص)
-                        const correctOrderTexts = q.correctOrder.map(index => q.events[index]); // إذا كان correctOrder indices
-                        if (JSON.stringify(ans) === JSON.stringify(correctOrderTexts)) {
-                            isCorrect = true;
+                switch (q.type) {
+                    case 'mcq': isCorrect = (ans === q.correct); break;
+                    case 'order':
+                    case 'sentence_order':
+                        if (ans && Array.isArray(ans)) {
+                            const correct = q.correctOrder.map(i => q.items ? q.items[i] : q.words[i]);
+                            isCorrect = JSON.stringify(ans) === JSON.stringify(correct);
                         }
-                    }
-                } else {
-                    if (ans === q.correct) isCorrect = true;
+                        break;
+                    case 'missing_letter': isCorrect = (ans === q.options[q.correct]); break;
+                    case 'truefalse': isCorrect = (ans === q.correct); break;
                 }
-                if (isCorrect) correctAnswersCount++;
+                if (isCorrect) correctCount++;
                 else {
                     wrongDetails.push({
-                        question: q.text || `سؤال ${idx+1}`,
-                        userAnswer: (q.type === 'order') ? (ans ? ans.join(' → ') : 'لم يرتب') : (ans !== null ? q.options[ans] : 'لم يجب'),
-                        correctAnswer: (q.type === 'order') ? (q.correctOrder.map(i => q.events[i]).join(' → ')) : (q.options[q.correct])
+                        question: q.text,
+                        userAnswer: ans,
+                        correctAnswer: q.correct
                     });
                 }
             });
 
             const total = questions.length;
-            const score = Math.round((correctAnswersCount / total) * 100);
+            const score = Math.round((correctCount / total) * 100);
             const level = score >= 85 ? 'متقدم' : (score >= 65 ? 'متوسط' : 'مبتدئ');
 
             // تحديث المودال
             modalResultScore.textContent = `${score}%`;
             modalResultEmoji.textContent = score >= 85 ? '🏆' : (score >= 65 ? '👍' : '💪');
-            modalResultMessage.textContent = `أجبت صحيحاً على ${correctAnswersCount} من ${total}`;
-            
-            const wrongCount = total - correctAnswersCount;
-            const correctDeg = (correctAnswersCount / total) * 360;
+            modalResultMessage.textContent = `أجبت صحيحاً على ${correctCount} من ${total}`;
+            const correctDeg = (correctCount / total) * 360;
             modalPieChart.style.background = `conic-gradient(var(--success) ${correctDeg}deg, var(--border) ${correctDeg}deg)`;
-            modalCorrectCount.textContent = correctAnswersCount;
-            modalWrongCount.textContent = wrongCount;
-
+            modalCorrectCount.textContent = correctCount;
+            modalWrongCount.textContent = total - correctCount;
             reportSpeed.textContent = speed;
             reportErrors.textContent = errorsCount;
-            // عرض الزمن بالثواني فقط
             reportDuration.textContent = duration;
 
-            // تفاصيل الأخطاء
             if (wrongDetails.length > 0) {
                 let html = '<h4>❌ تفاصيل الأخطاء</h4>';
                 wrongDetails.forEach(err => {
-                    html += `
-                        <div class="error-item">
-                            <div class="error-question">${escapeHtml(err.question)}</div>
-                            <div class="error-answers">
-                                <span style="color:var(--danger);">إجابتك: ${escapeHtml(err.userAnswer)}</span>
-                                <span style="color:var(--success);">الصحيح: ${escapeHtml(err.correctAnswer)}</span>
-                            </div>
-                        </div>
-                    `;
+                    html += `<div class="error-item"><strong>${escapeHtml(err.question)}</strong><br>إجابتك: ${escapeHtml(err.userAnswer)} | الصحيح: ${escapeHtml(err.correctAnswer)}</div>`;
                 });
                 errorDetailsContainer.innerHTML = html;
             } else {
-                errorDetailsContainer.innerHTML = '<p style="color:var(--success);">🎉 لا توجد أخطاء! كل الإجابات صحيحة.</p>';
+                errorDetailsContainer.innerHTML = '<p style="color:var(--success);">🎉 مبروك! كل الإجابات صحيحة.</p>';
             }
 
             reportModal.classList.add('show');
-
             quizSubmitted = true;
             renderQuestion();
             submitBtn.disabled = true;
             prevBtn.disabled = true;
             nextBtn.disabled = true;
 
-            saveFinalSession({ correct: correctAnswersCount, total, score, level });
-        }
-
-        submitBtn.addEventListener('click', submitAnswers);
+            saveFinalSession({ correct: correctCount, total, score, level });
+        });
 
         // إغلاق المودال
-        function closeModal() {
-            reportModal.classList.remove('show');
-        }
+        function closeModal() { reportModal.classList.remove('show'); }
         closeModalBtn.addEventListener('click', closeModal);
         modalCloseBtn.addEventListener('click', closeModal);
-        window.addEventListener('click', (e) => {
-            if (e.target === reportModal) closeModal();
-        });
+        window.addEventListener('click', (e) => { if (e.target === reportModal) closeModal(); });
 
         function saveFinalSession(quizResult) {
             const sessions = JSON.parse(localStorage.getItem(STORAGE_SESSIONS)) || [];
@@ -839,21 +1019,13 @@
 
         function escapeHtml(unsafe) {
             if (typeof unsafe !== 'string') return '';
-            return unsafe.replace(/[&<>"]/g, function(m) {
+            return unsafe.replace(/[&<>"]/g, m => {
                 if (m === '&') return '&amp;';
                 if (m === '<') return '&lt;';
                 if (m === '>') return '&gt;';
                 if (m === '"') return '&quot;';
                 return m;
             });
-        }
-
-        // تطبيق الثيم
-        if (sessionData.theme) {
-            document.body.setAttribute('data-theme', sessionData.theme);
-        } else {
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            document.body.setAttribute('data-theme', savedTheme);
         }
 
         // بدء العرض
