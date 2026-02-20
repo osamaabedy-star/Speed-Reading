@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Amiri&family=Tajawal:wght@400;700&family=Almarai:wght@400;700&family=Readex+Pro:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* الأنماط الأساسية مع تعديل المسافات */
+        /* الأنماط الأساسية مع تحسين المسافات */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
         body * { font-family: inherit; }
 
@@ -19,8 +19,6 @@
             --accent: #f72585;
             --border: #e9eef2;
             --shadow: 0 10px 30px rgba(0,0,0,0.05);
-            --success: #10b981;
-            --danger: #ef4444;
         }
 
         [data-theme="dark"] {
@@ -141,17 +139,17 @@
         }
         .pivot { color: var(--accent); }
 
-        /* تحسين المسافات في وضع التمرير */
+        /* تحسين وضع التمرير - توسيط وتقريب النص */
         #scroll-container {
-            width: 85%; /* زيادة العرض */
-            max-width: 900px;
+            width: 90%; /* زيادة العرض */
+            max-width: 950px;
             font-size: 2.2rem;
             line-height: 1.8;
             text-align: justify;
             display: none;
             position: absolute;
             top: 20px;
-            left: 7%; /* تقليل الهامش الأيسر */
+            left: 5%; /* هامش أقل */
             transform: translateY(100vh);
             will-change: transform;
             transition: font-size 0.2s, line-height 0.2s;
@@ -197,33 +195,34 @@
             z-index: 200;
         }
 
-        /* لوحة التحكم الجانبية - أقرب للنص */
+        /* ===== لوحة التحكم الجانبية المصغرة جداً ===== */
         .control-panel {
             position: fixed;
-            right: 10px; /* أقرب */
+            right: 8px; /* أقرب للحافة */
             top: 55%;
             transform: translateY(-50%);
             background: var(--panel);
             backdrop-filter: blur(10px);
-            border-radius: 50px;
-            padding: 15px 8px;
+            border-radius: 40px;
+            padding: 10px 5px; /* تقليل padding */
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 10px;
             align-items: center;
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
             z-index: 150;
+            width: 45px; /* أضيق */
         }
 
         .control-btn {
             background: transparent;
             border: none;
             color: var(--text);
-            font-size: 1.2rem;
+            font-size: 1rem; /* تصغير */
             cursor: pointer;
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -239,9 +238,12 @@
         .speed-indicator {
             font-weight: 700;
             color: var(--primary);
-            min-width: 60px;
+            font-size: 0.8rem;
+            background: var(--bg);
+            padding: 2px 0;
+            width: 100%;
             text-align: center;
-            font-size: 1rem;
+            border-radius: 20px;
         }
 
         .font-controls {
@@ -250,57 +252,81 @@
             gap: 5px;
             align-items: center;
             border-top: 2px solid var(--border);
-            padding-top: 10px;
-            margin-top: 5px;
+            padding-top: 8px;
+            margin-top: 3px;
+        }
+
+        .font-controls .control-btn {
+            width: 28px;
+            height: 28px;
+            font-size: 0.9rem;
         }
 
         .words-per-line-control {
             border-top: 2px solid var(--border);
-            padding-top: 10px;
-            margin-top: 5px;
+            padding-top: 8px;
+            margin-top: 3px;
             text-align: center;
             display: none;
+            width: 100%;
         }
+
         .words-per-line-control span {
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
+
         .wpl-buttons {
             display: flex;
-            gap: 5px;
+            gap: 2px;
             justify-content: center;
             align-items: center;
         }
-        #wordsPerLineValue {
-            min-width: 30px;
-            text-align: center;
-            font-weight: bold;
+
+        .wpl-buttons .control-btn {
+            width: 24px;
+            height: 24px;
+            font-size: 0.8rem;
         }
 
-        .error-btn {
+        #wordsPerLineValue {
+            min-width: 24px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        /* ===== زر الخطأ المنفصل (عائم) ===== */
+        .floating-error-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 15px; /* تحت القائمة */
             background-color: var(--accent);
             color: white;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 55px;
+            height: 55px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: 0.2s;
             border: none;
-            font-size: 1.2rem;
+            font-size: 1.8rem;
+            box-shadow: 0 4px 15px rgba(247, 37, 133, 0.4);
+            z-index: 200;
         }
-        .error-btn:hover {
+
+        .floating-error-btn:hover {
             transform: scale(1.1);
-            box-shadow: 0 0 10px var(--accent);
+            box-shadow: 0 6px 20px rgba(247, 37, 133, 0.6);
         }
 
         /* رسالة toast لتأكيد تسجيل الخطأ */
         .error-toast {
             position: fixed;
-            bottom: 30px;
+            bottom: 100px;
             left: 50%;
             transform: translateX(-50%);
             background: var(--accent);
@@ -325,6 +351,7 @@
             font-size: 1.2rem;
         }
 
+        /* باقي الأنماط للمودالات */
         .loading {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -337,13 +364,75 @@
             color: var(--primary);
         }
 
-        /* باقي الأنماط للمودالات */
-        .custom-modal { /* ... */ }
-        /* تم حذف باقي الأنماط للاختصار ولكنها موجودة في الكود الكامل */
+        .custom-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 300;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.3s;
+        }
+        .custom-modal.show {
+            visibility: visible;
+            opacity: 1;
+        }
+        .modal-content {
+            background: var(--panel);
+            padding: 30px;
+            border-radius: 40px;
+            text-align: center;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 2px solid var(--primary);
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        .modal-btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .modal-btn.primary {
+            background: var(--primary);
+            color: white;
+        }
+        .modal-btn.secondary {
+            background: var(--border);
+            color: var(--text);
+        }
+        .error-list {
+            text-align: right;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+            padding: 10px;
+            background: var(--bg);
+            border-radius: 20px;
+        }
+        .error-item {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin: 3px;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body data-theme="light">
-<!-- شاشة التحميل والمودالات (كما هي) -->
 <div class="loading" id="loadingScreen"><i class="fas fa-spinner fa-spin"></i> جاري التجهيز...</div>
 
 <!-- رسالة تأكيد الخطأ -->
@@ -352,11 +441,51 @@
     <span>تم تسجيل الخطأ</span>
 </div>
 
-<!-- باقي المودالات (نفس السابق) -->
-<div class="custom-modal" id="messageModal"><!-- المحتوى --></div>
-<div class="custom-modal" id="confirmModal"><!-- المحتوى --></div>
-<div class="custom-modal" id="reportModal"><!-- المحتوى --></div>
+<!-- المودالات -->
+<div class="custom-modal" id="messageModal">
+    <div class="modal-content">
+        <i class="fas fa-info-circle" style="font-size: 3rem; color: var(--primary);" id="modalIcon"></i>
+        <h3 id="modalTitle" style="margin: 15px 0;">رسالة</h3>
+        <p id="modalMessage"></p>
+        <div class="modal-buttons">
+            <button class="modal-btn primary" id="modalConfirmBtn">موافق</button>
+        </div>
+    </div>
+</div>
 
+<div class="custom-modal" id="confirmModal">
+    <div class="modal-content">
+        <i class="fas fa-question-circle" style="font-size: 3rem; color: var(--warning);"></i>
+        <h3 style="margin: 15px 0;">تأكيد</h3>
+        <p id="confirmMessage"></p>
+        <div class="modal-buttons">
+            <button class="modal-btn primary" id="confirmYesBtn">نعم</button>
+            <button class="modal-btn secondary" id="confirmNoBtn">لا</button>
+        </div>
+    </div>
+</div>
+
+<div class="custom-modal" id="reportModal">
+    <div class="modal-content">
+        <i class="fas fa-chart-bar" style="font-size: 3rem; color: var(--primary);"></i>
+        <h2 style="margin: 15px 0;">تقرير القراءة</h2>
+        <div style="text-align: right; margin: 20px 0;">
+            <p><strong>📊 متوسط السرعة:</strong> <span id="reportSpeed">0</span> كلمة/دقيقة</p>
+            <p><strong>📄 عدد الكلمات:</strong> <span id="reportWords">0</span></p>
+            <p><strong>❌ عدد الأخطاء:</strong> <span id="reportErrors">0</span></p>
+            <div id="reportErrorWordsContainer" style="display: none;">
+                <p><strong>الكلمات الخاطئة:</strong></p>
+                <div class="error-list" id="reportErrorWords"></div>
+            </div>
+        </div>
+        <div class="modal-buttons">
+            <button class="modal-btn primary" id="reportQuestionsBtn">انتقل إلى الأسئلة</button>
+            <button class="modal-btn secondary" id="reportHomeBtn">العودة للرئيسية</button>
+        </div>
+    </div>
+</div>
+
+<!-- الشريط العلوي -->
 <div class="top-bar">
     <div class="lesson-info">
         <img src="https://www.wzufa.com/wp-content/uploads/2022/07/Riyadh-Al-Ebdaa-Schools.png" alt="شعار المدرسة" class="school-logo-small">
@@ -372,6 +501,7 @@
     </div>
 </div>
 
+<!-- منطقة عرض النص -->
 <div id="reader-viewport">
     <div id="countdown"></div>
     <div id="rsvp-container"><div id="rsvp-word"></div></div>
@@ -379,23 +509,13 @@
     <div id="static-container"><div class="static-content" id="static-content"></div></div>
 </div>
 
-<!-- لوحة التحكم الجانبية -->
+<!-- لوحة التحكم الجانبية المصغرة (بدون زر الخطأ) -->
 <div class="control-panel">
     <button class="control-btn" id="playPauseBtn" title="تشغيل/إيقاف"><i class="fas fa-play"></i></button>
     <button class="control-btn" id="stopBtn" title="إنهاء"><i class="fas fa-stop"></i></button>
     <span class="speed-indicator" id="speedDisplay">150</span>
     <button class="control-btn" id="speedUpBtn" title="زيادة السرعة"><i class="fas fa-plus"></i></button>
     <button class="control-btn" id="speedDownBtn" title="خفض السرعة"><i class="fas fa-minus"></i></button>
-    <button class="error-btn" id="errorBtn" title="تسجيل خطأ في الكلمة الحالية" style="display: none;"><i class="fas fa-exclamation-circle"></i></button>
-    
-    <div class="words-per-line-control" id="wplControl">
-        <span>كلمات/سطر</span>
-        <div class="wpl-buttons">
-            <button class="control-btn" id="wplDown"><i class="fas fa-minus"></i></button>
-            <span id="wordsPerLineValue">5</span>
-            <button class="control-btn" id="wplUp"><i class="fas fa-plus"></i></button>
-        </div>
-    </div>
 
     <div class="font-controls">
         <button class="control-btn" id="fontIncreaseBtn" title="تكبير الخط"><i class="fas fa-search-plus"></i></button>
@@ -403,7 +523,21 @@
         <button class="control-btn" id="lineHeightIncreaseBtn" title="زيادة التباعد"><i class="fas fa-arrows-alt-v"></i></button>
         <button class="control-btn" id="lineHeightDecreaseBtn" title="تقليل التباعد"><i class="fas fa-compress-alt"></i></button>
     </div>
+
+    <div class="words-per-line-control" id="wplControl">
+        <span>كلمات/سطر</span>
+        <div class="wpl-buttons">
+            <button class="control-btn" id="wplDown"><i class="fas fa-minus"></i></button>
+            <span id="wordsPerLineValue">10</span>
+            <button class="control-btn" id="wplUp"><i class="fas fa-plus"></i></button>
+        </div>
+    </div>
 </div>
+
+<!-- زر الخطأ المنفصل (يظهر فقط في وضعي RSVP والانسيابي) -->
+<button class="floating-error-btn" id="errorBtn" title="تسجيل خطأ في الكلمة الحالية" style="display: none;">
+    <i class="fas fa-exclamation-circle"></i>
+</button>
 
 <script>
     (function() {
@@ -419,6 +553,12 @@
             setTimeout(() => {
                 errorToast.classList.remove('show');
             }, 1500);
+        }
+
+        // دالة تحويل الأرقام الغربية إلى هندية
+        function toIndianNumbers(num) {
+            const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+            return num.toString().replace(/\d/g, (d) => arabicNumbers[d]);
         }
 
         // دالة لتقسيم النص إلى أسطر بعدد كلمات متغير
@@ -511,6 +651,69 @@
         const wplDown = document.getElementById('wplDown');
         const wordsPerLineValue = document.getElementById('wordsPerLineValue');
 
+        // عناصر المودال
+        const messageModal = document.getElementById('messageModal');
+        const modalIcon = document.getElementById('modalIcon');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+        const confirmModal = document.getElementById('confirmModal');
+        const confirmMessage = document.getElementById('confirmMessage');
+        const confirmYesBtn = document.getElementById('confirmYesBtn');
+        const confirmNoBtn = document.getElementById('confirmNoBtn');
+        const reportModal = document.getElementById('reportModal');
+        const reportSpeed = document.getElementById('reportSpeed');
+        const reportWords = document.getElementById('reportWords');
+        const reportErrors = document.getElementById('reportErrors');
+        const reportErrorWordsContainer = document.getElementById('reportErrorWordsContainer');
+        const reportErrorWords = document.getElementById('reportErrorWords');
+        const reportQuestionsBtn = document.getElementById('reportQuestionsBtn');
+        const reportHomeBtn = document.getElementById('reportHomeBtn');
+
+        // دوال المودال
+        function showMessage(msg, title = 'رسالة', type = 'info', onConfirm = null) {
+            modalTitle.textContent = title;
+            modalMessage.textContent = msg;
+            if (type === 'error') {
+                modalIcon.className = 'fas fa-exclamation-circle';
+                modalIcon.style.color = 'var(--danger)';
+            } else if (type === 'success') {
+                modalIcon.className = 'fas fa-check-circle';
+                modalIcon.style.color = 'var(--success)';
+            } else {
+                modalIcon.className = 'fas fa-info-circle';
+                modalIcon.style.color = 'var(--primary)';
+            }
+            messageModal.classList.add('show');
+            modalConfirmBtn.onclick = () => {
+                messageModal.classList.remove('show');
+                if (onConfirm) onConfirm();
+            };
+        }
+
+        function showConfirm(msg, onYes, onNo) {
+            confirmMessage.textContent = msg;
+            confirmModal.classList.add('show');
+            confirmYesBtn.onclick = () => {
+                confirmModal.classList.remove('show');
+                if (onYes) onYes();
+            };
+            confirmNoBtn.onclick = () => {
+                confirmModal.classList.remove('show');
+                if (onNo) onNo();
+            };
+        }
+
+        // دوال التنقل بعد التقرير
+        reportQuestionsBtn.onclick = () => {
+            reportModal.classList.remove('show');
+            window.location.href = 'questions.html';
+        };
+        reportHomeBtn.onclick = () => {
+            reportModal.classList.remove('show');
+            window.location.href = 'index.html';
+        };
+
         // تهيئة الواجهة حسب الوضع
         lessonTitleEl.innerText = lesson.title;
         updateSpeedDisplay();
@@ -519,7 +722,7 @@
         if (config.mode === 'rsvp') {
             rsvpContainer.style.display = 'block';
             rsvpContainer.style.fontSize = currentFontSize + 'px';
-            errorBtn.style.display = 'flex';
+            errorBtn.style.display = 'flex'; // إظهار زر الخطأ المنفصل
             wplControl.style.display = 'none';
         } else if (config.mode === 'scroll') {
             scrollContainer.style.display = 'block';
@@ -679,16 +882,15 @@
             }
         }
 
-        // دالة تسجيل خطأ محسنة مع إشارة بصرية
+        // دالة تسجيل خطأ مع إشارة بصرية
         function recordError() {
             if (!isPlaying) return;
             totalErrors++;
             
-            // تسجيل الكلمة في القائمة حسب الوضع
             if (config.mode === 'rsvp' && currentIndex > 0) {
                 const errorWord = words[currentIndex - 1];
                 errorWordsList.push(errorWord);
-                // تأثير بسيط: تغيير لون الكلمة الحالية (التي تم عرضها) إلى الأحمر لمدة قصيرة
+                // تأثير بسيط على الكلمة
                 const wordElement = rsvpWordEl;
                 wordElement.style.transition = 'color 0.2s';
                 wordElement.style.color = 'var(--accent)';
@@ -697,23 +899,21 @@
                 }, 300);
             } else if (config.mode === 'scroll') {
                 errorWordsList.push('خطأ (غير محدد)');
-                // في وضع التمرير، يمكن إضافة وميض بسيط للنص
+                // وميض خلفية النص
                 scrollContainer.style.transition = 'background-color 0.2s';
                 scrollContainer.style.backgroundColor = 'rgba(247, 37, 133, 0.1)';
                 setTimeout(() => {
                     scrollContainer.style.backgroundColor = '';
                 }, 300);
-            } else if (config.mode === 'static') {
-                // في الثابت، يتم التعامل مع النقر على الكلمة
             }
             
-            // إظهار رسالة toast
-            showErrorToast();
+            showErrorToast(); // إظهار رسالة التأكيد
         }
 
-        // ربط زر الخطأ
+        // ربط زر الخطأ المنفصل
         errorBtn.addEventListener('click', recordError);
 
+        // تفعيل تحديد الأخطاء في النص الثابت
         function enableErrorSelection() {
             const text = lesson.content;
             const wordsArray = text.split(/(\s+)/);
@@ -801,22 +1001,173 @@
             let wordsRead = 0;
             if (config.mode === 'rsvp') {
                 wordsRead = currentIndex;
-            } else {
+            } else if (config.mode === 'scroll') {
+                wordsRead = words.length;
+            } else if (config.mode === 'static') {
                 wordsRead = words.length;
             }
             const minutes = duration / 60;
             const avgSpeed = minutes > 0 ? Math.round(wordsRead / minutes) : 0;
 
-            // تجهيز بيانات التقرير (نفس السابق)
-            // ... 
-            // سيتم عرض التقرير كما هو
+            // تجهيز بيانات التقرير
+            reportSpeed.textContent = toIndianNumbers(avgSpeed);
+            reportWords.textContent = toIndianNumbers(words.length);
+            reportErrors.textContent = toIndianNumbers(totalErrors);
+            
+            if (config.mode === 'static' && errorWordsList.length > 0) {
+                reportErrorWordsContainer.style.display = 'block';
+                reportErrorWords.innerHTML = errorWordsList.map(w => `<span class="error-item">${escapeHtml(w)}</span>`).join('');
+            } else {
+                reportErrorWordsContainer.style.display = 'none';
+            }
 
-            // ملاحظة: تم حذف بقية الكود للاختصار، لكنه موجود في الكود الكامل
+            reportModal.classList.add('show');
+
+            // تخزين بيانات الجلسة
+            const sessionData = {
+                lessonId: config.lessonId,
+                lessonTitle: lesson.title,
+                grade: lesson.grade,
+                semester: lesson.semester,
+                totalWords: words.length,
+                duration: duration,
+                speed: currentSpeed,
+                errors: totalErrors,
+                startTime: startTime,
+                endTime: endTime,
+                theme: config.theme,
+                questions: lesson.questions || []
+            };
+            sessionStorage.setItem('currentReadingSession', JSON.stringify(sessionData));
         }
 
-        // باقي الدوال (مثل معالجات الأزرار) تبقى كما هي
-        // ...
-        
+        // معالجات الأزرار
+        playPauseBtn.addEventListener('click', togglePlay);
+        stopBtn.addEventListener('click', stopReading);
+
+        speedUpBtn.addEventListener('click', () => {
+            let newSpeed = Number(currentSpeed) + 10;
+            if (newSpeed > 400) newSpeed = 400;
+            currentSpeed = newSpeed;
+            updateSpeedDisplay();
+            if (config.mode === 'scroll' && isPlaying) {
+                const totalSeconds = (words.length / currentSpeed) * 60;
+                scrollPixelsPerSecond = scrollTotalDistance / totalSeconds;
+            }
+        });
+
+        speedDownBtn.addEventListener('click', () => {
+            let newSpeed = Number(currentSpeed) - 10;
+            if (newSpeed < 10) newSpeed = 10;
+            currentSpeed = newSpeed;
+            updateSpeedDisplay();
+            if (config.mode === 'scroll' && isPlaying) {
+                const totalSeconds = (words.length / currentSpeed) * 60;
+                scrollPixelsPerSecond = scrollTotalDistance / totalSeconds;
+            }
+        });
+
+        wplUp.addEventListener('click', () => {
+            if (currentWordsPerLine < 20) {
+                currentWordsPerLine++;
+                wordsPerLineValue.innerText = currentWordsPerLine;
+                if (config.mode === 'scroll') {
+                    scrollContainer.innerText = formatTextToFixedWords(lesson.content, currentWordsPerLine);
+                    recalcScrollDistance();
+                }
+            }
+        });
+
+        wplDown.addEventListener('click', () => {
+            if (currentWordsPerLine > 1) {
+                currentWordsPerLine--;
+                wordsPerLineValue.innerText = currentWordsPerLine;
+                if (config.mode === 'scroll') {
+                    scrollContainer.innerText = formatTextToFixedWords(lesson.content, currentWordsPerLine);
+                    recalcScrollDistance();
+                }
+            }
+        });
+
+        fontIncreaseBtn.addEventListener('click', () => {
+            if (currentFontSize < 96) {
+                currentFontSize += 4;
+                if (config.mode === 'rsvp') {
+                    rsvpContainer.style.fontSize = currentFontSize + 'px';
+                } else if (config.mode === 'scroll') {
+                    scrollContainer.style.fontSize = currentFontSize + 'px';
+                    recalcScrollDistance();
+                } else if (config.mode === 'static') {
+                    staticContainer.style.fontSize = currentFontSize + 'px';
+                }
+                updateFontSizeDisplay();
+            }
+        });
+
+        fontDecreaseBtn.addEventListener('click', () => {
+            if (currentFontSize > 12) {
+                currentFontSize -= 4;
+                if (config.mode === 'rsvp') {
+                    rsvpContainer.style.fontSize = currentFontSize + 'px';
+                } else if (config.mode === 'scroll') {
+                    scrollContainer.style.fontSize = currentFontSize + 'px';
+                    recalcScrollDistance();
+                } else if (config.mode === 'static') {
+                    staticContainer.style.fontSize = currentFontSize + 'px';
+                }
+                updateFontSizeDisplay();
+            }
+        });
+
+        lineHeightIncreaseBtn.addEventListener('click', () => {
+            currentLineHeight += 0.2;
+            if (config.mode === 'scroll') {
+                scrollContainer.style.lineHeight = currentLineHeight;
+                recalcScrollDistance();
+            } else if (config.mode === 'static') {
+                staticContainer.style.lineHeight = currentLineHeight;
+            }
+        });
+
+        lineHeightDecreaseBtn.addEventListener('click', () => {
+            if (currentLineHeight > 1.2) {
+                currentLineHeight -= 0.2;
+                if (config.mode === 'scroll') {
+                    scrollContainer.style.lineHeight = currentLineHeight;
+                    recalcScrollDistance();
+                } else if (config.mode === 'static') {
+                    staticContainer.style.lineHeight = currentLineHeight;
+                }
+            }
+        });
+
+        if (config.mode !== 'static') {
+            document.getElementById('reader-viewport').addEventListener('click', togglePlay);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                togglePlay();
+            } else if (e.code === 'ArrowUp') {
+                e.preventDefault();
+                speedUpBtn.click();
+            } else if (e.code === 'ArrowDown') {
+                e.preventDefault();
+                speedDownBtn.click();
+            }
+        });
+
+        function escapeHtml(unsafe) {
+            return unsafe.replace(/[&<>"]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                if (m === '"') return '&quot;';
+                return m;
+            });
+        }
+
         // بدء العد التنازلي
         startCountdown();
     })();
