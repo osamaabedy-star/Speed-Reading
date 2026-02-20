@@ -139,9 +139,9 @@
         }
         .pivot { color: var(--accent); }
 
-        /* تحسين وضع التمرير - تقريب النص من القائمة */
+        /* تحسين وضع التمرير - مسافة محددة بين النص والقائمة */
         #scroll-container {
-            width: 94%; /* زيادة العرض */
+            width: 92%;
             max-width: 1000px;
             font-size: 2.2rem;
             line-height: 1.8;
@@ -149,7 +149,7 @@
             display: none;
             position: absolute;
             top: 20px;
-            left: 1%; /* هامش ضئيل جداً */
+            left: 20px; /* مسافة ثابتة من اليسار */
             transform: translateY(100vh);
             will-change: transform;
             transition: font-size 0.2s, line-height 0.2s;
@@ -195,16 +195,16 @@
             z-index: 200;
         }
 
-        /* ===== لوحة التحكم الجانبية أضيق ===== */
+        /* ===== لوحة التحكم الجانبية بمسافة محددة (2 سم تقريباً) ===== */
         .control-panel {
             position: fixed;
-            right: 5px; /* أقرب للحافة */
+            right: 80px; /* مسافة 80px من الحافة اليمنى (حوالي 2 سم على شاشات Full HD) */
             top: 55%;
             transform: translateY(-50%);
             background: var(--panel);
             backdrop-filter: blur(10px);
             border-radius: 35px;
-            padding: 8px 4px; /* تقليل */
+            padding: 8px 4px;
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -212,14 +212,14 @@
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
             z-index: 150;
-            width: 40px; /* أضيق */
+            width: 40px;
         }
 
         .control-btn {
             background: transparent;
             border: none;
             color: var(--text);
-            font-size: 0.95rem; /* تصغير */
+            font-size: 0.95rem;
             cursor: pointer;
             width: 28px;
             height: 28px;
@@ -297,11 +297,11 @@
             font-size: 0.7rem;
         }
 
-        /* ===== زر الخطأ في الشمال مع نص ===== */
+        /* ===== زر الخطأ في الشمال مع نص وإشعار منبثق فوقه ===== */
         .error-left-btn {
             position: fixed;
             bottom: 25px;
-            left: 20px; /* في الشمال */
+            left: 20px;
             background-color: var(--accent);
             color: white;
             border-radius: 40px;
@@ -328,32 +328,32 @@
             font-size: 1.3rem;
         }
 
-        /* رسالة toast لتأكيد تسجيل الخطأ */
-        .error-toast {
+        /* رسالة toast تظهر فوق زر الخطأ */
+        .error-toast-above {
             position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
+            bottom: 90px; /* فوق الزر */
+            left: 30px;
             background: var(--accent);
             color: white;
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-size: 1rem;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 0.95rem;
             font-weight: 600;
             box-shadow: var(--shadow);
-            z-index: 1000;
+            z-index: 250;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             opacity: 0;
             transition: opacity 0.3s;
             pointer-events: none;
+            white-space: nowrap;
         }
-        .error-toast.show {
+        .error-toast-above.show {
             opacity: 1;
         }
-        .error-toast i {
-            font-size: 1.2rem;
+        .error-toast-above i {
+            font-size: 1rem;
         }
 
         /* باقي الأنماط للمودالات */
@@ -440,10 +440,10 @@
 <body data-theme="light">
 <div class="loading" id="loadingScreen"><i class="fas fa-spinner fa-spin"></i> جاري التجهيز...</div>
 
-<!-- رسالة تأكيد الخطأ -->
-<div class="error-toast" id="errorToast">
+<!-- رسالة تأكيد الخطأ (تظهر فوق الزر) -->
+<div class="error-toast-above" id="errorToastAbove">
     <i class="fas fa-check-circle"></i>
-    <span>تم تسجيل الخطأ</span>
+    <span>تم تسجيل خطأ</span>
 </div>
 
 <!-- المودالات -->
@@ -478,7 +478,7 @@
             <p><strong>📊 متوسط السرعة:</strong> <span id="reportSpeed">0</span> كلمة/دقيقة</p>
             <p><strong>📄 عدد الكلمات:</strong> <span id="reportWords">0</span></p>
             <p><strong>❌ عدد الأخطاء:</strong> <span id="reportErrors">0</span></p>
-            <div id="reportErrorWordsContainer" style="display: none;">
+            <div id="reportErrorWordsContainer">
                 <p><strong>الكلمات الخاطئة:</strong></p>
                 <div class="error-list" id="reportErrorWords"></div>
             </div>
@@ -552,12 +552,12 @@
             document.getElementById('loadingScreen').style.display = 'none';
         });
 
-        // عنصر toast
-        const errorToast = document.getElementById('errorToast');
-        function showErrorToast() {
-            errorToast.classList.add('show');
+        // عنصر toast فوق الزر
+        const errorToastAbove = document.getElementById('errorToastAbove');
+        function showErrorToastAbove() {
+            errorToastAbove.classList.add('show');
             setTimeout(() => {
-                errorToast.classList.remove('show');
+                errorToastAbove.classList.remove('show');
             }, 1500);
         }
 
@@ -616,7 +616,7 @@
         
         // الأخطاء
         let totalErrors = 0;
-        let errorWordsList = [];
+        let errorWordsList = []; // سيتم ملؤها في جميع الأوضاع
 
         // حجم الخط
         let currentFontSize = parseInt(config.fontSize) || 32;
@@ -893,6 +893,7 @@
             if (!isPlaying) return;
             totalErrors++;
             
+            // تسجيل الكلمة حسب الوضع
             if (config.mode === 'rsvp' && currentIndex > 0) {
                 const errorWord = words[currentIndex - 1];
                 errorWordsList.push(errorWord);
@@ -904,16 +905,27 @@
                     wordElement.style.color = '';
                 }, 300);
             } else if (config.mode === 'scroll') {
-                errorWordsList.push('خطأ (غير محدد)');
+                // في التمرير، يمكن تسجيل الكلمة الظاهرة حالياً (تقديرياً)
+                // نقدر الكلمة بناءً على موقع التمرير، ولكن للتبسيط نضيف "خطأ في التمرير"
+                errorWordsList.push('خطأ أثناء التمرير');
                 // وميض خلفية النص
                 scrollContainer.style.transition = 'background-color 0.2s';
                 scrollContainer.style.backgroundColor = 'rgba(247, 37, 133, 0.1)';
                 setTimeout(() => {
                     scrollContainer.style.backgroundColor = '';
                 }, 300);
+            } else if (config.mode === 'static') {
+                // في الثابت يتم التعامل مع النقر على الكلمة، وهنا نضيف للقائمة عبر toggleError
             }
             
-            showErrorToast(); // إظهار رسالة التأكيد
+            showErrorToastAbove(); // إظهار الرسالة فوق الزر
+        }
+
+        function showErrorToastAbove() {
+            errorToastAbove.classList.add('show');
+            setTimeout(() => {
+                errorToastAbove.classList.remove('show');
+            }, 1500);
         }
 
         // ربط زر الخطأ
@@ -942,7 +954,7 @@
             if (element.classList.contains('error-word')) {
                 totalErrors++;
                 errorWordsList.push(word);
-                showErrorToast(); // إظهار toast عند النقر
+                showErrorToastAbove(); // إظهار toast عند النقر
             } else {
                 totalErrors--;
                 const index = errorWordsList.indexOf(word);
@@ -1007,20 +1019,19 @@
             let wordsRead = 0;
             if (config.mode === 'rsvp') {
                 wordsRead = currentIndex;
-            } else if (config.mode === 'scroll') {
-                wordsRead = words.length;
-            } else if (config.mode === 'static') {
+            } else {
                 wordsRead = words.length;
             }
             const minutes = duration / 60;
             const avgSpeed = minutes > 0 ? Math.round(wordsRead / minutes) : 0;
 
-            // تجهيز بيانات التقرير
+            // تجهيز بيانات التقرير - عرض الكلمات الخاطئة
             reportSpeed.textContent = toIndianNumbers(avgSpeed);
             reportWords.textContent = toIndianNumbers(words.length);
             reportErrors.textContent = toIndianNumbers(totalErrors);
             
-            if (config.mode === 'static' && errorWordsList.length > 0) {
+            // عرض الكلمات الخاطئة إذا وجدت (لجميع الأوضاع)
+            if (errorWordsList.length > 0) {
                 reportErrorWordsContainer.style.display = 'block';
                 reportErrorWords.innerHTML = errorWordsList.map(w => `<span class="error-item">${escapeHtml(w)}</span>`).join('');
             } else {
