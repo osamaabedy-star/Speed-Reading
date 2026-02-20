@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>منصة القراءة السريعة - مدارس الرياض الإبداع</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Amiri&family=Tajawal:wght@400;700&family=Almarai:wght@400;700&family=Readex+Pro:wght@400;700&family=Katibeh&family=Lalezar&family=Markazi+Text:wght@400;700&family=Scheherazade+New:wght@400;700&family=Harmattan:wght@400;700&family=El+Messiri:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Amiri&family=Almarai:wght@400;700&family=Readex+Pro:wght@400;700&family=Katibeh&family=Lalezar&family=Markazi+Text:wght@400;700&family=Scheherazade+New:wght@400;700&family=Harmattan:wght@400;700&family=El+Messiri:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* === تصميم أنيق وعصري === */
         :root {
@@ -105,6 +105,12 @@
             font-size: 0.85rem;
         }
 
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
         .theme-buttons {
             display: flex;
             gap: 10px;
@@ -132,10 +138,32 @@
             color: var(--primary);
         }
 
-        /* === الشبكة الرئيسية - تصغير العمود الأيمن === */
+        /* زر المساعدة في الهيدر */
+        .help-header-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .help-header-btn:hover {
+            transform: scale(1.1);
+            background: var(--primary-dark);
+        }
+
+        /* === الشبكة الرئيسية === */
         .main-grid {
             display: grid;
-            grid-template-columns: 0.8fr 1.5fr; /* العمود الأيمن أصغر */
+            grid-template-columns: 0.8fr 1.5fr;
             gap: 28px;
             align-items: start;
         }
@@ -150,7 +178,7 @@
         .settings-card {
             background: var(--card-bg);
             border-radius: var(--radius-lg);
-            padding: 18px; /* تقليل padding */
+            padding: 18px;
             box-shadow: var(--shadow-md);
             border: 1px solid var(--border);
             backdrop-filter: blur(10px);
@@ -159,7 +187,7 @@
         }
 
         .section-title {
-            font-size: 1rem; /* تصغير */
+            font-size: 1rem;
             font-weight: 700;
             margin-bottom: 16px;
             display: flex;
@@ -171,10 +199,9 @@
         }
 
         .section-title i {
-            font-size: 1.1rem; /* تصغير الأيقونة */
+            font-size: 1.1rem;
         }
 
-        /* شريط الخطوط الأفقي القابل للتمرير */
         .font-scroll-bar {
             display: flex;
             gap: 6px;
@@ -201,12 +228,12 @@
 
         .font-mini-btn {
             white-space: nowrap;
-            padding: 6px 12px; /* تقليل */
+            padding: 6px 12px;
             border-radius: 30px;
             border: 1px solid var(--border);
             background: var(--card-bg);
             color: var(--text);
-            font-size: 0.75rem; /* تصغير الخط */
+            font-size: 0.75rem;
             font-weight: 500;
             cursor: pointer;
             transition: var(--transition);
@@ -221,13 +248,12 @@
             transform: scale(1.02);
         }
 
-        /* تحكم الحجم */
         .size-controls {
             display: flex;
             align-items: center;
             gap: 6px;
             background: var(--bg);
-            padding: 4px 8px; /* تقليل */
+            padding: 4px 8px;
             border-radius: 30px;
             border: 1px solid var(--border);
             margin-bottom: 14px;
@@ -235,7 +261,7 @@
         }
 
         .size-btn {
-            width: 28px; /* تصغير */
+            width: 28px;
             height: 28px;
             border-radius: 50%;
             border: none;
@@ -262,11 +288,10 @@
             font-size: 0.85rem;
         }
 
-        /* صندوق المعاينة */
         .preview-box {
             background: var(--bg);
             border-radius: var(--radius-md);
-            padding: 12px; /* تقليل */
+            padding: 12px;
             border: 1px solid var(--border);
             text-align: center;
             margin: 16px 0;
@@ -279,7 +304,7 @@
         }
 
         .preview-text {
-            font-size: 22px; /* تصغير */
+            font-size: 22px;
             line-height: 1.5;
             color: var(--primary);
             font-weight: 600;
@@ -287,7 +312,6 @@
             word-break: break-word;
         }
 
-        /* أزرار أوضاع القراءة بشكل كروت مصغرة */
         .mode-cards {
             display: flex;
             gap: 8px;
@@ -298,15 +322,15 @@
             flex: 1;
             background: var(--bg);
             border: 1px solid var(--border);
-            border-radius: var(--radius-sm); /* أصغر */
-            padding: 12px 4px; /* تقليل */
+            border-radius: var(--radius-sm);
+            padding: 12px 4px;
             text-align: center;
             cursor: pointer;
             transition: var(--transition);
         }
 
         .mode-card i {
-            font-size: 1.5rem; /* تصغير الأيقونة */
+            font-size: 1.5rem;
             color: var(--primary);
             margin-bottom: 4px;
         }
@@ -314,7 +338,7 @@
         .mode-card span {
             display: block;
             font-weight: 600;
-            font-size: 0.75rem; /* تصغير */
+            font-size: 0.75rem;
         }
 
         .mode-card.active {
@@ -323,7 +347,6 @@
             transform: translateY(-2px);
         }
 
-        /* شريط السرعة */
         .speed-section {
             margin-bottom: 18px;
         }
@@ -342,14 +365,14 @@
         }
 
         .speed-value {
-            font-size: 1.6rem; /* تصغير */
+            font-size: 1.6rem;
             font-weight: 700;
             color: var(--primary);
         }
 
         input[type=range] {
             width: 100%;
-            height: 5px; /* أقل ارتفاعاً */
+            height: 5px;
             background: var(--border);
             border-radius: 10px;
             -webkit-appearance: none;
@@ -357,7 +380,7 @@
 
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 18px; /* أصغر */
+            width: 18px;
             height: 18px;
             border-radius: 50%;
             background: var(--primary);
@@ -370,46 +393,106 @@
             transform: scale(1.2);
         }
 
-        /* فلاتر الفصل والصف */
-        .filter-group {
-            margin-bottom: 16px;
+        /* فلاتر محسنة */
+        .filter-section {
+            margin-bottom: 18px;
         }
 
         .filter-title {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-light);
-            margin-bottom: 6px;
             display: flex;
             align-items: center;
-            gap: 4px;
-        }
-
-        .filter-buttons {
-            display: flex;
             gap: 6px;
-            flex-wrap: wrap;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 10px;
         }
 
-        .filter-btn {
-            padding: 6px 14px; /* تقليل */
-            border-radius: 30px;
+        .filter-title i {
+            color: var(--primary);
+            font-size: 1rem;
+        }
+
+        .semester-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .semester-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border-radius: 50px;
             border: 1px solid var(--border);
-            background: var(--card-bg);
+            background: var(--bg);
             color: var(--text);
-            font-size: 0.7rem; /* تصغير */
-            font-weight: 500;
+            font-size: 0.9rem;
+            font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
+            box-shadow: var(--shadow-sm);
         }
 
-        .filter-btn.active {
+        .semester-btn i {
+            font-size: 1rem;
+            color: var(--primary);
+        }
+
+        .semester-btn.active {
             background: var(--primary);
             color: white;
             border-color: var(--primary);
         }
 
-        /* === العمود الأيسر: الدروس وزر البدء (كما هو) === */
+        .semester-btn.active i {
+            color: white;
+        }
+
+        .grade-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .grade-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 8px 4px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .grade-btn .grade-number {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .grade-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .grade-btn.active .grade-number {
+            color: white;
+        }
+
+        /* === العمود الأيسر: الدروس وزر البدء === */
         .lessons-column {
             background: var(--card-bg);
             border-radius: var(--radius-lg);
@@ -603,11 +686,93 @@
             color: var(--primary);
             font-size: 1.2rem;
         }
+
+        /* === مودال المساعدة === */
+        .help-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .help-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .help-content {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            position: relative;
+        }
+
+        .help-content h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .help-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .help-content li {
+            margin-bottom: 16px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .help-content li i {
+            color: var(--primary);
+            font-size: 1.2rem;
+            margin-top: 3px;
+        }
+
+        .help-content p {
+            color: var(--text-light);
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        .close-help {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: transparent;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .close-help:hover {
+            color: var(--accent);
+        }
     </style>
 </head>
 <body data-theme="light">
 <div class="container">
-    <!-- الهيدر (كما هو) -->
+    <!-- الهيدر مع زر المساعدة -->
     <div class="header">
         <div class="logo-container">
             <img src="https://www.wzufa.com/wp-content/uploads/2022/07/Riyadh-Al-Ebdaa-Schools.png" alt="شعار مدارس الرياض الإبداع" class="school-logo">
@@ -616,24 +781,25 @@
                 <p>مدارس رياض الإبداع الأهلية</p>
             </div>
         </div>
-        <div class="theme-buttons">
-            <div class="theme-btn light" onclick="setTheme('light')" title="الوضع النهاري"><i class="fas fa-sun"></i></div>
-            <div class="theme-btn dark" onclick="setTheme('dark')" title="الوضع الليلي"><i class="fas fa-moon"></i></div>
-            <div class="theme-btn comfort" onclick="setTheme('comfort')" title="الوضع المريح"><i class="fas fa-leaf"></i></div>
+        <div class="header-actions">
+            <div class="theme-buttons">
+                <div class="theme-btn light" onclick="setTheme('light')" title="الوضع النهاري"><i class="fas fa-sun"></i></div>
+                <div class="theme-btn dark" onclick="setTheme('dark')" title="الوضع الليلي"><i class="fas fa-moon"></i></div>
+                <div class="theme-btn comfort" onclick="setTheme('comfort')" title="الوضع المريح"><i class="fas fa-leaf"></i></div>
+            </div>
+            <button class="help-header-btn" id="helpBtn" title="طريقة الاستخدام"><i class="fas fa-question"></i></button>
         </div>
     </div>
 
     <!-- المحتوى الرئيسي -->
     <div class="main-grid">
-        <!-- العمود الأيمن: الإعدادات (مصغر) -->
+        <!-- العمود الأيمن: الإعدادات -->
         <div class="settings-card">
             <h3 class="section-title"><i class="fas fa-sliders-h"></i> الإعدادات</h3>
             
-            <!-- شريط الخطوط -->
             <div class="font-scroll-bar" id="miniFontSelector">
-                <span class="font-mini-btn" data-font="'Cairo', sans-serif" style="font-family: 'Cairo';">كايرو</span>
                 <span class="font-mini-btn" data-font="'Amiri', serif" style="font-family: 'Amiri';">أميري</span>
-                <span class="font-mini-btn" data-font="'Tajawal', sans-serif" style="font-family: 'Tajawal';">تجوال</span>
+                <span class="font-mini-btn" data-font="'Cairo', sans-serif" style="font-family: 'Cairo';">كايرو</span>
                 <span class="font-mini-btn" data-font="'Almarai', sans-serif" style="font-family: 'Almarai';">المرائي</span>
                 <span class="font-mini-btn" data-font="'Readex Pro', sans-serif" style="font-family: 'Readex Pro';">ريدكس</span>
                 <span class="font-mini-btn" data-font="'Katibeh', cursive" style="font-family: 'Katibeh';">كايور</span>
@@ -644,20 +810,17 @@
                 <span class="font-mini-btn" data-font="'Scheherazade New', serif" style="font-family: 'Scheherazade New';">شهزاد</span>
             </div>
 
-            <!-- تحكم الحجم -->
             <div class="size-controls">
                 <button class="size-btn" id="decreaseFontSize"><i class="fas fa-minus"></i></button>
-                <span id="fontSizeValue">28</span>
+                <span id="fontSizeValue">٢٨</span>
                 <button class="size-btn" id="increaseFontSize"><i class="fas fa-plus"></i></button>
             </div>
 
-            <!-- معاينة الخط -->
             <div class="preview-box">
                 <p>معاينة الخط</p>
                 <div class="preview-text" id="fontPreview">أسامة إبراهيم محمدي</div>
             </div>
 
-            <!-- أوضاع القراءة -->
             <div class="mode-cards" id="modeSelector">
                 <div class="mode-card" data-mode="rsvp">
                     <i class="fas fa-bolt"></i>
@@ -673,33 +836,63 @@
                 </div>
             </div>
 
-            <!-- السرعة -->
             <div class="speed-section">
                 <div class="speed-label">
                     <span><i class="fas fa-tachometer-alt"></i> السرعة</span>
-                    <span class="speed-value" id="speedVal">150</span>
+                    <span class="speed-value" id="speedVal">١٥٠</span>
                 </div>
                 <input type="range" id="speedSlider" min="10" max="400" step="10" value="150">
             </div>
 
-            <!-- فلاتر -->
-            <div class="filter-group">
-                <div class="filter-title"><i class="fas fa-calendar-alt"></i> الفصل</div>
-                <div class="filter-buttons" id="semesterSelector">
-                    <div class="filter-btn" data-semester="1">الأول</div>
-                    <div class="filter-btn" data-semester="2">الثاني</div>
+            <!-- قسم الفصل الدراسي المحسن -->
+            <div class="filter-section">
+                <div class="filter-title">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>الفصل الدراسي</span>
+                </div>
+                <div class="semester-buttons" id="semesterSelector">
+                    <div class="semester-btn" data-semester="1">
+                        <i class="fas fa-calendar"></i>
+                        الأول
+                    </div>
+                    <div class="semester-btn" data-semester="2">
+                        <i class="fas fa-calendar-check"></i>
+                        الثاني
+                    </div>
                 </div>
             </div>
 
-            <div class="filter-group">
-                <div class="filter-title"><i class="fas fa-graduation-cap"></i> الصف</div>
-                <div class="filter-buttons" id="gradeSelector">
-                    <div class="filter-btn" data-grade="1">الأول</div>
-                    <div class="filter-btn" data-grade="2">الثاني</div>
-                    <div class="filter-btn" data-grade="3">الثالث</div>
-                    <div class="filter-btn" data-grade="4">الرابع</div>
-                    <div class="filter-btn" data-grade="5">الخامس</div>
-                    <div class="filter-btn" data-grade="6">السادس</div>
+            <!-- قسم الصف المحسن مع أرقام هندية -->
+            <div class="filter-section">
+                <div class="filter-title">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>الصف</span>
+                </div>
+                <div class="grade-grid" id="gradeSelector">
+                    <div class="grade-btn" data-grade="1">
+                        <span class="grade-number">١</span>
+                        <span>الأول</span>
+                    </div>
+                    <div class="grade-btn" data-grade="2">
+                        <span class="grade-number">٢</span>
+                        <span>الثاني</span>
+                    </div>
+                    <div class="grade-btn" data-grade="3">
+                        <span class="grade-number">٣</span>
+                        <span>الثالث</span>
+                    </div>
+                    <div class="grade-btn" data-grade="4">
+                        <span class="grade-number">٤</span>
+                        <span>الرابع</span>
+                    </div>
+                    <div class="grade-btn" data-grade="5">
+                        <span class="grade-number">٥</span>
+                        <span>الخامس</span>
+                    </div>
+                    <div class="grade-btn" data-grade="6">
+                        <span class="grade-number">٦</span>
+                        <span>السادس</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -731,12 +924,34 @@
     </div>
 </div>
 
-<!-- نفس السكربت السابق بدون تغيير -->
+<!-- مودال المساعدة -->
+<div class="help-modal" id="helpModal">
+    <div class="help-content">
+        <button class="close-help" id="closeHelp"><i class="fas fa-times"></i></button>
+        <h2><i class="fas fa-lightbulb"></i> طريقة استخدام المنصة</h2>
+        <ul>
+            <li><i class="fas fa-paint-brush"></i> <strong>الخط والحجم:</strong> اختر الخط المناسب وحجمه من الشريط العلوي، ويمكنك معاينة التغيير مباشرة.</li>
+            <li><i class="fas fa-bolt"></i> <strong>وضع القراءة:</strong> حدد الوضع: كلمة بكلمة (RSVP)، تمرير انسيابي، أو نص ثابت.</li>
+            <li><i class="fas fa-tachometer-alt"></i> <strong>السرعة:</strong> اضبط السرعة التي تريدها (كلمة/دقيقة).</li>
+            <li><i class="fas fa-filter"></i> <strong>تصفية النصوص:</strong> اختر الفصل والصف، ثم ابحث عن النص المطلوب أو تصفح القائمة.</li>
+            <li><i class="fas fa-file-alt"></i> <strong>اختيار النص:</strong> انقر على أي نص ليتم تحديده (يظهر بإطار ملون).</li>
+            <li><i class="fas fa-play"></i> <strong>بدء القراءة:</strong> بعد اختيار النص، اضغط على زر "ابدأ القراءة" في الأسفل.</li>
+        </ul>
+        <p>يمكنك تغيير الثيم (نهاري/ليلي/مريح) من الأعلى. استمتع بالقراءة! 📚</p>
+    </div>
+</div>
+
 <script>
+    // دالة تحويل الأرقام الغربية إلى هندية
+    function toIndianNumbers(num) {
+        const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+        return num.toString().replace(/\d/g, (d) => arabicNumbers[d]);
+    }
+
     // ========== بيانات الدروس ==========
     let lessonsData = [];
     let selectedLessonId = null;
-    let currentFont = "'Cairo', sans-serif";
+    let currentFont = "'Amiri', serif"; // تغيير الافتراضي إلى أميري
     let currentMode = 'rsvp';
     let currentSpeed = 150;
     let currentSemester = '1';
@@ -749,6 +964,27 @@
     const startBtn = document.getElementById('startBtn');
     const fontPreview = document.getElementById('fontPreview');
     const searchInput = document.getElementById('searchInput');
+    const speedVal = document.getElementById('speedVal');
+    const fontSizeValue = document.getElementById('fontSizeValue');
+
+    // عناصر المساعدة
+    const helpBtn = document.getElementById('helpBtn');
+    const helpModal = document.getElementById('helpModal');
+    const closeHelp = document.getElementById('closeHelp');
+
+    helpBtn.addEventListener('click', () => {
+        helpModal.classList.add('show');
+    });
+
+    closeHelp.addEventListener('click', () => {
+        helpModal.classList.remove('show');
+    });
+
+    window.addEventListener('click', (e) => {
+        if (e.target === helpModal) {
+            helpModal.classList.remove('show');
+        }
+    });
 
     // دوال تحويل رقم الصف والفصل إلى النص الكامل
     function getGradeFullName(gradeNumber) {
@@ -771,6 +1007,12 @@
     function updateFontPreview() {
         fontPreview.style.fontFamily = currentFont;
         fontPreview.style.fontSize = currentFontSize + 'px';
+        fontSizeValue.textContent = toIndianNumbers(currentFontSize);
+    }
+
+    // تحديث عرض السرعة
+    function updateSpeedDisplay() {
+        speedVal.textContent = toIndianNumbers(currentSpeed);
     }
 
     // ========== تحميل الدروس وحفظها في localStorage ==========
@@ -834,7 +1076,7 @@
             const wordCount = l.content.split(/\s+/).length;
             return `
                 <div class="lesson-item ${selectedLessonId === l.id ? 'selected' : ''}" onclick="selectLesson('${l.id}')">
-                    <span class="word-count-badge">${wordCount}</span>
+                    <span class="word-count-badge">${toIndianNumbers(wordCount)}</span>
                     <i class="fas fa-file-alt"></i>
                     <div class="lesson-title">${escapeHtml(l.title)}</div>
                 </div>
@@ -890,7 +1132,9 @@
                 if (btn.dataset.font === prefs.font) btn.classList.add('active');
             });
         } else {
-            document.querySelector('.font-mini-btn[data-font="\'Cairo\', sans-serif"]').classList.add('active');
+            // تعيين أميري كافتراضي
+            currentFont = "'Amiri', serif";
+            document.querySelector('.font-mini-btn[data-font="\'Amiri\', serif"]').classList.add('active');
         }
         
         if (prefs.mode) {
@@ -905,26 +1149,26 @@
         if (prefs.speed) {
             currentSpeed = prefs.speed;
             document.getElementById('speedSlider').value = currentSpeed;
-            document.getElementById('speedVal').innerText = currentSpeed;
+            updateSpeedDisplay();
         }
         
         if (prefs.semester) {
             currentSemester = prefs.semester;
         }
-        document.querySelectorAll('#semesterSelector .filter-btn').forEach(btn => {
+        document.querySelectorAll('.semester-btn').forEach(btn => {
             if (btn.dataset.semester === currentSemester) btn.classList.add('active');
         });
         
         if (prefs.grade) {
             currentGrade = prefs.grade;
         }
-        document.querySelectorAll('#gradeSelector .filter-btn').forEach(btn => {
+        document.querySelectorAll('.grade-btn').forEach(btn => {
             if (btn.dataset.grade === currentGrade) btn.classList.add('active');
         });
         
         if (prefs.fontSize) {
             currentFontSize = prefs.fontSize;
-            document.getElementById('fontSizeValue').innerText = currentFontSize;
+            fontSizeValue.textContent = toIndianNumbers(currentFontSize);
         }
 
         // تحديث المعاينة
@@ -946,7 +1190,7 @@
     // ========== Event Listeners ==========
     document.getElementById('speedSlider').addEventListener('input', function(e) {
         currentSpeed = e.target.value;
-        document.getElementById('speedVal').innerText = currentSpeed;
+        updateSpeedDisplay();
         saveUserPrefs();
     });
 
@@ -962,14 +1206,14 @@
 
     document.getElementById('increaseFontSize').addEventListener('click', () => {
         currentFontSize += 2;
-        document.getElementById('fontSizeValue').innerText = currentFontSize;
+        fontSizeValue.textContent = toIndianNumbers(currentFontSize);
         updateFontPreview();
         saveUserPrefs();
     });
     document.getElementById('decreaseFontSize').addEventListener('click', () => {
         if (currentFontSize > 12) {
             currentFontSize -= 2;
-            document.getElementById('fontSizeValue').innerText = currentFontSize;
+            fontSizeValue.textContent = toIndianNumbers(currentFontSize);
             updateFontPreview();
             saveUserPrefs();
         }
@@ -984,9 +1228,9 @@
         });
     });
 
-    document.querySelectorAll('#semesterSelector .filter-btn').forEach(btn => {
+    document.querySelectorAll('.semester-btn').forEach(btn => {
         btn.addEventListener('click', function() {
-            document.querySelectorAll('#semesterSelector .filter-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.semester-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             currentSemester = this.dataset.semester;
             saveUserPrefs();
@@ -995,9 +1239,9 @@
         });
     });
 
-    document.querySelectorAll('#gradeSelector .filter-btn').forEach(btn => {
+    document.querySelectorAll('.grade-btn').forEach(btn => {
         btn.addEventListener('click', function() {
-            document.querySelectorAll('#gradeSelector .filter-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.grade-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             currentGrade = this.dataset.grade;
             saveUserPrefs();
@@ -1026,6 +1270,8 @@
         loadUserPrefs();
         loadAllLessons();
         startBtn.disabled = true;
+        updateSpeedDisplay();
+        fontSizeValue.textContent = toIndianNumbers(currentFontSize);
     };
 </script>
 </body>
