@@ -139,17 +139,17 @@
         }
         .pivot { color: var(--accent); }
 
-        /* تحسين وضع التمرير - توسيط وتقريب النص */
+        /* تحسين وضع التمرير - تقريب النص من القائمة */
         #scroll-container {
-            width: 90%; /* زيادة العرض */
-            max-width: 950px;
+            width: 94%; /* زيادة العرض */
+            max-width: 1000px;
             font-size: 2.2rem;
             line-height: 1.8;
             text-align: justify;
             display: none;
             position: absolute;
             top: 20px;
-            left: 5%; /* هامش أقل */
+            left: 1%; /* هامش ضئيل جداً */
             transform: translateY(100vh);
             will-change: transform;
             transition: font-size 0.2s, line-height 0.2s;
@@ -195,34 +195,34 @@
             z-index: 200;
         }
 
-        /* ===== لوحة التحكم الجانبية المصغرة جداً ===== */
+        /* ===== لوحة التحكم الجانبية أضيق ===== */
         .control-panel {
             position: fixed;
-            right: 8px; /* أقرب للحافة */
+            right: 5px; /* أقرب للحافة */
             top: 55%;
             transform: translateY(-50%);
             background: var(--panel);
             backdrop-filter: blur(10px);
-            border-radius: 40px;
-            padding: 10px 5px; /* تقليل padding */
+            border-radius: 35px;
+            padding: 8px 4px; /* تقليل */
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
             align-items: center;
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
             z-index: 150;
-            width: 45px; /* أضيق */
+            width: 40px; /* أضيق */
         }
 
         .control-btn {
             background: transparent;
             border: none;
             color: var(--text);
-            font-size: 1rem; /* تصغير */
+            font-size: 0.95rem; /* تصغير */
             cursor: pointer;
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -238,7 +238,7 @@
         .speed-indicator {
             font-weight: 700;
             color: var(--primary);
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             background: var(--bg);
             padding: 2px 0;
             width: 100%;
@@ -249,78 +249,83 @@
         .font-controls {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 4px;
             align-items: center;
             border-top: 2px solid var(--border);
-            padding-top: 8px;
-            margin-top: 3px;
+            padding-top: 6px;
+            margin-top: 2px;
         }
 
         .font-controls .control-btn {
-            width: 28px;
-            height: 28px;
-            font-size: 0.9rem;
+            width: 24px;
+            height: 24px;
+            font-size: 0.8rem;
         }
 
         .words-per-line-control {
             border-top: 2px solid var(--border);
-            padding-top: 8px;
-            margin-top: 3px;
+            padding-top: 6px;
+            margin-top: 2px;
             text-align: center;
             display: none;
             width: 100%;
         }
 
         .words-per-line-control span {
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             display: block;
-            margin-bottom: 3px;
+            margin-bottom: 2px;
         }
 
         .wpl-buttons {
             display: flex;
-            gap: 2px;
+            gap: 1px;
             justify-content: center;
             align-items: center;
         }
 
         .wpl-buttons .control-btn {
-            width: 24px;
-            height: 24px;
-            font-size: 0.8rem;
+            width: 22px;
+            height: 22px;
+            font-size: 0.7rem;
         }
 
         #wordsPerLineValue {
-            min-width: 24px;
+            min-width: 22px;
             text-align: center;
             font-weight: bold;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
         }
 
-        /* ===== زر الخطأ المنفصل (عائم) ===== */
-        .floating-error-btn {
+        /* ===== زر الخطأ في الشمال مع نص ===== */
+        .error-left-btn {
             position: fixed;
             bottom: 25px;
-            right: 15px; /* تحت القائمة */
+            left: 20px; /* في الشمال */
             background-color: var(--accent);
             color: white;
-            border-radius: 50%;
-            width: 55px;
-            height: 55px;
+            border-radius: 40px;
+            padding: 12px 20px;
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 8px;
             cursor: pointer;
             transition: 0.2s;
             border: none;
-            font-size: 1.8rem;
+            font-size: 1.1rem;
+            font-weight: 600;
             box-shadow: 0 4px 15px rgba(247, 37, 133, 0.4);
             z-index: 200;
         }
 
-        .floating-error-btn:hover {
-            transform: scale(1.1);
+        .error-left-btn:hover {
+            transform: scale(1.05);
             box-shadow: 0 6px 20px rgba(247, 37, 133, 0.6);
+        }
+
+        .error-left-btn i {
+            font-size: 1.3rem;
         }
 
         /* رسالة toast لتأكيد تسجيل الخطأ */
@@ -509,7 +514,7 @@
     <div id="static-container"><div class="static-content" id="static-content"></div></div>
 </div>
 
-<!-- لوحة التحكم الجانبية المصغرة (بدون زر الخطأ) -->
+<!-- لوحة التحكم الجانبية المصغرة جداً (بدون زر الخطأ) -->
 <div class="control-panel">
     <button class="control-btn" id="playPauseBtn" title="تشغيل/إيقاف"><i class="fas fa-play"></i></button>
     <button class="control-btn" id="stopBtn" title="إنهاء"><i class="fas fa-stop"></i></button>
@@ -534,9 +539,10 @@
     </div>
 </div>
 
-<!-- زر الخطأ المنفصل (يظهر فقط في وضعي RSVP والانسيابي) -->
-<button class="floating-error-btn" id="errorBtn" title="تسجيل خطأ في الكلمة الحالية" style="display: none;">
+<!-- زر الخطأ في الشمال مع نص -->
+<button class="error-left-btn" id="errorBtn" title="تسجيل خطأ" style="display: none;">
     <i class="fas fa-exclamation-circle"></i>
+    <span>سجل خطأ</span>
 </button>
 
 <script>
@@ -555,7 +561,7 @@
             }, 1500);
         }
 
-        // دالة تحويل الأرقام الغربية إلى هندية
+        // دالة تحويل الأرقام الغربية إلى هندية (للتقرير)
         function toIndianNumbers(num) {
             const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
             return num.toString().replace(/\d/g, (d) => arabicNumbers[d]);
@@ -722,7 +728,7 @@
         if (config.mode === 'rsvp') {
             rsvpContainer.style.display = 'block';
             rsvpContainer.style.fontSize = currentFontSize + 'px';
-            errorBtn.style.display = 'flex'; // إظهار زر الخطأ المنفصل
+            errorBtn.style.display = 'flex'; // إظهار زر الخطأ
             wplControl.style.display = 'none';
         } else if (config.mode === 'scroll') {
             scrollContainer.style.display = 'block';
@@ -910,7 +916,7 @@
             showErrorToast(); // إظهار رسالة التأكيد
         }
 
-        // ربط زر الخطأ المنفصل
+        // ربط زر الخطأ
         errorBtn.addEventListener('click', recordError);
 
         // تفعيل تحديد الأخطاء في النص الثابت
