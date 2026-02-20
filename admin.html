@@ -87,9 +87,10 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
+            gap: 10px;
         }
         .question-type {
-            width: 150px;
+            width: 200px;
         }
         .remove-question {
             background: none;
@@ -99,17 +100,60 @@
             cursor: pointer;
         }
         .options-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            display: flex;
+            flex-direction: column;
             gap: 10px;
-            margin-top: 10px;
+            margin: 10px 0;
+        }
+        .option-row {
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
         .option-input {
-            width: 100%;
+            flex: 1;
         }
-        .correct-select {
+        .dynamic-fields {
             margin-top: 10px;
-            width: 200px;
+        }
+        .items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        .item-row {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .item-input {
+            flex: 1;
+        }
+        .remove-item {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+        }
+        .add-item {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        .correct-order {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        .order-select {
+            width: 100%;
+            padding: 8px;
         }
 
         .lesson-card {
@@ -199,12 +243,21 @@
                     <label style="margin-top: 20px;">الأسئلة</label>
                 </div>
 
-                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
                     <button type="button" class="btn btn-secondary" id="addMcqBtn">
-                        <i class="fas fa-plus-circle"></i> إضافة سؤال اختيار من متعدد
+                        <i class="fas fa-plus-circle"></i> اختيار من متعدد
                     </button>
                     <button type="button" class="btn btn-secondary" id="addTrueFalseBtn">
-                        <i class="fas fa-plus-circle"></i> إضافة سؤال صح/خطأ
+                        <i class="fas fa-plus-circle"></i> صح/خطأ
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="addOrderBtn">
+                        <i class="fas fa-plus-circle"></i> ترتيب الأحداث
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="addMissingLetterBtn">
+                        <i class="fas fa-plus-circle"></i> حرف ناقص
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="addSyllableOrderBtn">
+                        <i class="fas fa-plus-circle"></i> ترتيب المقاطع
                     </button>
                 </div>
 
@@ -290,6 +343,9 @@
         document.getElementById('lessonForm').addEventListener('submit', saveLesson);
         document.getElementById('addMcqBtn').addEventListener('click', () => addQuestionField('mcq'));
         document.getElementById('addTrueFalseBtn').addEventListener('click', () => addQuestionField('truefalse'));
+        document.getElementById('addOrderBtn').addEventListener('click', () => addQuestionField('order'));
+        document.getElementById('addMissingLetterBtn').addEventListener('click', () => addQuestionField('missing_letter'));
+        document.getElementById('addSyllableOrderBtn').addEventListener('click', () => addQuestionField('syllable_order'));
     }
 
     function getLessons() { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
@@ -328,56 +384,31 @@
         });
     }
 
+    // دالة لإضافة حقل سؤال جديد بناءً على النوع
     function addQuestionField(type = 'mcq', data = null) {
         const container = document.getElementById('questionsContainer');
         const div = document.createElement('div');
         div.className = 'question-item';
         
-        let optionsHtml = '';
-        let correctOptions = '';
-        
-        if (type === 'mcq' || data?.type === 'mcq') {
-            // اختيار من متعدد (4 خيارات)
-            for (let i = 0; i < 4; i++) {
-                optionsHtml += `<input type="text" class="option-input" placeholder="خيار ${i+1}" value="${escapeHtml(data?.options?.[i] || '')}">`;
-            }
-            correctOptions = `
-                <select class="correct-select">
-                    <option value="">اختر الإجابة الصحيحة</option>
-                    ${[0,1,2,3].map(i => `<option value="${i}" ${data?.correct == i ? 'selected' : ''}>خيار ${i+1}</option>`).join('')}
-                </select>
-            `;
-        } else {
-            // صح/خطأ (خياران)
-            optionsHtml = `
-                <input type="text" class="option-input" placeholder="الإجابة الصحيحة (مثال: صح)" value="${escapeHtml(data?.options?.[0] || 'صح')}">
-                <input type="text" class="option-input" placeholder="الإجابة الخاطئة (مثال: خطأ)" value="${escapeHtml(data?.options?.[1] || 'خطأ')}">
-            `;
-            correctOptions = `
-                <select class="correct-select">
-                    <option value="">اختر الإجابة الصحيحة</option>
-                    <option value="0" ${data?.correct == 0 ? 'selected' : ''}>الخيار الأول (صح)</option>
-                    <option value="1" ${data?.correct == 1 ? 'selected' : ''}>الخيار الثاني (خطأ)</option>
-                </select>
-            `;
-        }
-
-        div.innerHTML = `
+        let innerHtml = `
             <div class="question-header">
                 <select class="question-type" onchange="changeQuestionType(this)">
-                    <option value="mcq" ${(type === 'mcq' || data?.type === 'mcq') ? 'selected' : ''}>اختيار من متعدد</option>
-                    <option value="truefalse" ${(type === 'truefalse' || data?.type === 'truefalse') ? 'selected' : ''}>صح/خطأ</option>
+                    <option value="mcq" ${(type === 'mcq') ? 'selected' : ''}>اختيار من متعدد</option>
+                    <option value="truefalse" ${(type === 'truefalse') ? 'selected' : ''}>صح/خطأ</option>
+                    <option value="order" ${(type === 'order') ? 'selected' : ''}>ترتيب الأحداث</option>
+                    <option value="missing_letter" ${(type === 'missing_letter') ? 'selected' : ''}>حرف ناقص</option>
+                    <option value="syllable_order" ${(type === 'syllable_order') ? 'selected' : ''}>ترتيب المقاطع</option>
                 </select>
                 <button type="button" class="remove-question" title="حذف السؤال"><i class="fas fa-times"></i></button>
             </div>
             <input type="text" class="q-text" placeholder="نص السؤال" value="${escapeHtml(data?.text || '')}" style="width:100%; margin-bottom:10px;">
-            <div class="options-container">
-                ${optionsHtml}
-            </div>
-            ${correctOptions}
+            <div class="dynamic-fields" id="dynamic-${Date.now()}-${Math.random()}"></div>
             <input type="hidden" class="q-type" value="${type}">
         `;
-
+        div.innerHTML = innerHtml;
+        const dynamicDiv = div.querySelector('.dynamic-fields');
+        fillDynamicFields(dynamicDiv, type, data);
+        
         div.querySelector('.remove-question').addEventListener('click', () => div.remove());
         div.querySelector('.question-type').addEventListener('change', function(e) {
             changeQuestionType(e.target);
@@ -385,26 +416,176 @@
         container.appendChild(div);
     }
 
+    // تعبئة الحقول الديناميكية حسب النوع
+    function fillDynamicFields(container, type, data) {
+        let html = '';
+        if (type === 'mcq') {
+            html = '<div class="options-container">';
+            for (let i = 0; i < 4; i++) {
+                html += `<input type="text" class="option-input" placeholder="خيار ${i+1}" value="${escapeHtml(data?.options?.[i] || '')}">`;
+            }
+            html += '</div>';
+            html += `<select class="correct-select">
+                        <option value="">اختر الإجابة الصحيحة</option>
+                        ${[0,1,2,3].map(i => `<option value="${i}" ${data?.correct == i ? 'selected' : ''}>خيار ${i+1}</option>`).join('')}
+                    </select>`;
+        } else if (type === 'truefalse') {
+            html = '<div class="options-container">';
+            html += `<input type="text" class="option-input" placeholder="الإجابة الصحيحة (مثال: صح)" value="${escapeHtml(data?.options?.[0] || 'صح')}">`;
+            html += `<input type="text" class="option-input" placeholder="الإجابة الخاطئة (مثال: خطأ)" value="${escapeHtml(data?.options?.[1] || 'خطأ')}">`;
+            html += '</div>';
+            html += `<select class="correct-select">
+                        <option value="">اختر الإجابة الصحيحة</option>
+                        <option value="0" ${data?.correct == 0 ? 'selected' : ''}>الخيار الأول (صح)</option>
+                        <option value="1" ${data?.correct == 1 ? 'selected' : ''}>الخيار الثاني (خطأ)</option>
+                    </select>`;
+        } else if (type === 'order') {
+            // ترتيب الأحداث: قائمة من العناصر + الترتيب الصحيح (مصفوفة indices)
+            let items = data?.items || ['', '', ''];
+            let correctOrder = data?.correctOrder || [0,1,2];
+            html = '<div class="items-list" id="order-items">';
+            items.forEach((item, idx) => {
+                html += `<div class="item-row">
+                            <input type="text" class="item-input" placeholder="حدث ${idx+1}" value="${escapeHtml(item)}">
+                            <button type="button" class="remove-item" onclick="this.closest('.item-row').remove()"><i class="fas fa-times"></i></button>
+                        </div>`;
+            });
+            html += '</div>';
+            html += `<button type="button" class="add-item" onclick="addOrderItem(this)">+ إضافة حدث</button>`;
+            html += `<div class="correct-order"><label>الترتيب الصحيح (أرقام الأحداث حسب الأولوية):</label>`;
+            // سنقوم بإضافة قوائم منسدلة للترتيب لاحقاً عبر JavaScript
+            html += `<div id="order-selects"></div>`;
+            html += `</div>`;
+            // سنقوم بملء قوائم الترتيب بعد إدراج العنصر
+            setTimeout(() => {
+                const selectsDiv = container.parentElement.querySelector('#order-selects');
+                if (selectsDiv) updateOrderSelects(container.parentElement);
+            }, 10);
+        } else if (type === 'missing_letter') {
+            // حرف ناقص: كلمة، مكان الحرف الناقص، خيارات الحروف
+            html = `<div class="form-group"><label>الكلمة مع فراغ (مثال: كـتاب)</label>
+                    <input type="text" class="word-input" placeholder="الكلمة مع فراغ" value="${escapeHtml(data?.word || '')}"></div>
+                    <div class="form-group"><label>مكان الحرف الناقص (0-based index)</label>
+                    <input type="number" class="missing-index" min="0" value="${data?.missingIndex || 0}"></div>
+                    <div class="options-container" id="missing-options">
+                        <label>خيارات الحروف:</label>`;
+            let options = data?.options || ['ا', 'ب', 'ت'];
+            options.forEach((opt, i) => {
+                html += `<input type="text" class="option-input" placeholder="حرف ${i+1}" value="${escapeHtml(opt)}">`;
+            });
+            html += `<button type="button" class="add-item" onclick="addMissingOption(this)">+ إضافة حرف</button>`;
+            html += `</div>`;
+            html += `<select class="correct-select">
+                        <option value="">اختر الحرف الصحيح (رقم الخيار)</option>
+                        ${options.map((opt, i) => `<option value="${i}" ${data?.correct == i ? 'selected' : ''}>${opt}</option>`).join('')}
+                    </select>`;
+        } else if (type === 'syllable_order') {
+            // ترتيب المقاطع: قائمة مقاطع
+            let items = data?.items || ['كَ', 'تِ', 'بَ'];
+            html = '<div class="items-list" id="syllable-items">';
+            items.forEach((item, idx) => {
+                html += `<div class="item-row">
+                            <input type="text" class="item-input" placeholder="مقطع ${idx+1}" value="${escapeHtml(item)}">
+                            <button type="button" class="remove-item" onclick="this.closest('.item-row').remove()"><i class="fas fa-times"></i></button>
+                        </div>`;
+            });
+            html += '</div>';
+            html += `<button type="button" class="add-item" onclick="addSyllableItem(this)">+ إضافة مقطع</button>`;
+            html += `<div class="correct-order"><label>الترتيب الصحيح (أرقام المقاطع حسب التسلسل):</label>`;
+            html += `<div id="syllable-selects"></div>`;
+            html += `</div>`;
+            setTimeout(() => {
+                const selectsDiv = container.parentElement.querySelector('#syllable-selects');
+                if (selectsDiv) updateSyllableSelects(container.parentElement);
+            }, 10);
+        }
+        container.innerHTML = html;
+    }
+
+    // دوال مساعدة للترتيب
+    window.addOrderItem = function(btn) {
+        const container = btn.closest('.dynamic-fields');
+        const itemsList = container.querySelector('#order-items');
+        const newRow = document.createElement('div');
+        newRow.className = 'item-row';
+        newRow.innerHTML = `<input type="text" class="item-input" placeholder="حدث جديد" value=""><button type="button" class="remove-item" onclick="this.closest('.item-row').remove()"><i class="fas fa-times"></i></button>`;
+        itemsList.appendChild(newRow);
+        updateOrderSelects(container.parentElement);
+    };
+
+    function updateOrderSelects(questionDiv) {
+        const items = questionDiv.querySelectorAll('#order-items .item-input');
+        const selectsDiv = questionDiv.querySelector('#order-selects');
+        if (!selectsDiv) return;
+        let html = '';
+        for (let i = 0; i < items.length; i++) {
+            html += `<select class="order-select" data-order="${i}">`;
+            for (let j = 0; j < items.length; j++) {
+                html += `<option value="${j}">الحدث ${j+1}</option>`;
+            }
+            html += '</select><br>';
+        }
+        selectsDiv.innerHTML = html;
+        // محاولة استعادة القيم المحفوظة
+        const savedOrder = questionDiv.dataset.savedOrder ? JSON.parse(questionDiv.dataset.savedOrder) : null;
+        if (savedOrder) {
+            const selects = selectsDiv.querySelectorAll('select');
+            selects.forEach((sel, idx) => {
+                sel.value = savedOrder[idx];
+            });
+        }
+    }
+
+    window.addSyllableItem = function(btn) {
+        const container = btn.closest('.dynamic-fields');
+        const itemsList = container.querySelector('#syllable-items');
+        const newRow = document.createElement('div');
+        newRow.className = 'item-row';
+        newRow.innerHTML = `<input type="text" class="item-input" placeholder="مقطع جديد" value=""><button type="button" class="remove-item" onclick="this.closest('.item-row').remove()"><i class="fas fa-times"></i></button>`;
+        itemsList.appendChild(newRow);
+        updateSyllableSelects(container.parentElement);
+    };
+
+    function updateSyllableSelects(questionDiv) {
+        const items = questionDiv.querySelectorAll('#syllable-items .item-input');
+        const selectsDiv = questionDiv.querySelector('#syllable-selects');
+        if (!selectsDiv) return;
+        let html = '';
+        for (let i = 0; i < items.length; i++) {
+            html += `<select class="order-select" data-order="${i}">`;
+            for (let j = 0; j < items.length; j++) {
+                html += `<option value="${j}">المقطع ${j+1}</option>`;
+            }
+            html += '</select><br>';
+        }
+        selectsDiv.innerHTML = html;
+        const savedOrder = questionDiv.dataset.savedOrder ? JSON.parse(questionDiv.dataset.savedOrder) : null;
+        if (savedOrder) {
+            const selects = selectsDiv.querySelectorAll('select');
+            selects.forEach((sel, idx) => {
+                sel.value = savedOrder[idx];
+            });
+        }
+    }
+
+    window.addMissingOption = function(btn) {
+        const container = btn.closest('#missing-options');
+        const newInput = document.createElement('input');
+        newInput.type = 'text';
+        newInput.className = 'option-input';
+        newInput.placeholder = 'حرف جديد';
+        container.insertBefore(newInput, btn);
+    };
+
     window.changeQuestionType = function(selectEl) {
         const questionItem = selectEl.closest('.question-item');
         const newType = selectEl.value;
-        const oldType = questionItem.querySelector('.q-type')?.value || 'mcq';
-        if (newType === oldType) return;
-        
-        // استخراج البيانات الحالية إن وجدت
         const text = questionItem.querySelector('.q-text')?.value || '';
-        let options = [];
-        if (oldType === 'mcq') {
-            options = Array.from(questionItem.querySelectorAll('.option-input')).map(i => i.value);
-        } else {
-            options = Array.from(questionItem.querySelectorAll('.option-input')).map(i => i.value);
-        }
-        const correct = questionItem.querySelector('.correct-select')?.value;
-        
-        // إعادة بناء السؤال بالنوع الجديد
-        const type = newType;
-        questionItem.remove();
-        addQuestionField(type, { text, options, correct: correct ? parseInt(correct) : null, type });
+        const dynamicDiv = questionItem.querySelector('.dynamic-fields');
+        // جمع البيانات القديمة حسب النوع القديم (يمكن تحسينه لكننا سنعيد تعبئة)
+        fillDynamicFields(dynamicDiv, newType, null);
+        // تحديث نوع السؤال المخفي
+        questionItem.querySelector('.q-type').value = newType;
     };
 
     function saveLesson(e) {
@@ -424,28 +605,70 @@
         const questions = [];
         for (let item of questionItems) {
             const text = item.querySelector('.q-text')?.value.trim();
-            const options = Array.from(item.querySelectorAll('.option-input')).map(i => i.value.trim());
-            const correct = item.querySelector('.correct-select')?.value;
-            const type = item.querySelector('.question-type')?.value || 'mcq';
+            const type = item.querySelector('.question-type')?.value;
             
             if (!text) {
                 alert('يرجى إدخال نص السؤال');
                 return;
             }
-            if (options.some(o => o === '')) {
-                alert('يرجى ملء جميع الخيارات');
-                return;
+
+            let questionData = { text, type };
+
+            if (type === 'mcq' || type === 'truefalse') {
+                const options = Array.from(item.querySelectorAll('.option-input')).map(i => i.value.trim());
+                const correct = item.querySelector('.correct-select')?.value;
+                if (options.some(o => o === '')) {
+                    alert('يرجى ملء جميع الخيارات');
+                    return;
+                }
+                if (correct === '') {
+                    alert('يرجى اختيار الإجابة الصحيحة');
+                    return;
+                }
+                questionData.options = options;
+                questionData.correct = parseInt(correct);
+            } else if (type === 'order') {
+                const items = Array.from(item.querySelectorAll('#order-items .item-input')).map(i => i.value.trim());
+                if (items.some(i => i === '')) {
+                    alert('يرجى ملء جميع الأحداث');
+                    return;
+                }
+                const orderSelects = Array.from(item.querySelectorAll('#order-selects select')).map(s => parseInt(s.value));
+                if (orderSelects.length !== items.length) {
+                    alert('خطأ في تحديد الترتيب');
+                    return;
+                }
+                questionData.items = items;
+                questionData.correctOrder = orderSelects;
+            } else if (type === 'missing_letter') {
+                const word = item.querySelector('.word-input')?.value.trim();
+                const missingIndex = parseInt(item.querySelector('.missing-index')?.value);
+                const options = Array.from(item.querySelectorAll('#missing-options .option-input')).map(i => i.value.trim());
+                const correct = item.querySelector('.correct-select')?.value;
+                if (!word || isNaN(missingIndex) || options.some(o => o === '') || correct === '') {
+                    alert('يرجى ملء جميع حقول الحرف الناقص');
+                    return;
+                }
+                questionData.word = word;
+                questionData.missingIndex = missingIndex;
+                questionData.options = options;
+                questionData.correct = parseInt(correct);
+            } else if (type === 'syllable_order') {
+                const items = Array.from(item.querySelectorAll('#syllable-items .item-input')).map(i => i.value.trim());
+                if (items.some(i => i === '')) {
+                    alert('يرجى ملء جميع المقاطع');
+                    return;
+                }
+                const orderSelects = Array.from(item.querySelectorAll('#syllable-selects select')).map(s => parseInt(s.value));
+                if (orderSelects.length !== items.length) {
+                    alert('خطأ في تحديد الترتيب');
+                    return;
+                }
+                questionData.items = items;
+                questionData.correctOrder = orderSelects;
             }
-            if (correct === '') {
-                alert('يرجى اختيار الإجابة الصحيحة');
-                return;
-            }
-            questions.push({ 
-                text, 
-                options, 
-                correct: parseInt(correct),
-                type 
-            });
+
+            questions.push(questionData);
         }
 
         const lessons = getLessons();
@@ -484,7 +707,7 @@
         document.getElementById('questionsContainer').innerHTML = '';
         if (lesson.questions) {
             lesson.questions.forEach(q => {
-                addQuestionField(q.type || 'mcq', q);
+                addQuestionField(q.type, q);
             });
         }
         window.scrollTo(0, 0);
