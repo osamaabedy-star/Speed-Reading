@@ -139,7 +139,6 @@
             color: var(--primary);
         }
 
-        /* زر المساعدة في الهيدر */
         .help-header-btn {
             width: 36px;
             height: 36px;
@@ -178,7 +177,7 @@
             .main-grid { grid-template-columns: 0.8fr 1.5fr; }
         }
 
-        /* === العمود الأيمن: الإعدادات (مصغر) === */
+        /* === العمود الأيمن: الإعدادات === */
         .settings-card {
             background: var(--card-bg);
             border-radius: var(--radius-lg);
@@ -467,6 +466,15 @@
             color: white;
         }
 
+        /* قسم الصفوف - مخفي افتراضيًا */
+        .grade-section {
+            display: none;
+        }
+
+        .grade-section.show {
+            display: block;
+        }
+
         .grade-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -574,10 +582,11 @@
             color: var(--text-light);
         }
 
+        /* شبكة الدروس: 4 أعمدة ثابتة */
         .lessons-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
             margin-bottom: 20px;
             max-height: 400px;
             overflow-y: auto;
@@ -599,10 +608,11 @@
             border-radius: 10px;
         }
 
+        /* تصغير حجم البطاقات لتناسب 4 أعمدة */
         .lesson-item {
             background: var(--bg);
-            padding: 14px 6px;
-            border-radius: var(--radius-md);
+            padding: 10px 4px;
+            border-radius: var(--radius-sm);
             border: 1px solid var(--border);
             cursor: pointer;
             transition: var(--transition);
@@ -612,7 +622,7 @@
         }
 
         .lesson-item:hover {
-            transform: translateY(-4px);
+            transform: translateY(-3px);
             border-color: var(--primary);
             box-shadow: var(--shadow-md);
         }
@@ -623,32 +633,38 @@
         }
 
         .lesson-item i {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             color: var(--primary);
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             opacity: 0.9;
         }
 
         .word-count-badge {
             position: absolute;
-            top: 4px;
-            left: 4px;
+            top: 3px;
+            left: 3px;
             background: var(--primary);
             color: white;
-            padding: 2px 6px;
+            padding: 2px 5px;
             border-radius: 40px;
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             font-weight: 600;
         }
 
         .lesson-title {
             font-weight: 700;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             color: var(--text);
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .lesson-item i { font-size: 1.8rem; }
+            .lesson-title { font-size: 0.8rem; }
+            .word-count-badge { font-size: 0.6rem; }
         }
 
         .start-btn-container {
@@ -878,7 +894,7 @@
                 <input type="range" id="speedSlider" min="10" max="400" step="10" value="150">
             </div>
 
-            <!-- قسم الفصل الدراسي المحسن -->
+            <!-- قسم الفصل الدراسي -->
             <div class="filter-section">
                 <div class="filter-title">
                     <i class="fas fa-calendar-alt"></i>
@@ -896,11 +912,11 @@
                 </div>
             </div>
 
-            <!-- قسم الصف المحسن مع أرقام هندية -->
-            <div class="filter-section">
+            <!-- قسم الصفوف (مخفي افتراضيًا) -->
+            <div class="filter-section grade-section" id="gradeSection">
                 <div class="filter-title">
                     <i class="fas fa-graduation-cap"></i>
-                    <span>الصف</span>
+                    <span>اختر الصف</span>
                 </div>
                 <div class="grade-grid" id="gradeSelector">
                     <div class="grade-btn" data-grade="1">
@@ -967,7 +983,7 @@
             <li><i class="fas fa-paint-brush"></i> <strong>الخط والحجم:</strong> اختر الخط المناسب وحجمه من الشريط العلوي، ويمكنك معاينة التغيير مباشرة.</li>
             <li><i class="fas fa-bolt"></i> <strong>وضع القراءة:</strong> حدد الوضع: كلمة بكلمة (RSVP)، تمرير انسيابي، أو نص ثابت.</li>
             <li><i class="fas fa-tachometer-alt"></i> <strong>السرعة:</strong> اضبط السرعة التي تريدها (كلمة/دقيقة).</li>
-            <li><i class="fas fa-filter"></i> <strong>تصفية النصوص:</strong> اختر الفصل والصف، ثم ابحث عن النص المطلوب أو تصفح القائمة.</li>
+            <li><i class="fas fa-filter"></i> <strong>تصفية النصوص:</strong> اختر الفصل أولاً، ثم اختر الصف، ثم ابحث عن النص المطلوب أو تصفح القائمة.</li>
             <li><i class="fas fa-file-alt"></i> <strong>اختيار النص:</strong> انقر على أي نص ليتم تحديده (يظهر بإطار ملون).</li>
             <li><i class="fas fa-play"></i> <strong>بدء القراءة:</strong> بعد اختيار النص، اضغط على زر "ابدأ القراءة" في الأسفل.</li>
         </ul>
@@ -988,8 +1004,8 @@
     let currentFont = "'Amiri', serif";
     let currentMode = 'rsvp';
     let currentSpeed = 150;
-    let currentSemester = '1';
-    let currentGrade = '1';
+    let currentSemester = null; // لا قيمة افتراضية
+    let currentGrade = null; // لا قيمة افتراضية
     let currentFontSize = 28;
     let searchTerm = '';
 
@@ -1000,6 +1016,7 @@
     const searchInput = document.getElementById('searchInput');
     const speedVal = document.getElementById('speedVal');
     const fontSizeValue = document.getElementById('fontSizeValue');
+    const gradeSection = document.getElementById('gradeSection');
 
     // عناصر المساعدة
     const helpBtn = document.getElementById('helpBtn');
@@ -1084,6 +1101,16 @@
 
     // عرض الدروس في الشبكة مع فلترة
     function renderLessons() {
+        // إذا لم يتم اختيار الفصل والصف بعد، لا نعرض دروس
+        if (!currentSemester || !currentGrade) {
+            lessonsGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-light);">
+                <i class="fas fa-hand-point-up fa-3x"></i>
+                <p>الرجاء اختيار الفصل والصف أولاً</p>
+            </div>`;
+            startBtn.disabled = true;
+            return;
+        }
+
         const targetGradeName = getGradeFullName(currentGrade);
         const targetSemesterName = getSemesterFullName(currentSemester);
         
@@ -1185,19 +1212,8 @@
             updateSpeedDisplay();
         }
         
-        if (prefs.semester) {
-            currentSemester = prefs.semester;
-        }
-        document.querySelectorAll('.semester-btn').forEach(btn => {
-            if (btn.dataset.semester === currentSemester) btn.classList.add('active');
-        });
-        
-        if (prefs.grade) {
-            currentGrade = prefs.grade;
-        }
-        document.querySelectorAll('.grade-btn').forEach(btn => {
-            if (btn.dataset.grade === currentGrade) btn.classList.add('active');
-        });
+        // لا نستعيد الفصل والصف من التفضيلات لأننا نريد البدء فارغًا
+        // لكن لو أردنا يمكن تفعيلها
         
         if (prefs.fontSize) {
             currentFontSize = prefs.fontSize;
@@ -1260,25 +1276,32 @@
         });
     });
 
+    // معالجة اختيار الفصل
     document.querySelectorAll('.semester-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.semester-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             currentSemester = this.dataset.semester;
-            saveUserPrefs();
+            // إظهار قسم الصفوف
+            gradeSection.classList.add('show');
+            // إعادة تعيين الصف المختار
+            currentGrade = null;
+            document.querySelectorAll('.grade-btn').forEach(b => b.classList.remove('active'));
             selectedLessonId = null;
             renderLessons();
+            saveUserPrefs();
         });
     });
 
+    // معالجة اختيار الصف
     document.querySelectorAll('.grade-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.grade-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             currentGrade = this.dataset.grade;
-            saveUserPrefs();
             selectedLessonId = null;
             renderLessons();
+            saveUserPrefs();
         });
     });
 
@@ -1304,8 +1327,12 @@
         startBtn.disabled = true;
         updateSpeedDisplay();
         fontSizeValue.textContent = toIndianNumbers(currentFontSize);
+        // إخفاء قسم الصفوف في البداية
+        gradeSection.classList.remove('show');
+        // إزالة أي تحديد سابق للفصل والصف
+        currentSemester = null;
+        currentGrade = null;
     };
 </script>
 </body>
 </html>
-
