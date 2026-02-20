@@ -19,6 +19,7 @@
             --accent: #f72585;
             --border: #e9eef2;
             --shadow: 0 10px 30px rgba(0,0,0,0.05);
+            --success: #10b981;
         }
 
         [data-theme="dark"] {
@@ -67,6 +68,7 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            position: relative;
         }
 
         .school-logo-small {
@@ -79,6 +81,36 @@
             font-weight: 700;
             font-size: 1.4rem;
             color: var(--primary);
+        }
+
+        /* رسالة الخطأ في الشريط العلوي */
+        .error-toast-top {
+            position: absolute;
+            top: 50%;
+            right: 100%; /* تظهر بجانب العنوان */
+            transform: translateY(-50%);
+            background: var(--accent);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: var(--shadow);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 150;
+            margin-right: 10px;
+        }
+        .error-toast-top.show {
+            opacity: 1;
+        }
+        .error-toast-top i {
+            font-size: 1rem;
         }
 
         .stats {
@@ -128,7 +160,7 @@
             align-items: center;
             position: relative;
             cursor: pointer;
-            padding: 20px;
+            padding: 0; /* إزالة padding ليكون النص أقرب */
         }
 
         #rsvp-container {
@@ -136,20 +168,22 @@
             font-weight: 700;
             text-align: center;
             display: none;
+            width: 100%;
+            padding: 0 20px;
         }
         .pivot { color: var(--accent); }
 
-        /* تحسين وضع التمرير - مسافة محددة بين النص والقائمة */
+        /* تحسين وضع التمرير - النص بجانب القائمة مباشرة */
         #scroll-container {
-            width: 92%;
-            max-width: 1000px;
+            width: calc(100% - 100px); /* ترك مساحة للقائمة */
+            max-width: 1200px;
             font-size: 2.2rem;
             line-height: 1.8;
             text-align: justify;
             display: none;
             position: absolute;
             top: 20px;
-            left: 20px; /* مسافة ثابتة من اليسار */
+            right: 70px; /* يبدأ بعد القائمة مباشرة (القائمة عند 20px) */
             transform: translateY(100vh);
             will-change: transform;
             transition: font-size 0.2s, line-height 0.2s;
@@ -158,8 +192,8 @@
         }
 
         #static-container {
-            width: 90%;
-            max-width: 900px;
+            width: calc(100% - 100px);
+            max-width: 1200px;
             font-size: 1.8rem;
             line-height: 2;
             text-align: justify;
@@ -171,6 +205,7 @@
             border-radius: 30px;
             box-shadow: var(--shadow);
             transition: font-size 0.2s, line-height 0.2s;
+            margin-right: 70px; /* نفس المسافة */
         }
 
         .static-content {
@@ -195,10 +230,10 @@
             z-index: 200;
         }
 
-        /* ===== لوحة التحكم الجانبية بمسافة محددة (2 سم تقريباً) ===== */
+        /* ===== لوحة التحكم الجانبية قريبة جداً من الحافة ===== */
         .control-panel {
             position: fixed;
-            right: 80px; /* مسافة 80px من الحافة اليمنى (حوالي 2 سم على شاشات Full HD) */
+            right: 10px; /* قريبة من الحافة */
             top: 55%;
             transform: translateY(-50%);
             background: var(--panel);
@@ -297,7 +332,7 @@
             font-size: 0.7rem;
         }
 
-        /* ===== زر الخطأ في الشمال مع نص وإشعار منبثق فوقه ===== */
+        /* ===== زر الخطأ في الشمال مع نص ===== */
         .error-left-btn {
             position: fixed;
             bottom: 25px;
@@ -326,34 +361,6 @@
 
         .error-left-btn i {
             font-size: 1.3rem;
-        }
-
-        /* رسالة toast تظهر فوق زر الخطأ */
-        .error-toast-above {
-            position: fixed;
-            bottom: 90px; /* فوق الزر */
-            left: 30px;
-            background: var(--accent);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 40px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            box-shadow: var(--shadow);
-            z-index: 250;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-            white-space: nowrap;
-        }
-        .error-toast-above.show {
-            opacity: 1;
-        }
-        .error-toast-above i {
-            font-size: 1rem;
         }
 
         /* باقي الأنماط للمودالات */
@@ -440,12 +447,6 @@
 <body data-theme="light">
 <div class="loading" id="loadingScreen"><i class="fas fa-spinner fa-spin"></i> جاري التجهيز...</div>
 
-<!-- رسالة تأكيد الخطأ (تظهر فوق الزر) -->
-<div class="error-toast-above" id="errorToastAbove">
-    <i class="fas fa-check-circle"></i>
-    <span>تم تسجيل خطأ</span>
-</div>
-
 <!-- المودالات -->
 <div class="custom-modal" id="messageModal">
     <div class="modal-content">
@@ -495,6 +496,11 @@
     <div class="lesson-info">
         <img src="https://www.wzufa.com/wp-content/uploads/2022/07/Riyadh-Al-Ebdaa-Schools.png" alt="شعار المدرسة" class="school-logo-small">
         <span class="lesson-title" id="lesson-title">جاري التحميل...</span>
+        <!-- رسالة الخطأ في الشريط العلوي -->
+        <span class="error-toast-top" id="errorToastTop">
+            <i class="fas fa-check-circle"></i>
+            <span>تم تسجيل خطأ</span>
+        </span>
     </div>
     <div class="stats">
         <div class="stat-item"><i class="far fa-clock"></i> <span id="timer">00:00</span></div>
@@ -514,7 +520,7 @@
     <div id="static-container"><div class="static-content" id="static-content"></div></div>
 </div>
 
-<!-- لوحة التحكم الجانبية المصغرة جداً (بدون زر الخطأ) -->
+<!-- لوحة التحكم الجانبية قريبة جداً -->
 <div class="control-panel">
     <button class="control-btn" id="playPauseBtn" title="تشغيل/إيقاف"><i class="fas fa-play"></i></button>
     <button class="control-btn" id="stopBtn" title="إنهاء"><i class="fas fa-stop"></i></button>
@@ -552,12 +558,12 @@
             document.getElementById('loadingScreen').style.display = 'none';
         });
 
-        // عنصر toast فوق الزر
-        const errorToastAbove = document.getElementById('errorToastAbove');
-        function showErrorToastAbove() {
-            errorToastAbove.classList.add('show');
+        // عنصر toast العلوي
+        const errorToastTop = document.getElementById('errorToastTop');
+        function showErrorToastTop() {
+            errorToastTop.classList.add('show');
             setTimeout(() => {
-                errorToastAbove.classList.remove('show');
+                errorToastTop.classList.remove('show');
             }, 1500);
         }
 
@@ -616,7 +622,7 @@
         
         // الأخطاء
         let totalErrors = 0;
-        let errorWordsList = []; // سيتم ملؤها في جميع الأوضاع
+        let errorWordsList = [];
 
         // حجم الخط
         let currentFontSize = parseInt(config.fontSize) || 32;
@@ -728,7 +734,7 @@
         if (config.mode === 'rsvp') {
             rsvpContainer.style.display = 'block';
             rsvpContainer.style.fontSize = currentFontSize + 'px';
-            errorBtn.style.display = 'flex'; // إظهار زر الخطأ
+            errorBtn.style.display = 'flex';
             wplControl.style.display = 'none';
         } else if (config.mode === 'scroll') {
             scrollContainer.style.display = 'block';
@@ -893,7 +899,6 @@
             if (!isPlaying) return;
             totalErrors++;
             
-            // تسجيل الكلمة حسب الوضع
             if (config.mode === 'rsvp' && currentIndex > 0) {
                 const errorWord = words[currentIndex - 1];
                 errorWordsList.push(errorWord);
@@ -905,27 +910,15 @@
                     wordElement.style.color = '';
                 }, 300);
             } else if (config.mode === 'scroll') {
-                // في التمرير، يمكن تسجيل الكلمة الظاهرة حالياً (تقديرياً)
-                // نقدر الكلمة بناءً على موقع التمرير، ولكن للتبسيط نضيف "خطأ في التمرير"
                 errorWordsList.push('خطأ أثناء التمرير');
-                // وميض خلفية النص
                 scrollContainer.style.transition = 'background-color 0.2s';
                 scrollContainer.style.backgroundColor = 'rgba(247, 37, 133, 0.1)';
                 setTimeout(() => {
                     scrollContainer.style.backgroundColor = '';
                 }, 300);
-            } else if (config.mode === 'static') {
-                // في الثابت يتم التعامل مع النقر على الكلمة، وهنا نضيف للقائمة عبر toggleError
             }
             
-            showErrorToastAbove(); // إظهار الرسالة فوق الزر
-        }
-
-        function showErrorToastAbove() {
-            errorToastAbove.classList.add('show');
-            setTimeout(() => {
-                errorToastAbove.classList.remove('show');
-            }, 1500);
+            showErrorToastTop(); // إظهار الرسالة في الأعلى
         }
 
         // ربط زر الخطأ
@@ -954,7 +947,7 @@
             if (element.classList.contains('error-word')) {
                 totalErrors++;
                 errorWordsList.push(word);
-                showErrorToastAbove(); // إظهار toast عند النقر
+                showErrorToastTop();
             } else {
                 totalErrors--;
                 const index = errorWordsList.indexOf(word);
@@ -1025,12 +1018,11 @@
             const minutes = duration / 60;
             const avgSpeed = minutes > 0 ? Math.round(wordsRead / minutes) : 0;
 
-            // تجهيز بيانات التقرير - عرض الكلمات الخاطئة
+            // تجهيز بيانات التقرير
             reportSpeed.textContent = toIndianNumbers(avgSpeed);
             reportWords.textContent = toIndianNumbers(words.length);
             reportErrors.textContent = toIndianNumbers(totalErrors);
             
-            // عرض الكلمات الخاطئة إذا وجدت (لجميع الأوضاع)
             if (errorWordsList.length > 0) {
                 reportErrorWordsContainer.style.display = 'block';
                 reportErrorWords.innerHTML = errorWordsList.map(w => `<span class="error-item">${escapeHtml(w)}</span>`).join('');
