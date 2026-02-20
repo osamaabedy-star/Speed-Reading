@@ -2,12 +2,12 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة القراءة السريعة - مدارس رياض الإبداع</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>منصة القراءة السريعة - مدارس الرياض الإبداع</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Amiri&family=Almarai:wght@400;700&family=Readex+Pro:wght@400;700&family=Katibeh&family=Lalezar&family=Markazi+Text:wght@400;700&family=Scheherazade+New:wght@400;700&family=Harmattan:wght@400;700&family=El+Messiri:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* === تصميم أنيق وعصري === */
+        /* === تصميم أنيق وعصري متجاوب === */
         :root {
             --primary: #4361ee;
             --primary-light: #4895ef;
@@ -54,9 +54,9 @@
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
-            padding: 24px;
+            padding: 16px;
             transition: var(--transition);
-            line-height: 1.6;
+            line-height: 1.5;
         }
 
         .container {
@@ -68,8 +68,8 @@
         .header {
             background: var(--card-bg);
             border-radius: var(--radius-lg);
-            padding: 16px 28px;
-            margin-bottom: 28px;
+            padding: 12px 20px;
+            margin-bottom: 20px;
             box-shadow: var(--shadow-sm);
             display: flex;
             align-items: center;
@@ -81,49 +81,50 @@
         .logo-container {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 12px;
         }
 
         .school-logo {
-            height: 64px;
+            height: 48px;
             width: auto;
             border-radius: var(--radius-sm);
             box-shadow: var(--shadow-sm);
         }
 
         .header h1 {
-            font-size: 1.6rem;
+            font-size: 1.2rem;
             font-weight: 700;
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            letter-spacing: -0.5px;
+            letter-spacing: -0.3px;
+            line-height: 1.3;
         }
 
         .header p {
             color: var(--text-light);
-            font-size: 0.85rem;
+            font-size: 0.7rem;
         }
 
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
         }
 
         .theme-buttons {
             display: flex;
-            gap: 10px;
+            gap: 6px;
         }
 
         .theme-btn {
-            width: 44px;
-            height: 44px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             border: 1px solid var(--border);
             background: var(--card-bg);
             color: var(--text);
-            font-size: 1.2rem;
+            font-size: 1rem;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -140,13 +141,13 @@
 
         /* زر المساعدة في الهيدر */
         .help-header-btn {
-            width: 44px;
-            height: 44px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             background: var(--primary);
             color: white;
             border: none;
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -163,15 +164,18 @@
         /* === الشبكة الرئيسية === */
         .main-grid {
             display: grid;
-            grid-template-columns: 0.8fr 1.5fr;
-            gap: 28px;
-            align-items: start;
+            grid-template-columns: 1fr;
+            gap: 20px;
         }
 
-        @media (max-width: 900px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
+        @media (min-width: 768px) {
+            body { padding: 24px; }
+            .header { padding: 16px 28px; }
+            .header h1 { font-size: 1.6rem; }
+            .header p { font-size: 0.85rem; }
+            .school-logo { height: 64px; }
+            .theme-btn, .help-header-btn { width: 44px; height: 44px; font-size: 1.2rem; }
+            .main-grid { grid-template-columns: 0.8fr 1.5fr; }
         }
 
         /* === العمود الأيمن: الإعدادات (مصغر) === */
@@ -182,8 +186,15 @@
             box-shadow: var(--shadow-md);
             border: 1px solid var(--border);
             backdrop-filter: blur(10px);
-            position: sticky;
-            top: 20px;
+            position: relative;
+            top: 0;
+        }
+
+        @media (min-width: 768px) {
+            .settings-card {
+                position: sticky;
+                top: 20px;
+            }
         }
 
         .section-title {
@@ -210,6 +221,7 @@
             margin-bottom: 12px;
             scrollbar-width: thin;
             scrollbar-color: var(--primary) var(--border);
+            -webkit-overflow-scrolling: touch;
         }
 
         .font-scroll-bar::-webkit-scrollbar {
@@ -338,7 +350,11 @@
         .mode-card span {
             display: block;
             font-weight: 600;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
+        }
+
+        @media (min-width: 480px) {
+            .mode-card span { font-size: 0.75rem; }
         }
 
         .mode-card.active {
@@ -402,7 +418,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 700;
             color: var(--text);
             margin-bottom: 10px;
@@ -410,7 +426,7 @@
 
         .filter-title i {
             color: var(--primary);
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
 
         .semester-buttons {
@@ -423,13 +439,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            padding: 10px 12px;
+            gap: 6px;
+            padding: 8px 10px;
             border-radius: 50px;
             border: 1px solid var(--border);
             background: var(--bg);
             color: var(--text);
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
@@ -437,7 +453,7 @@
         }
 
         .semester-btn i {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: var(--primary);
         }
 
@@ -454,7 +470,7 @@
         .grade-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+            gap: 6px;
         }
 
         .grade-btn {
@@ -462,13 +478,13 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 4px;
-            padding: 8px 4px;
+            gap: 2px;
+            padding: 6px 2px;
             border-radius: 16px;
             border: 1px solid var(--border);
             background: var(--bg);
             color: var(--text);
-            font-size: 0.75rem;
+            font-size: 0.65rem;
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
@@ -476,7 +492,7 @@
         }
 
         .grade-btn .grade-number {
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             font-weight: 700;
             color: var(--primary);
             line-height: 1;
@@ -496,7 +512,7 @@
         .lessons-column {
             background: var(--card-bg);
             border-radius: var(--radius-lg);
-            padding: 24px;
+            padding: 18px;
             box-shadow: var(--shadow-md);
             border: 1px solid var(--border);
             display: flex;
@@ -506,13 +522,21 @@
 
         .lessons-header {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        @media (min-width: 480px) {
+            .lessons-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
         }
 
         .lessons-header h3 {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 700;
             color: var(--primary);
         }
@@ -522,9 +546,14 @@
             align-items: center;
             gap: 6px;
             background: var(--bg);
-            padding: 6px 14px;
+            padding: 6px 12px;
             border-radius: 40px;
             border: 1px solid var(--border);
+            width: 100%;
+        }
+
+        @media (min-width: 480px) {
+            .search-box { width: auto; }
         }
 
         .search-box i {
@@ -537,7 +566,7 @@
             background: transparent;
             color: var(--text);
             outline: none;
-            width: 140px;
+            width: 100%;
             font-size: 0.85rem;
         }
 
@@ -547,10 +576,10 @@
 
         .lessons-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 16px;
-            margin-bottom: 28px;
-            max-height: 450px;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+            max-height: 400px;
             overflow-y: auto;
             padding: 4px;
             scrollbar-width: thin;
@@ -572,7 +601,7 @@
 
         .lesson-item {
             background: var(--bg);
-            padding: 16px 8px;
+            padding: 14px 6px;
             border-radius: var(--radius-md);
             border: 1px solid var(--border);
             cursor: pointer;
@@ -594,27 +623,27 @@
         }
 
         .lesson-item i {
-            font-size: 2rem;
+            font-size: 1.8rem;
             color: var(--primary);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             opacity: 0.9;
         }
 
         .word-count-badge {
             position: absolute;
-            top: 6px;
-            left: 6px;
+            top: 4px;
+            left: 4px;
             background: var(--primary);
             color: white;
-            padding: 2px 8px;
+            padding: 2px 6px;
             border-radius: 40px;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             font-weight: 600;
         }
 
         .lesson-title {
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: var(--text);
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -630,12 +659,12 @@
 
         .btn-launch {
             width: 100%;
-            padding: 16px;
+            padding: 14px;
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             border: none;
             border-radius: 60px;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 700;
             cursor: pointer;
             transition: var(--transition);
@@ -660,13 +689,13 @@
         }
 
         .btn-launch i {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
 
         .admin-link {
             text-align: center;
             margin-top: 16px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
         }
 
         .admin-link a {
@@ -703,6 +732,7 @@
             opacity: 0;
             visibility: hidden;
             transition: var(--transition);
+            padding: 20px;
         }
 
         .help-modal.show {
@@ -713,12 +743,14 @@
         .help-content {
             background: var(--card-bg);
             border-radius: var(--radius-lg);
-            padding: 30px;
+            padding: 24px;
             max-width: 500px;
-            width: 90%;
+            width: 100%;
             box-shadow: var(--shadow-lg);
             border: 1px solid var(--border);
             position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .help-content h2 {
@@ -727,6 +759,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            font-size: 1.3rem;
         }
 
         .help-content ul {
@@ -735,22 +768,23 @@
         }
 
         .help-content li {
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             display: flex;
             gap: 12px;
             align-items: flex-start;
+            font-size: 0.9rem;
         }
 
         .help-content li i {
             color: var(--primary);
-            font-size: 1.2rem;
-            margin-top: 3px;
+            font-size: 1.1rem;
+            margin-top: 2px;
         }
 
         .help-content p {
             color: var(--text-light);
             margin-top: 10px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         .close-help {
@@ -817,6 +851,7 @@
             </div>
 
             <div class="preview-box">
+                <p>معاينة الخط</p>
                 <div class="preview-text" id="fontPreview">أسامة إبراهيم محمدي</div>
             </div>
 
@@ -927,7 +962,7 @@
 <div class="help-modal" id="helpModal">
     <div class="help-content">
         <button class="close-help" id="closeHelp"><i class="fas fa-times"></i></button>
-        <h2><i class="fas fa-lightbulb"></i> طريقة استخدام المنصة</h2>
+        <h2><i class="fas fa-lightbulb"></i> طريقة الاستخدام</h2>
         <ul>
             <li><i class="fas fa-paint-brush"></i> <strong>الخط والحجم:</strong> اختر الخط المناسب وحجمه من الشريط العلوي، ويمكنك معاينة التغيير مباشرة.</li>
             <li><i class="fas fa-bolt"></i> <strong>وضع القراءة:</strong> حدد الوضع: كلمة بكلمة (RSVP)، تمرير انسيابي، أو نص ثابت.</li>
@@ -936,7 +971,7 @@
             <li><i class="fas fa-file-alt"></i> <strong>اختيار النص:</strong> انقر على أي نص ليتم تحديده (يظهر بإطار ملون).</li>
             <li><i class="fas fa-play"></i> <strong>بدء القراءة:</strong> بعد اختيار النص، اضغط على زر "ابدأ القراءة" في الأسفل.</li>
         </ul>
-        <p>يمكنك تغيير الألوان (نهاري/ليلي/مريح) من الأعلى.! </p>
+        <p>يمكنك تغيير الثيم (نهاري/ليلي/مريح) من الأعلى. استمتع بالقراءة! 📚</p>
     </div>
 </div>
 
@@ -950,7 +985,7 @@
     // ========== بيانات الدروس ==========
     let lessonsData = [];
     let selectedLessonId = null;
-    let currentFont = "'Amiri', serif"; // تغيير الافتراضي إلى أميري
+    let currentFont = "'Amiri', serif";
     let currentMode = 'rsvp';
     let currentSpeed = 150;
     let currentSemester = '1';
@@ -1131,7 +1166,6 @@
                 if (btn.dataset.font === prefs.font) btn.classList.add('active');
             });
         } else {
-            // تعيين أميري كافتراضي
             currentFont = "'Amiri', serif";
             document.querySelector('.font-mini-btn[data-font="\'Amiri\', serif"]').classList.add('active');
         }
@@ -1170,7 +1204,6 @@
             fontSizeValue.textContent = toIndianNumbers(currentFontSize);
         }
 
-        // تحديث المعاينة
         updateFontPreview();
     }
 
@@ -1275,4 +1308,3 @@
 </script>
 </body>
 </html>
-
