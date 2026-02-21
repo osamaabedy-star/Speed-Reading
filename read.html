@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -568,39 +567,6 @@
             }, 1500);
         }
 
-        // ========== Wake Lock (منع النوم) ==========
-        let wakeLock = null;
-
-        async function requestWakeLock() {
-            try {
-                if ('wakeLock' in navigator) {
-                    wakeLock = await navigator.wakeLock.request('screen');
-                    wakeLock.addEventListener('release', () => {
-                        console.log('تم تحرير Wake Lock');
-                    });
-                    console.log('Wake Lock مفعل');
-                }
-            } catch (err) {
-                console.error('فشل تفعيل Wake Lock:', err);
-            }
-        }
-
-        function releaseWakeLock() {
-            if (wakeLock) {
-                wakeLock.release().then(() => {
-                    wakeLock = null;
-                    console.log('تم تحرير Wake Lock يدوياً');
-                });
-            }
-        }
-
-        // إعادة طلب Wake Lock عند العودة للصفحة
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible' && isPlaying) {
-                requestWakeLock();
-            }
-        });
-
         // دالة تحويل الأرقام الغربية إلى هندية (للتقرير)
         function toIndianNumbers(num) {
             const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
@@ -851,7 +817,6 @@
             startTime = Date.now();
             startTimer();
             playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            requestWakeLock(); // ✅ منع النوم
 
             if (config.mode === 'rsvp') {
                 currentIndex = 0;
@@ -1005,7 +970,6 @@
             playPauseBtn.innerHTML = isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
 
             if (isPlaying) {
-                requestWakeLock(); // إعادة طلب القفل عند التشغيل
                 if (config.mode === 'rsvp') {
                     scheduleNextRSVP();
                 } else if (config.mode === 'scroll') {
@@ -1013,7 +977,6 @@
                     rafId = requestAnimationFrame(scrollStep);
                 }
             } else {
-                releaseWakeLock(); // تحرير القفل عند الإيقاف المؤقت
                 if (rsvpTimer) {
                     clearTimeout(rsvpTimer);
                     rsvpTimer = null;
@@ -1042,7 +1005,6 @@
                 rafId = null;
             }
             isPlaying = false;
-            releaseWakeLock(); // ✅ تحرير Wake Lock عند الانتهاء
 
             const endTime = Date.now();
             const duration = Math.floor((endTime - startTime) / 1000);
@@ -1221,4 +1183,3 @@
 </script>
 </body>
 </html>
-```
