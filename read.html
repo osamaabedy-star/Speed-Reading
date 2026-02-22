@@ -747,7 +747,7 @@
             scrollContainer.style.fontSize = currentFontSize + 'px';
             scrollContainer.style.lineHeight = currentLineHeight;
             const viewportHeight = window.innerHeight;
-            // نضبط الموضع بحيث يظهر أول سطر في أسفل الشاشة (بدلاً من إخفائه كلياً)
+            // نضبط الموضع بحيث يظهر أول سطر في أسفل الشاشة
             scrollCurrentY = viewportHeight - 80; // 80px ارتفاع تقريبي لسطرين
             scrollContainer.style.transform = `translateY(${scrollCurrentY}px)`;
             errorBtn.style.display = 'none';        // مخفي في التمرير
@@ -771,15 +771,13 @@
         }
 
         // دالة إعادة حساب مسافة التمرير مع الحفاظ على الموضع الرأسي المطلق (عدم تحريك النص)
-        function recalcScrollDistance(keepAbsolutePosition = true) {
+        function recalcScrollDistance() {
             if (config.mode !== 'scroll') return;
 
             // حفظ الإزاحة الحالية
             const oldY = scrollCurrentY;
 
-            // إعادة تعيين HTML (إذا تغير عدد الكلمات في السطر) أو تحديث النمط فقط (إذا تغير حجم الخط)
-            // نتحقق: إذا كان التغيير في عدد الكلمات فقط، نعيد بناء HTML. وإلا نكتفي بتحديث النمط.
-            // لكن لتبسيط، سنعيد بناء HTML دائماً لأن formatTextToFixedWordsHTML يستخدم currentWordsPerLine الحالي.
+            // إعادة بناء HTML (إذا تغير عدد الكلمات في السطر)
             scrollContainer.innerHTML = formatTextToFixedWordsHTML(lesson.content, currentWordsPerLine);
             
             // تطبيق أنماط الخط والتباعد (قد تكون تغيرت)
@@ -790,9 +788,9 @@
             const viewportHeight = window.innerHeight;
             const newTotalDistance = textHeight + viewportHeight;
             
-            let newY = oldY; // نبدأ بنفس الإزاحة
+            // نحاول الاحتفاظ بنفس الإزاحة الرأسية، ولكن قد نحتاج لضبطها لتكون ضمن الحدود الجديدة
+            let newY = oldY;
             const maxY = - (newTotalDistance - viewportHeight);
-            // التأكد من أن newY ضمن الحدود الجديدة
             if (newY > 0) newY = 0;
             if (newY < maxY) newY = maxY;
             
@@ -1114,11 +1112,12 @@
             updateSpeedDisplay();
             if (config.mode === 'scroll') {
                 if (isPlaying) {
-                    // تحديث سرعة التمرير فقط (لا داعي لإعادة الحساب)
+                    // تحديث سرعة التمرير فقط (لا تغيير في المسافة)
                     const totalSeconds = (words.length / currentSpeed) * 60;
                     scrollPixelsPerSecond = scrollTotalDistance / totalSeconds;
                 } else {
-                    recalcScrollDistance(true); // نحافظ على الموضع
+                    // لا حاجة لإعادة حساب المسافة لأنها لم تتغير، فقط السرعة
+                    // ولكن قد يتغير scrollPixelsPerSecond إذا كانت السرعة تؤثر على المسافة الكلية؟ لا، المسافة ثابتة.
                 }
             }
         });
@@ -1132,8 +1131,6 @@
                 if (isPlaying) {
                     const totalSeconds = (words.length / currentSpeed) * 60;
                     scrollPixelsPerSecond = scrollTotalDistance / totalSeconds;
-                } else {
-                    recalcScrollDistance(true);
                 }
             }
         });
@@ -1143,7 +1140,7 @@
                 currentWordsPerLine++;
                 wordsPerLineValue.innerText = currentWordsPerLine;
                 if (config.mode === 'scroll') {
-                    recalcScrollDistance(true); // نحافظ على الموضع
+                    recalcScrollDistance(); // يحافظ على الموضع
                 }
             }
         });
@@ -1153,7 +1150,7 @@
                 currentWordsPerLine--;
                 wordsPerLineValue.innerText = currentWordsPerLine;
                 if (config.mode === 'scroll') {
-                    recalcScrollDistance(true); // نحافظ على الموضع
+                    recalcScrollDistance(); // يحافظ على الموضع
                 }
             }
         });
@@ -1164,9 +1161,8 @@
                 if (config.mode === 'rsvp') {
                     rsvpContainer.style.fontSize = currentFontSize + 'px';
                 } else if (config.mode === 'scroll') {
-                    // نطبق تغيير حجم الخط أولاً ثم نعيد حساب المسافة مع الحفاظ على الموضع
                     scrollContainer.style.fontSize = currentFontSize + 'px';
-                    recalcScrollDistance(true); // نحافظ على الموضع
+                    recalcScrollDistance(); // يحافظ على الموضع
                 } else if (config.mode === 'static') {
                     staticContainer.style.fontSize = currentFontSize + 'px';
                 }
@@ -1181,7 +1177,7 @@
                     rsvpContainer.style.fontSize = currentFontSize + 'px';
                 } else if (config.mode === 'scroll') {
                     scrollContainer.style.fontSize = currentFontSize + 'px';
-                    recalcScrollDistance(true); // نحافظ على الموضع
+                    recalcScrollDistance(); // يحافظ على الموضع
                 } else if (config.mode === 'static') {
                     staticContainer.style.fontSize = currentFontSize + 'px';
                 }
@@ -1193,7 +1189,7 @@
             currentLineHeight += 0.2;
             if (config.mode === 'scroll') {
                 scrollContainer.style.lineHeight = currentLineHeight;
-                recalcScrollDistance(true); // نحافظ على الموضع
+                recalcScrollDistance(); // يحافظ على الموضع
             } else if (config.mode === 'static') {
                 staticContainer.style.lineHeight = currentLineHeight;
             }
@@ -1204,7 +1200,7 @@
                 currentLineHeight -= 0.2;
                 if (config.mode === 'scroll') {
                     scrollContainer.style.lineHeight = currentLineHeight;
-                    recalcScrollDistance(true); // نحافظ على الموضع
+                    recalcScrollDistance(); // يحافظ على الموضع
                 } else if (config.mode === 'static') {
                     staticContainer.style.lineHeight = currentLineHeight;
                 }
