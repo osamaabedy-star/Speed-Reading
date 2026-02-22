@@ -747,7 +747,10 @@
             scrollContainer.style.fontSize = currentFontSize + 'px';
             scrollContainer.style.lineHeight = currentLineHeight;
             const viewportHeight = window.innerHeight;
-            scrollCurrentY = viewportHeight;
+            // نضع النص بحيث يكون أول سطر مرئي في أسفل الشاشة (بدلاً من كونه مخفياً تماماً)
+            // نحسب ارتفاع سطر تقريبي = (currentFontSize * currentLineHeight) مع الأخذ بعين الاعتبار أن الخط قد يتغير لاحقاً
+            // نستخدم قيمة تقديرية: 50 بكثير لتكون آمنة، وسيتم ضبطها لاحقاً عند إعادة الحساب
+            scrollCurrentY = viewportHeight - 80; // 80px تقريباً ارتفاع سطرين
             scrollContainer.style.transform = `translateY(${scrollCurrentY}px)`;
             errorBtn.style.display = 'none';        // مخفي في التمرير
             wplControl.style.display = 'block';
@@ -791,7 +794,7 @@
                 if (scrollCurrentY < maxY) scrollCurrentY = maxY;
             } else {
                 // إعادة تعيين الموضع إلى البداية (نادر الاستخدام)
-                scrollCurrentY = viewportHeight;
+                scrollCurrentY = viewportHeight - 80; // نعيد القيمة التقديرية
             }
             
             scrollTotalDistance = newTotalDistance;
