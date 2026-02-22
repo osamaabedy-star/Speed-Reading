@@ -769,12 +769,17 @@
             fontSizeIndicator.innerText = currentFontSize;
         }
 
-        function recalcScrollDistance() {
+        // دالة إعادة حساب مسافة التمرير مع الحفاظ على الموضع الحالي (اختياري)
+        function recalcScrollDistance(preservePosition = false) {
             if (config.mode !== 'scroll') return;
-            const wasPlaying = isPlaying;
-            if (wasPlaying) togglePlay();
-            
-            // إعادة تعيين HTML مع الحفاظ على عدد الكلمات الجديد (بعد تغيير wordsPerLine أو الخط)
+
+            // حفظ النسبة المئوية الحالية إذا أردنا الاحتفاظ بالموضع
+            let currentProgress = 0;
+            if (preservePosition && scrollTotalDistance > 0) {
+                currentProgress = Math.max(0, Math.min(1, (-scrollCurrentY) / scrollTotalDistance));
+            }
+
+            // إعادة تعيين HTML مع الحفاظ على عدد الكلمات الحالي (إذا تغير)
             scrollContainer.innerHTML = formatTextToFixedWordsHTML(lesson.content, currentWordsPerLine);
             
             const textHeight = scrollContainer.offsetHeight;
@@ -783,16 +788,23 @@
             const totalSeconds = (words.length / currentSpeed) * 60;
             scrollPixelsPerSecond = scrollTotalDistance / totalSeconds;
             
-            // إعادة تعيين الموضع
-            scrollCurrentY = viewportHeight;
-            scrollContainer.style.transform = `translateY(${scrollCurrentY}px)`;
-            
-            if (wasPlaying) {
-                isPlaying = true;
-                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-                scrollLastTimestamp = 0;
-                rafId = requestAnimationFrame(scrollStep);
+            if (preservePosition) {
+                // ضبط الموضع بناءً على النسبة المحفوظة
+                scrollCurrentY = - (currentProgress * scrollTotalDistance);
+                // التأكد من أن الموضع ضمن الحدود المسموحة
+                const maxY = - (scrollTotalDistance - viewportHeight);
+                if (scrollCurrentY > 0) scrollCurrentY = 0;
+                if (scrollCurrentY < maxY) scrollCurrentY = maxY;
+                scrollContainer.style.transform = `translateY(${scrollCurrentY}px)`;
+            } else {
+                // إعادة تعيين الموضع إلى البداية
+                scrollCurrentY = viewportHeight;
+                scrollContainer.style.transform = `translateY(${scrollCurrentY}px)`;
             }
+
+            // تحديث شريط التقدم
+            const progress = Math.min(100, Math.max(0, ((-scrollCurrentY) / scrollTotalDistance) * 100));
+            progressBar.style.width = progress + '%';
         }
 
         function startCountdown() {
@@ -1090,7 +1102,7 @@
             sessionStorage.setItem('currentReadingSession', JSON.stringify(sessionData));
         }
 
-        // معالجات الأزرار
+        // معالجات الأزرار مع الحفاظ على الموضع (باستخدام preservePosition = true)
         playPauseBtn.addEventListener('click', togglePlay);
         stopBtn.addEventListener('click', stopReading);
 
@@ -1099,9 +1111,15 @@
             if (newSpeed > 400) newSpeed = 400;
             currentSpeed = newSpeed;
             updateSpeedDisplay();
-            if (config.mode === 'scroll' && isPlaying) {
-                const totalSeconds = (words.length / currentSpeed) * 60;
-                scrollPixelsPerSecond = scrollTotalDistance / totalSeconds;
+            if (config.mode === 'scroll') {
+                if (isPlaying) {
+                    // تحديث سرعة التمرير مع الحفاظ على الموضع
+                    const totalSeconds = (words.length / currentSpeed) * 60;
+                    scrollPixelsPerSecond = scrollTotalDistance / totalSeconds;
+                } else {
+                    // إعادة حساب المسافة فقط (لأن السرعة تؤثر على المسافة الكلية)
+                    recalcScrollDistance(true); // نحافظ على الموضع
+                }
             }
         });
 
@@ -1110,9 +1128,13 @@
             if (newSpeed < 10) newSpeed = 10;
             currentSpeed = newSpeed;
             updateSpeedDisplay();
-            if (config.mode === 'scroll' && isPlaying) {
-                const totalSeconds = (words.length / currentSpeed) * 60;
-                scrollPixelsPerSecond = scrollTotalDistance / totalSeconds;
+            if (config.mode === 'scroll') {
+                if (isPlaying) {
+                    const totalSeconds = (words.length / currentSpeed) * 60;
+                    scrollPixelsPerSecond = scrollTotalDistance / totalSeconds;
+                } else {
+                    recalcScrollDistance(true);
+                }
             }
         });
 
@@ -1121,7 +1143,7 @@
                 currentWordsPerLine++;
                 wordsPerLineValue.innerText = currentWordsPerLine;
                 if (config.mode === 'scroll') {
-                    recalcScrollDistance(); // يقوم بتحديث HTML وإعادة حساب المسافة
+                    recalcScrollDistance(true); // نحافظ على الموضع
                 }
             }
         });
@@ -1131,7 +1153,7 @@
                 currentWordsPerLine--;
                 wordsPerLineValue.innerText = currentWordsPerLine;
                 if (config.mode === 'scroll') {
-                    recalcScrollDistance(); // يقوم بتحديث HTML وإعادة حساب المسافة
+                    recalcScrollDistance(true); // نحافظ على الموضع
                 }
             }
         });
@@ -1143,7 +1165,7 @@
                     rsvpContainer.style.fontSize = currentFontSize + 'px';
                 } else if (config.mode === 'scroll') {
                     scrollContainer.style.fontSize = currentFontSize + 'px';
-                    recalcScrollDistance(); // إعادة حساب المسافة بعد تغيير الحجم
+                    recalcScrollDistance(true); // نحافظ على الموضع
                 } else if (config.mode === 'static') {
                     staticContainer.style.fontSize = currentFontSize + 'px';
                 }
@@ -1158,7 +1180,7 @@
                     rsvpContainer.style.fontSize = currentFontSize + 'px';
                 } else if (config.mode === 'scroll') {
                     scrollContainer.style.fontSize = currentFontSize + 'px';
-                    recalcScrollDistance(); // إعادة حساب المسافة بعد تغيير الحجم
+                    recalcScrollDistance(true); // نحافظ على الموضع
                 } else if (config.mode === 'static') {
                     staticContainer.style.fontSize = currentFontSize + 'px';
                 }
@@ -1170,7 +1192,7 @@
             currentLineHeight += 0.2;
             if (config.mode === 'scroll') {
                 scrollContainer.style.lineHeight = currentLineHeight;
-                recalcScrollDistance(); // تغيير تباعد الأسطر يؤثر على الارتفاع
+                recalcScrollDistance(true); // نحافظ على الموضع
             } else if (config.mode === 'static') {
                 staticContainer.style.lineHeight = currentLineHeight;
             }
@@ -1181,7 +1203,7 @@
                 currentLineHeight -= 0.2;
                 if (config.mode === 'scroll') {
                     scrollContainer.style.lineHeight = currentLineHeight;
-                    recalcScrollDistance(); // تغيير تباعد الأسطر يؤثر على الارتفاع
+                    recalcScrollDistance(true); // نحافظ على الموضع
                 } else if (config.mode === 'static') {
                     staticContainer.style.lineHeight = currentLineHeight;
                 }
