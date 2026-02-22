@@ -747,7 +747,9 @@
             scrollContainer.style.fontSize = currentFontSize + 'px';
             scrollContainer.style.lineHeight = currentLineHeight;
             const viewportHeight = window.innerHeight;
-            scrollCurrentY = viewportHeight;
+            // نضبط الموضع بحيث يظهر أول سطر في أسفل الشاشة (بدلاً من إخفائه كلياً)
+            // نحتاج إلى معرفة ارتفاع السطر تقريباً، لذا نستخدم قيمة تقديرية ثم نصححها بعد تحميل المحتوى
+            scrollCurrentY = viewportHeight - 80; // 80px ارتفاع تقريبي لسطرين
             scrollContainer.style.transform = `translateY(${scrollCurrentY}px)`;
             errorBtn.style.display = 'flex';
             wplControl.style.display = 'block';
@@ -783,8 +785,11 @@
             const totalSeconds = (words.length / currentSpeed) * 60;
             scrollPixelsPerSecond = scrollTotalDistance / totalSeconds;
             
-            // إعادة تعيين الموضع
-            scrollCurrentY = viewportHeight;
+            // إعادة تعيين الموضع بحيث يكون أول سطر مرئياً (أسفل الشاشة)
+            scrollCurrentY = viewportHeight - 80; // نحتفظ بالقيمة التقريبية
+            // نضمن عدم تجاوز الحدود
+            if (scrollCurrentY > viewportHeight) scrollCurrentY = viewportHeight;
+            if (scrollCurrentY < - (textHeight)) scrollCurrentY = -textHeight;
             scrollContainer.style.transform = `translateY(${scrollCurrentY}px)`;
             
             if (wasPlaying) {
@@ -1231,4 +1236,3 @@
 </script>
 </body>
 </html>
-
