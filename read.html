@@ -769,38 +769,36 @@
             fontSizeIndicator.innerText = currentFontSize;
         }
 
-        // دالة إعادة حساب مسافة التمرير مع الحفاظ على الموضع الحالي (اختياري)
-        function recalcScrollDistance(preservePosition = false) {
+        // دالة إعادة حساب مسافة التمرير مع الحفاظ على الموضع الرأسي الحالي (عدم تحريك النص)
+        function recalcScrollDistance(keepPosition = true) {
             if (config.mode !== 'scroll') return;
 
-            // حفظ النسبة المئوية الحالية إذا أردنا الاحتفاظ بالموضع
-            let currentProgress = 0;
-            if (preservePosition && scrollTotalDistance > 0) {
-                currentProgress = Math.max(0, Math.min(1, (-scrollCurrentY) / scrollTotalDistance));
-            }
+            // حفظ الموضع الحالي (قيمة Y) إذا أردنا الاحتفاظ به
+            const oldY = scrollCurrentY;
 
-            // إعادة تعيين HTML مع الحفاظ على عدد الكلمات الحالي (إذا تغير)
+            // إعادة تعيين HTML مع الحفاظ على عدد الكلمات الحالي
             scrollContainer.innerHTML = formatTextToFixedWordsHTML(lesson.content, currentWordsPerLine);
             
             const textHeight = scrollContainer.offsetHeight;
             const viewportHeight = window.innerHeight;
-            scrollTotalDistance = textHeight + viewportHeight;
+            const newTotalDistance = textHeight + viewportHeight;
+            
+            if (keepPosition) {
+                // نحافظ على نفس الإزاحة الرأسية (لا نغير scrollCurrentY)
+                // ولكن قد نحتاج إلى ضبطه إذا كان خارج الحدود الجديدة
+                const maxY = - (newTotalDistance - viewportHeight);
+                if (scrollCurrentY > 0) scrollCurrentY = 0;
+                if (scrollCurrentY < maxY) scrollCurrentY = maxY;
+            } else {
+                // إعادة تعيين الموضع إلى البداية (نادر الاستخدام)
+                scrollCurrentY = viewportHeight;
+            }
+            
+            scrollTotalDistance = newTotalDistance;
             const totalSeconds = (words.length / currentSpeed) * 60;
             scrollPixelsPerSecond = scrollTotalDistance / totalSeconds;
             
-            if (preservePosition) {
-                // ضبط الموضع بناءً على النسبة المحفوظة
-                scrollCurrentY = - (currentProgress * scrollTotalDistance);
-                // التأكد من أن الموضع ضمن الحدود المسموحة
-                const maxY = - (scrollTotalDistance - viewportHeight);
-                if (scrollCurrentY > 0) scrollCurrentY = 0;
-                if (scrollCurrentY < maxY) scrollCurrentY = maxY;
-                scrollContainer.style.transform = `translateY(${scrollCurrentY}px)`;
-            } else {
-                // إعادة تعيين الموضع إلى البداية
-                scrollCurrentY = viewportHeight;
-                scrollContainer.style.transform = `translateY(${scrollCurrentY}px)`;
-            }
+            scrollContainer.style.transform = `translateY(${scrollCurrentY}px)`;
 
             // تحديث شريط التقدم
             const progress = Math.min(100, Math.max(0, ((-scrollCurrentY) / scrollTotalDistance) * 100));
@@ -1102,7 +1100,7 @@
             sessionStorage.setItem('currentReadingSession', JSON.stringify(sessionData));
         }
 
-        // معالجات الأزرار مع الحفاظ على الموضع (باستخدام preservePosition = true)
+        // معالجات الأزرار مع الحفاظ على الموضع الرأسي (عدم تحريك النص)
         playPauseBtn.addEventListener('click', togglePlay);
         stopBtn.addEventListener('click', stopReading);
 
@@ -1113,12 +1111,13 @@
             updateSpeedDisplay();
             if (config.mode === 'scroll') {
                 if (isPlaying) {
-                    // تحديث سرعة التمرير مع الحفاظ على الموضع
+                    // تحديث سرعة التمرير فقط
                     const totalSeconds = (words.length / currentSpeed) * 60;
                     scrollPixelsPerSecond = scrollTotalDistance / totalSeconds;
                 } else {
-                    // إعادة حساب المسافة فقط (لأن السرعة تؤثر على المسافة الكلية)
-                    recalcScrollDistance(true); // نحافظ على الموضع
+                    // إعادة حساب المسافة (قد تتغير بسبب تغير السرعة؟ لا، المسافة ثابتة، فقط السرعة)
+                    // نستدعي recalcScrollDistance مع true للحفاظ على الموضع
+                    recalcScrollDistance(true);
                 }
             }
         });
