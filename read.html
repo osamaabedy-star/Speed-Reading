@@ -545,7 +545,7 @@
     </div>
 </div>
 
-<!-- زر الخطأ في الشمال مع نص -->
+<!-- زر الخطأ في الشمال مع نص (يظهر فقط في وضع RSVP) -->
 <button class="error-left-btn" id="errorBtn" title="تسجيل خطأ" style="display: none;">
     <i class="fas fa-exclamation-circle"></i>
     <span>سجل خطأ</span>
@@ -738,7 +738,7 @@
         if (config.mode === 'rsvp') {
             rsvpContainer.style.display = 'block';
             rsvpContainer.style.fontSize = currentFontSize + 'px';
-            errorBtn.style.display = 'flex';
+            errorBtn.style.display = 'flex';        // يظهر فقط في RSVP
             wplControl.style.display = 'none';
         } else if (config.mode === 'scroll') {
             scrollContainer.style.display = 'block';
@@ -751,11 +751,11 @@
             // نحتاج إلى معرفة ارتفاع السطر تقريباً، لذا نستخدم قيمة تقديرية ثم نصححها بعد تحميل المحتوى
             scrollCurrentY = viewportHeight - 80; // 80px ارتفاع تقريبي لسطرين
             scrollContainer.style.transform = `translateY(${scrollCurrentY}px)`;
-            errorBtn.style.display = 'flex';
+            errorBtn.style.display = 'none';        // مخفي في التمرير
             wplControl.style.display = 'block';
             wordsPerLineValue.innerText = currentWordsPerLine;
             setTimeout(() => {
-                recalcScrollDistance();
+                recalcScrollDistance(true); // نحافظ على الموضع التقريبي
             }, 100);
         } else if (config.mode === 'static') {
             staticContainer.style.display = 'block';
@@ -763,7 +763,7 @@
             staticContainer.style.fontSize = (currentFontSize - 4) + 'px';
             staticContainer.style.lineHeight = currentLineHeight;
             enableErrorSelection();
-            errorBtn.style.display = 'none';
+            errorBtn.style.display = 'none';        // مخفي في النص الثابت
             wplControl.style.display = 'none';
         }
 
@@ -771,33 +771,44 @@
             fontSizeIndicator.innerText = currentFontSize;
         }
 
-        function recalcScrollDistance() {
+        // دالة إعادة حساب مسافة التمرير مع الحفاظ على الموضع الحالي (عدم إعادة التعيين)
+        function recalcScrollDistance(preservePosition = true) {
             if (config.mode !== 'scroll') return;
-            const wasPlaying = isPlaying;
-            if (wasPlaying) togglePlay();
-            
-            // إعادة تعيين HTML مع الحفاظ على عدد الكلمات الجديد (بعد تغيير wordsPerLine أو الخط)
+
+            // حفظ النسبة المئوية الحالية إذا أردنا الاحتفاظ بالموضع
+            let currentProgress = 0;
+            if (preservePosition && scrollTotalDistance > 0) {
+                currentProgress = Math.max(0, Math.min(1, (-scrollCurrentY) / scrollTotalDistance));
+            }
+
+            // إعادة تعيين HTML مع الحفاظ على عدد الكلمات الحالي
             scrollContainer.innerHTML = formatTextToFixedWordsHTML(lesson.content, currentWordsPerLine);
             
             const textHeight = scrollContainer.offsetHeight;
             const viewportHeight = window.innerHeight;
-            scrollTotalDistance = textHeight + viewportHeight;
+            const newTotalDistance = textHeight + viewportHeight;
+            
+            if (preservePosition && scrollTotalDistance > 0) {
+                // ضبط الموضع بناءً على النسبة المحفوظة
+                scrollCurrentY = - (currentProgress * newTotalDistance);
+                // التأكد من أن الموضع ضمن الحدود الجديدة
+                const maxY = - (newTotalDistance - viewportHeight);
+                if (scrollCurrentY > 0) scrollCurrentY = 0;
+                if (scrollCurrentY < maxY) scrollCurrentY = maxY;
+            } else {
+                // إعادة تعيين الموضع إلى البداية (نادر الاستخدام)
+                scrollCurrentY = viewportHeight - 80; // نعيد القيمة التقديرية
+            }
+            
+            scrollTotalDistance = newTotalDistance;
             const totalSeconds = (words.length / currentSpeed) * 60;
             scrollPixelsPerSecond = scrollTotalDistance / totalSeconds;
             
-            // إعادة تعيين الموضع بحيث يكون أول سطر مرئياً (أسفل الشاشة)
-            scrollCurrentY = viewportHeight - 80; // نحتفظ بالقيمة التقريبية
-            // نضمن عدم تجاوز الحدود
-            if (scrollCurrentY > viewportHeight) scrollCurrentY = viewportHeight;
-            if (scrollCurrentY < - (textHeight)) scrollCurrentY = -textHeight;
             scrollContainer.style.transform = `translateY(${scrollCurrentY}px)`;
-            
-            if (wasPlaying) {
-                isPlaying = true;
-                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-                scrollLastTimestamp = 0;
-                rafId = requestAnimationFrame(scrollStep);
-            }
+
+            // تحديث شريط التقدم
+            const progress = Math.min(100, Math.max(0, ((-scrollCurrentY) / scrollTotalDistance) * 100));
+            progressBar.style.width = progress + '%';
         }
 
         function startCountdown() {
@@ -945,7 +956,7 @@
             }
         }
 
-        // دالة تسجيل خطأ مع إشارة بصرية
+        // دالة تسجيل خطأ (تستخدم في RSVP عبر الزر)
         function recordError() {
             if (!isPlaying) return;
             totalErrors++;
@@ -960,21 +971,12 @@
                 setTimeout(() => {
                     wordElement.style.color = '';
                 }, 300);
-            } else if (config.mode === 'scroll') {
-                // لم نعد نستخدم هذا لأن الخطأ يتم تسجيله بالنقر على الكلمة مباشرة
-                // ولكن نحتفظ بسطر للتوافق (يمكن إزالته)
-                errorWordsList.push('خطأ أثناء التمرير');
-                scrollContainer.style.transition = 'background-color 0.2s';
-                scrollContainer.style.backgroundColor = 'rgba(247, 37, 133, 0.1)';
-                setTimeout(() => {
-                    scrollContainer.style.backgroundColor = '';
-                }, 300);
             }
             
             showErrorToastTop(); // إظهار الرسالة في الأعلى
         }
 
-        // ربط زر الخطأ
+        // ربط زر الخطأ (فقط في RSVP)
         errorBtn.addEventListener('click', recordError);
 
         // تفعيل تحديد الأخطاء في النص الثابت
@@ -1104,7 +1106,7 @@
             sessionStorage.setItem('currentReadingSession', JSON.stringify(sessionData));
         }
 
-        // معالجات الأزرار
+        // معالجات الأزرار مع الحفاظ على الموضع
         playPauseBtn.addEventListener('click', togglePlay);
         stopBtn.addEventListener('click', stopReading);
 
@@ -1113,9 +1115,14 @@
             if (newSpeed > 400) newSpeed = 400;
             currentSpeed = newSpeed;
             updateSpeedDisplay();
-            if (config.mode === 'scroll' && isPlaying) {
-                const totalSeconds = (words.length / currentSpeed) * 60;
-                scrollPixelsPerSecond = scrollTotalDistance / totalSeconds;
+            if (config.mode === 'scroll') {
+                if (isPlaying) {
+                    // تحديث سرعة التمرير فقط
+                    const totalSeconds = (words.length / currentSpeed) * 60;
+                    scrollPixelsPerSecond = scrollTotalDistance / totalSeconds;
+                } else {
+                    recalcScrollDistance(true); // نحافظ على الموضع
+                }
             }
         });
 
@@ -1124,9 +1131,13 @@
             if (newSpeed < 10) newSpeed = 10;
             currentSpeed = newSpeed;
             updateSpeedDisplay();
-            if (config.mode === 'scroll' && isPlaying) {
-                const totalSeconds = (words.length / currentSpeed) * 60;
-                scrollPixelsPerSecond = scrollTotalDistance / totalSeconds;
+            if (config.mode === 'scroll') {
+                if (isPlaying) {
+                    const totalSeconds = (words.length / currentSpeed) * 60;
+                    scrollPixelsPerSecond = scrollTotalDistance / totalSeconds;
+                } else {
+                    recalcScrollDistance(true);
+                }
             }
         });
 
@@ -1135,7 +1146,7 @@
                 currentWordsPerLine++;
                 wordsPerLineValue.innerText = currentWordsPerLine;
                 if (config.mode === 'scroll') {
-                    recalcScrollDistance(); // يقوم بتحديث HTML وإعادة حساب المسافة
+                    recalcScrollDistance(true); // نحافظ على الموضع
                 }
             }
         });
@@ -1145,7 +1156,7 @@
                 currentWordsPerLine--;
                 wordsPerLineValue.innerText = currentWordsPerLine;
                 if (config.mode === 'scroll') {
-                    recalcScrollDistance(); // يقوم بتحديث HTML وإعادة حساب المسافة
+                    recalcScrollDistance(true); // نحافظ على الموضع
                 }
             }
         });
@@ -1157,7 +1168,7 @@
                     rsvpContainer.style.fontSize = currentFontSize + 'px';
                 } else if (config.mode === 'scroll') {
                     scrollContainer.style.fontSize = currentFontSize + 'px';
-                    recalcScrollDistance(); // إعادة حساب المسافة بعد تغيير الحجم
+                    recalcScrollDistance(true); // نحافظ على الموضع
                 } else if (config.mode === 'static') {
                     staticContainer.style.fontSize = currentFontSize + 'px';
                 }
@@ -1172,7 +1183,7 @@
                     rsvpContainer.style.fontSize = currentFontSize + 'px';
                 } else if (config.mode === 'scroll') {
                     scrollContainer.style.fontSize = currentFontSize + 'px';
-                    recalcScrollDistance(); // إعادة حساب المسافة بعد تغيير الحجم
+                    recalcScrollDistance(true); // نحافظ على الموضع
                 } else if (config.mode === 'static') {
                     staticContainer.style.fontSize = currentFontSize + 'px';
                 }
@@ -1184,7 +1195,7 @@
             currentLineHeight += 0.2;
             if (config.mode === 'scroll') {
                 scrollContainer.style.lineHeight = currentLineHeight;
-                recalcScrollDistance(); // تغيير تباعد الأسطر يؤثر على الارتفاع
+                recalcScrollDistance(true); // نحافظ على الموضع
             } else if (config.mode === 'static') {
                 staticContainer.style.lineHeight = currentLineHeight;
             }
@@ -1195,7 +1206,7 @@
                 currentLineHeight -= 0.2;
                 if (config.mode === 'scroll') {
                     scrollContainer.style.lineHeight = currentLineHeight;
-                    recalcScrollDistance(); // تغيير تباعد الأسطر يؤثر على الارتفاع
+                    recalcScrollDistance(true); // نحافظ على الموضع
                 } else if (config.mode === 'static') {
                     staticContainer.style.lineHeight = currentLineHeight;
                 }
