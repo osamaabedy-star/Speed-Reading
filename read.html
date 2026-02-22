@@ -878,7 +878,8 @@
                 currentIndex = 0;
                 scheduleNextRSVP();
             } else if (config.mode === 'scroll') {
-                scrollLastTimestamp = 0;
+                // نبدأ التمرير فوراً باستخدام الوقت الحالي كمرجع
+                scrollLastTimestamp = performance.now();
                 rafId = requestAnimationFrame(scrollStep);
             }
         }
@@ -927,21 +928,16 @@
         function scrollStep(timestamp) {
             if (!isPlaying) return;
 
-            if (!scrollLastTimestamp) {
-                scrollLastTimestamp = timestamp;
-                rafId = requestAnimationFrame(scrollStep);
-                return;
-            }
-
+            // نحسب الوقت المنقضي منذ آخر إطار
             const elapsed = (timestamp - scrollLastTimestamp) / 1000;
+            scrollLastTimestamp = timestamp;
+
             const delta = scrollPixelsPerSecond * elapsed;
             scrollCurrentY -= delta;
             scrollContainer.style.transform = `translateY(${scrollCurrentY}px)`;
 
             const progress = Math.min(100, Math.max(0, ((-scrollCurrentY) / scrollTotalDistance) * 100));
             progressBar.style.width = progress + '%';
-
-            scrollLastTimestamp = timestamp;
 
             if (-scrollCurrentY < scrollTotalDistance - window.innerHeight) {
                 rafId = requestAnimationFrame(scrollStep);
@@ -1022,7 +1018,8 @@
                 if (config.mode === 'rsvp') {
                     scheduleNextRSVP();
                 } else if (config.mode === 'scroll') {
-                    scrollLastTimestamp = 0;
+                    // عند الاستئناف، نستخدم الوقت الحالي كمرجع
+                    scrollLastTimestamp = performance.now();
                     rafId = requestAnimationFrame(scrollStep);
                 }
             } else {
@@ -1115,8 +1112,6 @@
                     const totalSeconds = (words.length / currentSpeed) * 60;
                     scrollPixelsPerSecond = scrollTotalDistance / totalSeconds;
                 } else {
-                    // إعادة حساب المسافة (قد تتغير بسبب تغير السرعة؟ لا، المسافة ثابتة، فقط السرعة)
-                    // نستدعي recalcScrollDistance مع true للحفاظ على الموضع
                     recalcScrollDistance(true);
                 }
             }
