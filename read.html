@@ -573,17 +573,13 @@
             return num.toString().replace(/\d/g, (d) => arabicNumbers[d]);
         }
 
-        // دالة لتقسيم النص إلى أسطر بعدد كلمات متغير مع إمكانية النقر على الكلمات (HTML)
-        function formatTextToFixedWordsHTML(text, wordsPerLine = 5) {
+        // دالة لتقسيم النص إلى أسطر بعدد كلمات متغير
+        function formatTextToFixedWords(text, wordsPerLine = 5) {
             const words = text.split(/\s+/);
             let lines = [];
             for (let i = 0; i < words.length; i += wordsPerLine) {
-                let lineWords = words.slice(i, i + wordsPerLine);
-                // تحويل كل كلمة إلى span قابل للنقر
-                let lineHTML = lineWords.map(word => 
-                    `<span class="word" data-word="${escapeHtml(word)}" onclick="window.toggleError(this)">${escapeHtml(word)}</span>`
-                ).join(' ');
-                lines.push(lineHTML);
+                let line = words.slice(i, i + wordsPerLine).join(' ');
+                lines.push(line);
             }
             return lines.join('\n');
         }
@@ -742,8 +738,7 @@
             wplControl.style.display = 'none';
         } else if (config.mode === 'scroll') {
             scrollContainer.style.display = 'block';
-            // استخدام HTML بدلاً من النص العادي لتمكين النقر على الكلمات
-            scrollContainer.innerHTML = formatTextToFixedWordsHTML(lesson.content, currentWordsPerLine);
+            scrollContainer.innerText = formatTextToFixedWords(lesson.content, currentWordsPerLine);
             scrollContainer.style.fontSize = currentFontSize + 'px';
             scrollContainer.style.lineHeight = currentLineHeight;
             const viewportHeight = window.innerHeight;
@@ -774,18 +769,11 @@
             const wasPlaying = isPlaying;
             if (wasPlaying) togglePlay();
             
-            // إعادة تعيين HTML مع الحفاظ على عدد الكلمات الجديد (بعد تغيير wordsPerLine أو الخط)
-            scrollContainer.innerHTML = formatTextToFixedWordsHTML(lesson.content, currentWordsPerLine);
-            
             const textHeight = scrollContainer.offsetHeight;
             const viewportHeight = window.innerHeight;
             scrollTotalDistance = textHeight + viewportHeight;
             const totalSeconds = (words.length / currentSpeed) * 60;
             scrollPixelsPerSecond = scrollTotalDistance / totalSeconds;
-            
-            // إعادة تعيين الموضع
-            scrollCurrentY = viewportHeight;
-            scrollContainer.style.transform = `translateY(${scrollCurrentY}px)`;
             
             if (wasPlaying) {
                 isPlaying = true;
@@ -824,45 +812,11 @@
             return `${m}:${s}`;
         }
 
-        // ===== كود منع غلق الشاشة (Screen Wake Lock) =====
-        let wakeLock = null;
-
-        async function requestWakeLock() {
-            try {
-                if ('wakeLock' in navigator) {
-                    wakeLock = await navigator.wakeLock.request('screen');
-                    wakeLock.addEventListener('release', () => {
-                        console.log('تم تحرير قفل الشاشة');
-                    });
-                    console.log('تم تفعيل قفل الشاشة');
-                } else {
-                    console.warn('متصفحك لا يدعم منع غلق الشاشة');
-                }
-            } catch (err) {
-                console.error('خطأ في تفعيل قفل الشاشة:', err);
-            }
-        }
-
-        function releaseWakeLock() {
-            if (wakeLock) {
-                wakeLock.release()
-                    .then(() => {
-                        wakeLock = null;
-                        console.log('تم تحرير قفل الشاشة بنجاح');
-                    })
-                    .catch((err) => {
-                        console.error('خطأ أثناء تحرير قفل الشاشة:', err);
-                    });
-            }
-        }
-        // =================================================
-
         function startReading() {
             isPlaying = true;
             startTime = Date.now();
             startTimer();
             playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            requestWakeLock(); // طلب منع غلق الشاشة
 
             if (config.mode === 'rsvp') {
                 currentIndex = 0;
@@ -956,8 +910,6 @@
                     wordElement.style.color = '';
                 }, 300);
             } else if (config.mode === 'scroll') {
-                // لم نعد نستخدم هذا لأن الخطأ يتم تسجيله بالنقر على الكلمة مباشرة
-                // ولكن نحتفظ بسطر للتوافق (يمكن إزالته)
                 errorWordsList.push('خطأ أثناء التمرير');
                 scrollContainer.style.transition = 'background-color 0.2s';
                 scrollContainer.style.backgroundColor = 'rgba(247, 37, 133, 0.1)';
@@ -1043,7 +995,6 @@
         }
 
         function finish() {
-            releaseWakeLock(); // تحرير منع غلق الشاشة
             clearInterval(timerInterval);
             if (rsvpTimer) {
                 clearTimeout(rsvpTimer);
@@ -1130,7 +1081,8 @@
                 currentWordsPerLine++;
                 wordsPerLineValue.innerText = currentWordsPerLine;
                 if (config.mode === 'scroll') {
-                    recalcScrollDistance(); // يقوم بتحديث HTML وإعادة حساب المسافة
+                    scrollContainer.innerText = formatTextToFixedWords(lesson.content, currentWordsPerLine);
+                    recalcScrollDistance();
                 }
             }
         });
@@ -1140,7 +1092,8 @@
                 currentWordsPerLine--;
                 wordsPerLineValue.innerText = currentWordsPerLine;
                 if (config.mode === 'scroll') {
-                    recalcScrollDistance(); // يقوم بتحديث HTML وإعادة حساب المسافة
+                    scrollContainer.innerText = formatTextToFixedWords(lesson.content, currentWordsPerLine);
+                    recalcScrollDistance();
                 }
             }
         });
@@ -1152,7 +1105,7 @@
                     rsvpContainer.style.fontSize = currentFontSize + 'px';
                 } else if (config.mode === 'scroll') {
                     scrollContainer.style.fontSize = currentFontSize + 'px';
-                    recalcScrollDistance(); // إعادة حساب المسافة بعد تغيير الحجم
+                    recalcScrollDistance();
                 } else if (config.mode === 'static') {
                     staticContainer.style.fontSize = currentFontSize + 'px';
                 }
@@ -1167,7 +1120,7 @@
                     rsvpContainer.style.fontSize = currentFontSize + 'px';
                 } else if (config.mode === 'scroll') {
                     scrollContainer.style.fontSize = currentFontSize + 'px';
-                    recalcScrollDistance(); // إعادة حساب المسافة بعد تغيير الحجم
+                    recalcScrollDistance();
                 } else if (config.mode === 'static') {
                     staticContainer.style.fontSize = currentFontSize + 'px';
                 }
@@ -1179,7 +1132,7 @@
             currentLineHeight += 0.2;
             if (config.mode === 'scroll') {
                 scrollContainer.style.lineHeight = currentLineHeight;
-                recalcScrollDistance(); // تغيير تباعد الأسطر يؤثر على الارتفاع
+                recalcScrollDistance();
             } else if (config.mode === 'static') {
                 staticContainer.style.lineHeight = currentLineHeight;
             }
@@ -1190,15 +1143,14 @@
                 currentLineHeight -= 0.2;
                 if (config.mode === 'scroll') {
                     scrollContainer.style.lineHeight = currentLineHeight;
-                    recalcScrollDistance(); // تغيير تباعد الأسطر يؤثر على الارتفاع
+                    recalcScrollDistance();
                 } else if (config.mode === 'static') {
                     staticContainer.style.lineHeight = currentLineHeight;
                 }
             }
         });
 
-        // إضافة حدث النقر على viewport فقط لوضع RSVP (وليس للتمرير)
-        if (config.mode === 'rsvp') {
+        if (config.mode !== 'static') {
             document.getElementById('reader-viewport').addEventListener('click', togglePlay);
         }
 
