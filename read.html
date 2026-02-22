@@ -545,7 +545,7 @@
     </div>
 </div>
 
-<!-- زر الخطأ في الشمال مع نص -->
+<!-- زر الخطأ في الشمال مع نص (يظهر فقط في وضع RSVP) -->
 <button class="error-left-btn" id="errorBtn" title="تسجيل خطأ" style="display: none;">
     <i class="fas fa-exclamation-circle"></i>
     <span>سجل خطأ</span>
@@ -738,7 +738,7 @@
         if (config.mode === 'rsvp') {
             rsvpContainer.style.display = 'block';
             rsvpContainer.style.fontSize = currentFontSize + 'px';
-            errorBtn.style.display = 'flex';
+            errorBtn.style.display = 'flex';        // يظهر فقط في RSVP
             wplControl.style.display = 'none';
         } else if (config.mode === 'scroll') {
             scrollContainer.style.display = 'block';
@@ -749,7 +749,7 @@
             const viewportHeight = window.innerHeight;
             scrollCurrentY = viewportHeight;
             scrollContainer.style.transform = `translateY(${scrollCurrentY}px)`;
-            errorBtn.style.display = 'flex';
+            errorBtn.style.display = 'none';        // مخفي في التمرير
             wplControl.style.display = 'block';
             wordsPerLineValue.innerText = currentWordsPerLine;
             setTimeout(() => {
@@ -761,7 +761,7 @@
             staticContainer.style.fontSize = (currentFontSize - 4) + 'px';
             staticContainer.style.lineHeight = currentLineHeight;
             enableErrorSelection();
-            errorBtn.style.display = 'none';
+            errorBtn.style.display = 'none';        // مخفي في النص الثابت
             wplControl.style.display = 'none';
         }
 
@@ -940,7 +940,7 @@
             }
         }
 
-        // دالة تسجيل خطأ مع إشارة بصرية
+        // دالة تسجيل خطأ (تستخدم في RSVP عبر الزر)
         function recordError() {
             if (!isPlaying) return;
             totalErrors++;
@@ -955,21 +955,12 @@
                 setTimeout(() => {
                     wordElement.style.color = '';
                 }, 300);
-            } else if (config.mode === 'scroll') {
-                // لم نعد نستخدم هذا لأن الخطأ يتم تسجيله بالنقر على الكلمة مباشرة
-                // ولكن نحتفظ بسطر للتوافق (يمكن إزالته)
-                errorWordsList.push('خطأ أثناء التمرير');
-                scrollContainer.style.transition = 'background-color 0.2s';
-                scrollContainer.style.backgroundColor = 'rgba(247, 37, 133, 0.1)';
-                setTimeout(() => {
-                    scrollContainer.style.backgroundColor = '';
-                }, 300);
             }
             
             showErrorToastTop(); // إظهار الرسالة في الأعلى
         }
 
-        // ربط زر الخطأ
+        // ربط زر الخطأ (فقط في RSVP)
         errorBtn.addEventListener('click', recordError);
 
         // تفعيل تحديد الأخطاء في النص الثابت
