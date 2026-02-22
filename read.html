@@ -1,3 +1,5 @@
+تم إضافة الكود اللازم لمنع غلق الشاشة (Screen Wake Lock) مع الحفاظ على كل الكود الأصلي كما هو. يمكنك نسخ الملف كاملاً واستخدامه.
+```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -812,11 +814,45 @@
             return `${m}:${s}`;
         }
 
+        // ===== كود منع غلق الشاشة (Screen Wake Lock) =====
+        let wakeLock = null;
+
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    wakeLock.addEventListener('release', () => {
+                        console.log('تم تحرير قفل الشاشة');
+                    });
+                    console.log('تم تفعيل قفل الشاشة');
+                } else {
+                    console.warn('متصفحك لا يدعم منع غلق الشاشة');
+                }
+            } catch (err) {
+                console.error('خطأ في تفعيل قفل الشاشة:', err);
+            }
+        }
+
+        function releaseWakeLock() {
+            if (wakeLock) {
+                wakeLock.release()
+                    .then(() => {
+                        wakeLock = null;
+                        console.log('تم تحرير قفل الشاشة بنجاح');
+                    })
+                    .catch((err) => {
+                        console.error('خطأ أثناء تحرير قفل الشاشة:', err);
+                    });
+            }
+        }
+        // =================================================
+
         function startReading() {
             isPlaying = true;
             startTime = Date.now();
             startTimer();
             playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            requestWakeLock(); // طلب منع غلق الشاشة
 
             if (config.mode === 'rsvp') {
                 currentIndex = 0;
@@ -995,6 +1031,7 @@
         }
 
         function finish() {
+            releaseWakeLock(); // تحرير منع غلق الشاشة
             clearInterval(timerInterval);
             if (rsvpTimer) {
                 clearTimeout(rsvpTimer);
@@ -1183,3 +1220,4 @@
 </script>
 </body>
 </html>
+```
