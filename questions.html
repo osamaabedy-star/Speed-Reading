@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>أسئلة الفهم · تقييم القراءة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <style>
         /* === تصميم مضغوط وواضح === */
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Cairo',Tahoma,sans-serif; }
@@ -46,12 +47,11 @@
             padding: 15px;
             min-height: 100vh;
             transition: background 0.3s, color 0.3s;
-            font-size: 14px; /* تصغير الخط الأساسي */
+            font-size: 14px;
         }
 
         .container { max-width: 950px; margin: 0 auto; }
 
-        /* الهيدر بدون مؤقت */
         .header {
             background: var(--card-bg);
             border-radius: 40px;
@@ -99,7 +99,6 @@
         }
         .btn-home:hover { background: var(--border); }
 
-        /* ===== سؤال الترتيب الجديد مع ترقيم ثابت ===== */
         .order-container {
             display: flex;
             flex-direction: column;
@@ -111,14 +110,14 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            background: var(--card-bg); /* لون أغمق قليلاً */
+            background: var(--card-bg);
             border-radius: 50px;
             padding: 10px 15px;
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
             cursor: grab;
             transition: background 0.2s, transform 0.1s;
-            background-color: color-mix(in srgb, var(--bg) 70%, black 5%); /* أغمق قليلاً */
+            background-color: color-mix(in srgb, var(--bg) 70%, black 5%);
         }
         .order-item-row.dragging {
             opacity: 0.7;
@@ -157,7 +156,6 @@
             padding: 0 5px;
         }
 
-        /* أسئلة الاختيار */
         .options-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -193,7 +191,6 @@
             border-color: var(--danger);
         }
 
-        /* بطاقة السؤال */
         .question-box {
             background: var(--card-bg);
             border-radius: 30px;
@@ -209,7 +206,6 @@
             margin-bottom: 15px;
         }
 
-        /* عداد الأسئلة */
         .questions-header {
             display: flex;
             justify-content: space-between;
@@ -226,7 +222,6 @@
             font-weight: 600;
         }
 
-        /* أزرار التنقل */
         .navigation-buttons {
             display: flex;
             justify-content: space-between;
@@ -252,7 +247,6 @@
         .nav-btn:hover:not(:disabled) { background: var(--primary); color: white; }
         .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
-        /* زر التسليم */
         .submit-btn {
             background: var(--success);
             color: white;
@@ -269,7 +263,6 @@
         .submit-btn:hover:not(:disabled) { transform: scale(1.01); box-shadow: 0 5px 15px rgba(16,185,129,0.3); }
         .submit-btn:disabled { background: var(--border); cursor: not-allowed; opacity: 0.6; }
 
-        /* المودال النهائي المحسن */
         .modal {
             display: none;
             position: fixed;
@@ -379,16 +372,13 @@
 
         .legend { font-size: 0.8rem; }
 
-        /* لا حاجة لشريط التقرير العلوي أثناء الأسئلة */
         #readingInfoBar { display: none; }
-        .result-card { display: none; } /* نخفي البطاقة العلوية */
+        .result-card { display: none; }
 
-        /* تحسين مظهر الأزرار */
         .nav-btn, .submit-btn, .btn-home, .modal-btn {
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        /* لون أزرار أغمق قليلاً */
         .nav-btn {
             background: var(--card-bg);
             border: 1px solid var(--border);
@@ -398,7 +388,6 @@
 </head>
 <body data-theme="light">
 <div class="container">
-    <!-- هيدر بسيط: اسم الدرس فقط -->
     <div class="header">
         <div class="logo">
             <i class="fas fa-question-circle"></i>
@@ -408,7 +397,6 @@
         <a href="index.html" class="btn-home"><i class="fas fa-home"></i> الرئيسية</a>
     </div>
 
-    <!-- منطقة الأسئلة -->
     <div id="questionsSection">
         <div class="questions-header">
             <h3><i class="fas fa-pencil-alt"></i> أجب عن الأسئلة</h3>
@@ -422,7 +410,6 @@
         <button class="submit-btn" id="submitBtn" disabled>سلم الإجابات</button>
     </div>
 
-    <!-- مودال التقرير المحسن -->
     <div id="reportModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" id="closeModalBtn">&times;</span>
@@ -441,8 +428,8 @@
             <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin: 10px 0;">
                 <div class="pie" id="modalPieChart"></div>
                 <div class="legend">
-                    <div class="legend-item"><span class="color-dot" style="background:var(--success); width:12px; height:12px; border-radius:50%; display:inline-block;"></span> <span id="modalCorrectCount">0</span> صحيح</div>
-                    <div class="legend-item"><span class="color-dot" style="background:var(--border); width:12px; height:12px; border-radius:50%; display:inline-block;"></span> <span id="modalWrongCount">0</span> خطأ</div>
+                    <div><span style="background:var(--success); width:12px; height:12px; border-radius:50%; display:inline-block;"></span> <span id="modalCorrectCount">0</span> صحيح</div>
+                    <div><span style="background:var(--border); width:12px; height:12px; border-radius:50%; display:inline-block;"></span> <span id="modalWrongCount">0</span> خطأ</div>
                 </div>
             </div>
 
@@ -465,28 +452,31 @@
             return;
         }
 
-        // استخراج البيانات
         const lessonTitle = sessionData.lessonTitle;
-        const speed = sessionData.speed;
+        const speed = sessionData.speed || 0;
         const errorsCount = sessionData.errors || 0;
-        const duration = sessionData.duration; // بالثواني
+        const duration = sessionData.duration || 0;
         const allQuestions = sessionData.questions || [];
 
-        // عرض اسم الدرس في الهيدر
         document.getElementById('headerLessonName').textContent = lessonTitle;
 
-        if (!allQuestions || allQuestions.length === 0) {
-            document.getElementById('questionsSection').innerHTML = '<div class="no-questions"><i class="fas fa-smile-wink fa-4x"></i><h3>لا توجد أسئلة</h3></div>';
-            return;
+        // دالة تحويل الأرقام (اختياري)
+        function toIndianNumbers(num) {
+            const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+            return num.toString().replace(/\d/g, (d) => arabicNumbers[d]);
         }
 
-        // دالة التحقق من صحة السؤال
+        // التحقق من صحة السؤال
         function validateQuestion(q) {
             if (!q) return false;
             if (q.type === 'order') {
-                return q.events && Array.isArray(q.events) && q.events.length > 0 && q.correctOrder && Array.isArray(q.correctOrder);
+                if (!Array.isArray(q.events) || q.events.length === 0) return false;
+                if (!Array.isArray(q.correctOrder)) return false;
+                return q.correctOrder.every(idx => typeof idx === 'number' && idx >= 0 && idx < q.events.length);
             } else {
-                return q.options && Array.isArray(q.options) && q.options.length > 0 && q.correct !== undefined;
+                if (!Array.isArray(q.options) || q.options.length === 0) return false;
+                if (typeof q.correct !== 'number' || q.correct < 0 || q.correct >= q.options.length) return false;
+                return true;
             }
         }
 
@@ -496,45 +486,17 @@
             return;
         }
 
-        // اختيار 10 أسئلة عشوائية (مع وضع سؤال الترتيب في النهاية)
+        // اختيار الأسئلة دون تكرار
         function selectQuestions(questionsArray, count = 10) {
-            const copy = [...questionsArray];
-            const orderQ = copy.filter(q => q.type === 'order');
-            const otherQ = copy.filter(q => q.type !== 'order');
-            let selected = [];
-
-            // خلط الأسئلة الأخرى
-            for (let i = otherQ.length - 1; i > 0; i--) {
+            if (questionsArray.length <= count) {
+                return [...questionsArray];
+            }
+            const shuffled = [...questionsArray];
+            for (let i = shuffled.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [otherQ[i], otherQ[j]] = [otherQ[j], otherQ[i]];
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
             }
-
-            // نأخذ 9 أسئلة من الأخرى (أو أقل)
-            const othersNeeded = count - (orderQ.length > 0 ? 1 : 0);
-            for (let i = 0; i < othersNeeded; i++) {
-                if (otherQ.length > 0) selected.push(otherQ.shift());
-                else break;
-            }
-
-            // نضيف سؤال الترتيب إذا وجد
-            if (orderQ.length > 0) {
-                selected.push(orderQ[0]);
-            }
-
-            // إذا العدد أقل من 10، نكرر بعض الأسئلة
-            while (selected.length < count) {
-                const extra = [...selected];
-                selected = selected.concat(extra);
-            }
-            selected = selected.slice(0, count);
-
-            // نقل سؤال الترتيب للنهاية
-            const orderIdx = selected.findIndex(q => q.type === 'order');
-            if (orderIdx !== -1 && orderIdx !== selected.length - 1) {
-                const [orderItem] = selected.splice(orderIdx, 1);
-                selected.push(orderItem);
-            }
-            return selected;
+            return shuffled.slice(0, count);
         }
 
         let questions = selectQuestions(validQuestions, 10);
@@ -543,14 +505,11 @@
         let quizSubmitted = false;
         let correctAnswersCount = 0;
 
-        // عناصر DOM
         const questionContainer = document.getElementById('questionContainer');
         const questionCounter = document.getElementById('questionCounter');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
         const submitBtn = document.getElementById('submitBtn');
-
-        // عناصر المودال
         const reportModal = document.getElementById('reportModal');
         const modalResultEmoji = document.getElementById('modalResultEmoji');
         const modalResultScore = document.getElementById('modalResultScore');
@@ -565,67 +524,12 @@
         const reportDuration = document.getElementById('reportDuration');
         const errorDetailsContainer = document.getElementById('errorDetailsContainer');
 
-        // تحديث العداد
         function updateCounter() {
             questionCounter.textContent = `${currentQuestionIndex + 1} / ${questions.length}`;
         }
 
-        // متغيرات السحب والإفلات
-        let dragSourceIndex = null;
+        let sortableInstance = null;
 
-        function handleDragStart(e, index) {
-            if (quizSubmitted) { e.preventDefault(); return; }
-            dragSourceIndex = index;
-            e.dataTransfer.setData('text/plain', index);
-            e.target.classList.add('dragging');
-        }
-
-        function handleDragOver(e, index) {
-            e.preventDefault();
-            if (quizSubmitted) return;
-            e.target.classList.add('drag-over');
-        }
-
-        function handleDragLeave(e) {
-            e.target.classList.remove('drag-over');
-        }
-
-        function handleDrop(e, targetIndex) {
-            e.preventDefault();
-            e.target.classList.remove('drag-over');
-            if (quizSubmitted || dragSourceIndex === null) return;
-
-            const sourceIndex = dragSourceIndex;
-            if (sourceIndex === targetIndex) {
-                dragSourceIndex = null;
-                return;
-            }
-
-            const q = questions[currentQuestionIndex];
-            if (!q || q.type !== 'order') return;
-
-            const currentOrder = userAnswers[currentQuestionIndex] ? [...userAnswers[currentQuestionIndex]] : [...q.events];
-            const [movedItem] = currentOrder.splice(sourceIndex, 1);
-            currentOrder.splice(targetIndex, 0, movedItem);
-            userAnswers[currentQuestionIndex] = currentOrder;
-            renderQuestion();
-            dragSourceIndex = null;
-        }
-
-        function handleDragEnd(e) {
-            e.target.classList.remove('dragging');
-            document.querySelectorAll('.order-item-row').forEach(el => el.classList.remove('drag-over'));
-            dragSourceIndex = null;
-        }
-
-        // ربط الدوال بالعام
-        window.handleDragStart = handleDragStart;
-        window.handleDragOver = handleDragOver;
-        window.handleDragLeave = handleDragLeave;
-        window.handleDrop = handleDrop;
-        window.handleDragEnd = handleDragEnd;
-
-        // دالة عرض السؤال
         function renderQuestion() {
             const q = questions[currentQuestionIndex];
             if (!q) return;
@@ -643,15 +547,10 @@
                         userAnswers[currentQuestionIndex] = currentOrder;
                     }
 
-                    html += `<div class="order-container">`;
+                    html += `<div class="order-container" id="sortable-container">`;
                     currentOrder.forEach((eventText, idx) => {
                         html += `
-                            <div class="order-item-row" draggable="${!quizSubmitted}" 
-                                 ondragstart="handleDragStart(event, ${idx})"
-                                 ondragover="handleDragOver(event, ${idx})"
-                                 ondragleave="handleDragLeave(event)"
-                                 ondrop="handleDrop(event, ${idx})"
-                                 ondragend="handleDragEnd(event)">
+                            <div class="order-item-row" data-idx="${idx}">
                                 <span class="order-number">${idx + 1}</span>
                                 <span class="order-item-text">${escapeHtml(eventText)}</span>
                                 <span class="drag-handle"><i class="fas fa-grip-vertical"></i></span>
@@ -673,8 +572,7 @@
                             if (idx === q.correct) cls += ' correct';
                             else if (userAnswers[currentQuestionIndex] === idx) cls += ' wrong';
                         }
-                        const onClick = quizSubmitted ? '' : `selectAnswer(${currentQuestionIndex}, ${idx})`;
-                        html += `<div class="${cls}" onclick="${onClick}">${escapeHtml(opt)}</div>`;
+                        html += `<div class="${cls}" data-opt-index="${idx}">${escapeHtml(opt)}</div>`;
                     });
                     html += `</div>`;
                 }
@@ -682,7 +580,40 @@
 
             questionContainer.innerHTML = html;
 
-            // تحديث حالة الأزرار
+            if (q.type !== 'order') {
+                document.querySelectorAll('.option').forEach(optEl => {
+                    optEl.addEventListener('click', () => {
+                        if (quizSubmitted) return;
+                        const optIdx = parseInt(optEl.dataset.optIndex, 10);
+                        userAnswers[currentQuestionIndex] = optIdx;
+                        renderQuestion();
+                    });
+                });
+            }
+
+            if (q.type === 'order' && !quizSubmitted) {
+                const container = document.getElementById('sortable-container');
+                if (container) {
+                    if (sortableInstance) sortableInstance.destroy();
+                    sortableInstance = new Sortable(container, {
+                        animation: 150,
+                        handle: '.drag-handle',
+                        onEnd: (evt) => {
+                            const newOrder = [];
+                            const items = container.querySelectorAll('.order-item-row');
+                            items.forEach(item => {
+                                const textEl = item.querySelector('.order-item-text');
+                                newOrder.push(textEl.textContent);
+                            });
+                            userAnswers[currentQuestionIndex] = newOrder;
+                        }
+                    });
+                }
+            } else if (sortableInstance) {
+                sortableInstance.destroy();
+                sortableInstance = null;
+            }
+
             prevBtn.disabled = (currentQuestionIndex === 0) || quizSubmitted;
             nextBtn.disabled = (currentQuestionIndex === questions.length - 1) || quizSubmitted;
 
@@ -693,14 +624,6 @@
             submitBtn.disabled = !allAnswered || quizSubmitted;
         }
 
-        // اختيار إجابة عادية
-        window.selectAnswer = function(qIdx, optIdx) {
-            if (quizSubmitted) return;
-            userAnswers[qIdx] = optIdx;
-            renderQuestion();
-        };
-
-        // التنقل
         prevBtn.addEventListener('click', () => {
             if (currentQuestionIndex > 0 && !quizSubmitted) {
                 currentQuestionIndex--;
@@ -717,9 +640,9 @@
             }
         });
 
-        // تسليم الإجابات
         function submitAnswers() {
             if (quizSubmitted) return;
+            if (!confirm('هل أنت متأكد من تسليم الإجابات؟')) return;
 
             correctAnswersCount = 0;
             const wrongDetails = [];
@@ -730,11 +653,7 @@
                 let isCorrect = false;
                 if (q.type === 'order') {
                     if (ans && Array.isArray(ans)) {
-                        const correctOrderIndices = q.correctOrder; // مصفوفة من الأرقام تمثل الترتيب الصحيح (مثلاً [0,2,1,3] يعني العنصر الأول في المصفوفة يجب أن يكون في الموضع 0؟)
-                        // نفترض أن q.correctOrder هو ترتيب الأحداث الصحيح (مصفوفة من الأحداث نفسها أو indices)
-                        // في بياناتك، قد يكون q.correctOrder هو مصفوفة من النصوص (الأحداث مرتبة) أو indices
-                        // سنقارن المصفوفة الحالية مع المصفوفة الصحيحة (نصوص)
-                        const correctOrderTexts = q.correctOrder.map(index => q.events[index]); // إذا كان correctOrder indices
+                        const correctOrderTexts = q.correctOrder.map(i => q.events[i]);
                         if (JSON.stringify(ans) === JSON.stringify(correctOrderTexts)) {
                             isCorrect = true;
                         }
@@ -744,19 +663,24 @@
                 }
                 if (isCorrect) correctAnswersCount++;
                 else {
+                    let userAnswerText = '';
+                    if (q.type === 'order') {
+                        userAnswerText = (ans && Array.isArray(ans)) ? ans.join(' → ') : 'لم يرتب';
+                    } else {
+                        userAnswerText = (ans !== null && q.options[ans]) ? q.options[ans] : 'لم يجب';
+                    }
+                    let correctAnswerText = (q.type === 'order') ? q.correctOrder.map(i => q.events[i]).join(' → ') : q.options[q.correct];
                     wrongDetails.push({
                         question: q.text || `سؤال ${idx+1}`,
-                        userAnswer: (q.type === 'order') ? (ans ? ans.join(' → ') : 'لم يرتب') : (ans !== null ? q.options[ans] : 'لم يجب'),
-                        correctAnswer: (q.type === 'order') ? (q.correctOrder.map(i => q.events[i]).join(' → ')) : (q.options[q.correct])
+                        userAnswer: userAnswerText,
+                        correctAnswer: correctAnswerText
                     });
                 }
             });
 
             const total = questions.length;
             const score = Math.round((correctAnswersCount / total) * 100);
-            const level = score >= 85 ? 'متقدم' : (score >= 65 ? 'متوسط' : 'مبتدئ');
 
-            // تحديث المودال
             modalResultScore.textContent = `${score}%`;
             modalResultEmoji.textContent = score >= 85 ? '🏆' : (score >= 65 ? '👍' : '💪');
             modalResultMessage.textContent = `أجبت صحيحاً على ${correctAnswersCount} من ${total}`;
@@ -767,12 +691,10 @@
             modalCorrectCount.textContent = correctAnswersCount;
             modalWrongCount.textContent = wrongCount;
 
-            reportSpeed.textContent = speed;
-            reportErrors.textContent = errorsCount;
-            // عرض الزمن بالثواني فقط
-            reportDuration.textContent = duration;
+            reportSpeed.textContent = toIndianNumbers(speed);
+            reportErrors.textContent = toIndianNumbers(errorsCount);
+            reportDuration.textContent = toIndianNumbers(duration);
 
-            // تفاصيل الأخطاء
             if (wrongDetails.length > 0) {
                 let html = '<h4>❌ تفاصيل الأخطاء</h4>';
                 wrongDetails.forEach(err => {
@@ -799,12 +721,11 @@
             prevBtn.disabled = true;
             nextBtn.disabled = true;
 
-            saveFinalSession({ correct: correctAnswersCount, total, score, level });
+            saveFinalSession({ correct: correctAnswersCount, total, score });
         }
 
         submitBtn.addEventListener('click', submitAnswers);
 
-        // إغلاق المودال
         function closeModal() {
             reportModal.classList.remove('show');
         }
@@ -830,7 +751,7 @@
                 status: 'completed',
                 questionsAnswered: quizResult.total,
                 questionsCorrect: quizResult.correct,
-                comprehensionLevel: quizResult.level
+                comprehensionLevel: quizResult.score >= 85 ? 'متقدم' : (quizResult.score >= 65 ? 'متوسط' : 'مبتدئ')
             };
             sessions.push(newSession);
             localStorage.setItem(STORAGE_SESSIONS, JSON.stringify(sessions));
@@ -848,7 +769,6 @@
             });
         }
 
-        // تطبيق الثيم
         if (sessionData.theme) {
             document.body.setAttribute('data-theme', sessionData.theme);
         } else {
@@ -856,7 +776,13 @@
             document.body.setAttribute('data-theme', savedTheme);
         }
 
-        // بدء العرض
+        window.addEventListener('beforeunload', (e) => {
+            if (!quizSubmitted && userAnswers.some(ans => ans !== null)) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
         renderQuestion();
         updateCounter();
     })();
