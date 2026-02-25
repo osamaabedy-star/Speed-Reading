@@ -735,7 +735,7 @@
             scrollPixelsPerSecond = scrollTotalDistance / ((words.length / currentSpeed) * 60);
             
             // نبدأ من الأسفل: النص بأكمله أسفل الشاشة
-            scrollCurrentY = scrollTotalDistance;
+           scrollCurrentY = window.innerHeight;
             scrollContainer.style.transform = `translateY(${scrollCurrentY}px)`;
             
             errorBtn.style.display = 'none';
@@ -1212,3 +1212,4 @@
 </script>
 </body>
 </html>
+
