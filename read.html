@@ -727,15 +727,20 @@
             scrollContainer.innerHTML = formatTextToFixedWordsHTML(lesson.content, currentWordsPerLine);
             scrollContainer.style.fontSize = currentFontSize + 'px';
             scrollContainer.style.lineHeight = currentLineHeight;
+            
+            // حساب المسافة الكلية والبدء من الأسفل
             const viewportHeight = window.innerHeight;
-            scrollCurrentY = viewportHeight;
+            const textHeight = scrollContainer.offsetHeight;
+            scrollTotalDistance = textHeight + viewportHeight;
+            scrollPixelsPerSecond = scrollTotalDistance / ((words.length / currentSpeed) * 60);
+            
+            // نبدأ من الأسفل: النص بأكمله أسفل الشاشة
+            scrollCurrentY = scrollTotalDistance;
             scrollContainer.style.transform = `translateY(${scrollCurrentY}px)`;
+            
             errorBtn.style.display = 'none';
             wplControl.style.display = 'block';
             wordsPerLineValue.innerText = currentWordsPerLine;
-            setTimeout(() => {
-                recalcScrollDistance();
-            }, 100);
         } else if (config.mode === 'static') {
             staticContainer.style.display = 'block';
             staticContent.innerHTML = formatTextToFixedWordsHTML(lesson.content, 1000); // عدد كبير لكي يظهر كنص ثابت مع كلمات قابلة للنقر
@@ -754,23 +759,31 @@
             const wasPlaying = isPlaying;
             if (wasPlaying) togglePlay();
 
-            // حساب نسبة التقدم الحالية
-            let progress = 0;
-            if (scrollTotalDistance > 0) {
-                progress = Math.min(1, Math.max(0, (-scrollCurrentY) / scrollTotalDistance));
-            }
+            // حفظ المسافة المقطوعة الحالية (كم بكسل تم تمريره للأعلى)
+            const oldScrolledDistance = -scrollCurrentY; // قد تكون 0 أو موجبة
+            const oldTotalDistance = scrollTotalDistance;
 
+            // إعادة بناء المحتوى
             scrollContainer.innerHTML = formatTextToFixedWordsHTML(lesson.content, currentWordsPerLine);
             scrollContainer.style.fontSize = currentFontSize + 'px';
             scrollContainer.style.lineHeight = currentLineHeight;
 
             const textHeight = scrollContainer.offsetHeight;
             const viewportHeight = window.innerHeight;
-            scrollTotalDistance = textHeight + viewportHeight;
+            const newTotalDistance = textHeight + viewportHeight;
+            scrollTotalDistance = newTotalDistance;
             const totalSeconds = (words.length / currentSpeed) * 60;
             scrollPixelsPerSecond = scrollTotalDistance / totalSeconds;
 
-            scrollCurrentY = -progress * scrollTotalDistance;
+            // حساب المسافة الجديدة بنفس النسبة
+            let newScrolledDistance = 0;
+            if (oldTotalDistance > 0) {
+                const progress = oldScrolledDistance / oldTotalDistance;
+                newScrolledDistance = progress * newTotalDistance;
+            }
+            // نطبق الحدود: لا تتجاوز totalDistance
+            newScrolledDistance = Math.min(newTotalDistance, Math.max(0, newScrolledDistance));
+            scrollCurrentY = -newScrolledDistance;
             scrollContainer.style.transform = `translateY(${scrollCurrentY}px)`;
 
             if (wasPlaying) {
