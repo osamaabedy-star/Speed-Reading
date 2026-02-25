@@ -408,7 +408,6 @@
             transform: scale(1.2);
         }
 
-        /* فلاتر محسنة */
         .filter-section {
             margin-bottom: 18px;
         }
@@ -466,7 +465,6 @@
             color: white;
         }
 
-        /* قسم الصفوف - مخفي افتراضيًا */
         .grade-section {
             display: none;
         }
@@ -582,7 +580,6 @@
             color: var(--text-light);
         }
 
-        /* شبكة الدروس: 4 أعمدة ثابتة */
         .lessons-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -608,7 +605,6 @@
             border-radius: 10px;
         }
 
-        /* تصغير حجم البطاقات لتناسب 4 أعمدة */
         .lesson-item {
             background: var(--bg);
             padding: 10px 4px;
@@ -980,7 +976,7 @@
         <button class="close-help" id="closeHelp"><i class="fas fa-times"></i></button>
         <h2><i class="fas fa-lightbulb"></i> طريقة الاستخدام</h2>
         <ul>
-            <li><i class="fas fa-paint-brush"></i> <strong>الخط والحجم:</strong> اختر الخط المناسب وحجمه من الشريط العلوي، ويمكنك معاينة التغيير مباشرة.</li>
+            <li><i class="fas fa-paint-brush"></i> <strong>الخط والحجم:</strong> اختر الخط المناسب وحجمه من شريط الخطوط، ويمكنك معاينة التغيير مباشرة.</li>
             <li><i class="fas fa-bolt"></i> <strong>وضع القراءة:</strong> حدد الوضع: كلمة بكلمة (RSVP)، تمرير انسيابي، أو نص ثابت.</li>
             <li><i class="fas fa-tachometer-alt"></i> <strong>السرعة:</strong> اضبط السرعة التي تريدها (كلمة/دقيقة).</li>
             <li><i class="fas fa-filter"></i> <strong>تصفية النصوص:</strong> اختر الفصل أولاً، ثم اختر الصف، ثم ابحث عن النص المطلوب أو تصفح القائمة.</li>
@@ -1004,8 +1000,8 @@
     let currentFont = "'Amiri', serif";
     let currentMode = 'rsvp';
     let currentSpeed = 150;
-    let currentSemester = null; // لا قيمة افتراضية
-    let currentGrade = null; // لا قيمة افتراضية
+    let currentSemester = null;
+    let currentGrade = null;
     let currentFontSize = 28;
     let searchTerm = '';
 
@@ -1039,6 +1035,7 @@
 
     // دوال تحويل رقم الصف والفصل إلى النص الكامل
     function getGradeFullName(gradeNumber) {
+        const gradeNum = parseInt(gradeNumber, 10);
         const grades = [
             'الأول الابتدائي',
             'الثاني الابتدائي',
@@ -1047,7 +1044,7 @@
             'الخامس الابتدائي',
             'السادس الابتدائي'
         ];
-        return grades[gradeNumber - 1];
+        return grades[gradeNum - 1] || 'غير معروف';
     }
 
     function getSemesterFullName(semesterNumber) {
@@ -1066,7 +1063,7 @@
         speedVal.textContent = toIndianNumbers(currentSpeed);
     }
 
-    // ========== تحميل الدروس وحفظها في localStorage ==========
+    // ========== تحميل الدروس وحفظها في localStorage (باستخدام Promise.allSettled) ==========
     async function loadAllLessons() {
         const files = [
             'primary_first.json',
@@ -1076,14 +1073,19 @@
         ];
 
         try {
-            const promises = files.map(file => fetch(file).then(res => res.json()));
-            const results = await Promise.all(promises);
+            const promises = files.map(file => fetch(file).then(res => {
+                if (!res.ok) throw new Error(`فشل تحميل ${file}`);
+                return res.json();
+            }));
+            const results = await Promise.allSettled(promises);
 
             lessonsData = [];
-            results.forEach(lessonsArray => {
-                lessonsArray.forEach(lesson => {
-                    lessonsData.push(lesson);
-                });
+            results.forEach((result, index) => {
+                if (result.status === 'fulfilled') {
+                    lessonsData.push(...result.value);
+                } else {
+                    console.warn(`⚠️ الملف ${files[index]} لم يتم تحميله:`, result.reason);
+                }
             });
 
             // حفظ الدروس في localStorage لصفحة read.html
@@ -1133,16 +1135,24 @@
             return;
         }
 
-        lessonsGrid.innerHTML = filteredLessons.map(l => {
+        // استخدام DocumentFragment لتحسين الأداء
+        const fragment = document.createDocumentFragment();
+        filteredLessons.forEach(l => {
             const wordCount = l.content.split(/\s+/).length;
-            return `
-                <div class="lesson-item ${selectedLessonId === l.id ? 'selected' : ''}" onclick="selectLesson('${l.id}')">
-                    <span class="word-count-badge">${toIndianNumbers(wordCount)}</span>
-                    <i class="fas fa-file-alt"></i>
-                    <div class="lesson-title">${escapeHtml(l.title)}</div>
-                </div>
+            const div = document.createElement('div');
+            div.className = `lesson-item ${selectedLessonId === l.id ? 'selected' : ''}`;
+            div.dataset.id = l.id;
+            div.innerHTML = `
+                <span class="word-count-badge">${toIndianNumbers(wordCount)}</span>
+                <i class="fas fa-file-alt"></i>
+                <div class="lesson-title">${escapeHtml(l.title)}</div>
             `;
-        }).join('');
+            div.addEventListener('click', () => selectLesson(l.id));
+            fragment.appendChild(div);
+        });
+
+        lessonsGrid.innerHTML = ''; // مسح المحتوى القديم
+        lessonsGrid.appendChild(fragment);
 
         startBtn.disabled = !selectedLessonId;
     }
@@ -1187,21 +1197,30 @@
     function loadUserPrefs() {
         const prefs = JSON.parse(localStorage.getItem('USER_PREFS_KEY')) || {};
         
+        // استعادة الخط مع التحقق من وجود الزر
         if (prefs.font) {
-            currentFont = prefs.font;
-            document.querySelectorAll('.font-mini-btn').forEach(btn => {
-                if (btn.dataset.font === prefs.font) btn.classList.add('active');
-            });
+            const matchingBtn = document.querySelector(`.font-mini-btn[data-font="${prefs.font}"]`);
+            if (matchingBtn) {
+                currentFont = prefs.font;
+                matchingBtn.classList.add('active');
+            } else {
+                currentFont = "'Amiri', serif";
+                document.querySelector('.font-mini-btn[data-font="\'Amiri\', serif"]').classList.add('active');
+            }
         } else {
             currentFont = "'Amiri', serif";
             document.querySelector('.font-mini-btn[data-font="\'Amiri\', serif"]').classList.add('active');
         }
         
+        // استعادة الوضع
         if (prefs.mode) {
-            currentMode = prefs.mode;
-            document.querySelectorAll('.mode-card').forEach(card => {
-                if (card.dataset.mode === prefs.mode) card.classList.add('active');
-            });
+            const modeCard = document.querySelector(`.mode-card[data-mode="${prefs.mode}"]`);
+            if (modeCard) {
+                currentMode = prefs.mode;
+                modeCard.classList.add('active');
+            } else {
+                document.querySelector('.mode-card[data-mode="rsvp"]').classList.add('active');
+            }
         } else {
             document.querySelector('.mode-card[data-mode="rsvp"]').classList.add('active');
         }
@@ -1212,14 +1231,12 @@
             updateSpeedDisplay();
         }
         
-        // لا نستعيد الفصل والصف من التفضيلات لأننا نريد البدء فارغًا
-        // لكن لو أردنا يمكن تفعيلها
+        // لا نستعيد الفصل والصف من التفضيلات (نريد البدء فارغًا)
         
-        if (prefs.fontSize) {
+        if (prefs.fontSize && prefs.fontSize >= 12 && prefs.fontSize <= 96) {
             currentFontSize = prefs.fontSize;
-            fontSizeValue.textContent = toIndianNumbers(currentFontSize);
         }
-
+        fontSizeValue.textContent = toIndianNumbers(currentFontSize);
         updateFontPreview();
     }
 
@@ -1228,8 +1245,6 @@
             font: currentFont,
             mode: currentMode,
             speed: currentSpeed,
-            semester: currentSemester,
-            grade: currentGrade,
             fontSize: currentFontSize
         };
         localStorage.setItem('USER_PREFS_KEY', JSON.stringify(prefs));
@@ -1253,10 +1268,12 @@
     });
 
     document.getElementById('increaseFontSize').addEventListener('click', () => {
-        currentFontSize += 2;
-        fontSizeValue.textContent = toIndianNumbers(currentFontSize);
-        updateFontPreview();
-        saveUserPrefs();
+        if (currentFontSize < 96) {
+            currentFontSize += 2;
+            fontSizeValue.textContent = toIndianNumbers(currentFontSize);
+            updateFontPreview();
+            saveUserPrefs();
+        }
     });
     document.getElementById('decreaseFontSize').addEventListener('click', () => {
         if (currentFontSize > 12) {
@@ -1282,14 +1299,12 @@
             document.querySelectorAll('.semester-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             currentSemester = this.dataset.semester;
-            // إظهار قسم الصفوف
             gradeSection.classList.add('show');
-            // إعادة تعيين الصف المختار
             currentGrade = null;
             document.querySelectorAll('.grade-btn').forEach(b => b.classList.remove('active'));
             selectedLessonId = null;
             renderLessons();
-            saveUserPrefs();
+            saveUserPrefs(); // لا يحفظ الفصل والصف، لكن لا بأس
         });
     });
 
@@ -1327,9 +1342,7 @@
         startBtn.disabled = true;
         updateSpeedDisplay();
         fontSizeValue.textContent = toIndianNumbers(currentFontSize);
-        // إخفاء قسم الصفوف في البداية
         gradeSection.classList.remove('show');
-        // إزالة أي تحديد سابق للفصل والصف
         currentSemester = null;
         currentGrade = null;
     };
