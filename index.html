@@ -7,8 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Amiri&family=Almarai:wght@400;700&family=Readex+Pro:wght@400;700&family=Katibeh&family=Lalezar&family=Markazi+Text:wght@400;700&family=Scheherazade+New:wght@400;700&family=Harmattan:wght@400;700&family=El+Messiri:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* نفس الأنماط السابقة - يمكنك الاحتفاظ بها كما هي */
-        /* سأضع هنا الأنماط مختصرة لكن يفضل نسخها من ملفك القديم */
+        /* الأنماط كما هي دون تغيير (نفس الأنماط السابقة) */
         :root {
             --primary: #4361ee;
             --primary-light: #4895ef;
@@ -27,6 +26,7 @@
             --radius-sm: 16px;
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
         [data-theme="dark"] {
             --bg: #0f172a;
             --card-bg: #1e293b;
@@ -34,6 +34,7 @@
             --text-light: #94a3b8;
             --border: #334155;
         }
+
         [data-theme="comfort"] {
             --bg: #f5e9da;
             --card-bg: #fff7ed;
@@ -41,12 +42,14 @@
             --text-light: #8b7a6b;
             --border: #d9c9b4;
         }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Cairo', sans-serif;
         }
+
         body {
             background: var(--bg);
             color: var(--text);
@@ -55,10 +58,12 @@
             transition: var(--transition);
             line-height: 1.5;
         }
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
         }
+
         /* الهيدر */
         .header {
             background: var(--card-bg);
@@ -72,19 +77,22 @@
             border: 1px solid var(--border);
             backdrop-filter: blur(10px);
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 15px;
         }
+
         .logo-container {
             display: flex;
             align-items: center;
             gap: 12px;
         }
+
         .school-logo {
             height: 48px;
             width: auto;
             border-radius: var(--radius-sm);
             box-shadow: var(--shadow-sm);
         }
+
         .header h1 {
             font-size: 1.2rem;
             font-weight: 700;
@@ -94,40 +102,23 @@
             letter-spacing: -0.3px;
             line-height: 1.3;
         }
+
         .header p {
             color: var(--text-light);
             font-size: 0.7rem;
         }
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: var(--bg);
-            padding: 5px 15px;
-            border-radius: 40px;
-            border: 1px solid var(--border);
-        }
-        .user-info span {
-            font-weight: 600;
-            color: var(--primary);
-        }
-        .user-info button {
-            background: transparent;
-            border: none;
-            color: var(--accent);
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
+
         .header-actions {
             display: flex;
             align-items: center;
             gap: 10px;
         }
+
         .theme-buttons {
             display: flex;
             gap: 6px;
         }
+
         .theme-btn {
             width: 36px;
             height: 36px;
@@ -143,11 +134,13 @@
             transition: var(--transition);
             box-shadow: var(--shadow-sm);
         }
+
         .theme-btn:hover {
             transform: scale(1.1);
             border-color: var(--primary);
             color: var(--primary);
         }
+
         .help-header-btn {
             width: 36px;
             height: 36px;
@@ -163,97 +156,695 @@
             transition: var(--transition);
             box-shadow: var(--shadow-sm);
         }
+
         .help-header-btn:hover {
             transform: scale(1.1);
             background: var(--primary-dark);
         }
-        /* باقي الأنماط (نفس السابق) - سأختصرها هنا للقراءة، لكن يجب نسخها كاملة من ملفك الأصلي */
-        .main-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 768px) { body { padding: 24px; } .header { padding: 16px 28px; } .header h1 { font-size: 1.6rem; } .header p { font-size: 0.85rem; } .school-logo { height: 64px; } .theme-btn, .help-header-btn { width: 44px; height: 44px; font-size: 1.2rem; } .main-grid { grid-template-columns: 0.8fr 1.5fr; } }
-        .settings-card { background: var(--card-bg); border-radius: var(--radius-lg); padding: 18px; box-shadow: var(--shadow-md); border: 1px solid var(--border); backdrop-filter: blur(10px); position: relative; top: 0; }
-        @media (min-width: 768px) { .settings-card { position: sticky; top: 20px; } }
-        .section-title { font-size: 1rem; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; color: var(--primary); border-bottom: 2px solid var(--border); padding-bottom: 8px; }
-        .section-title i { font-size: 1.1rem; }
-        .font-scroll-bar { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 10px; margin-bottom: 12px; scrollbar-width: thin; scrollbar-color: var(--primary) var(--border); -webkit-overflow-scrolling: touch; }
-        .font-scroll-bar::-webkit-scrollbar { height: 4px; }
-        .font-scroll-bar::-webkit-scrollbar-track { background: var(--border); border-radius: 10px; }
-        .font-scroll-bar::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
-        .font-mini-btn { white-space: nowrap; padding: 6px 12px; border-radius: 30px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: var(--transition); box-shadow: var(--shadow-sm); flex-shrink: 0; }
-        .font-mini-btn.active { background: var(--primary); color: white; border-color: var(--primary); transform: scale(1.02); }
-        .size-controls { display: flex; align-items: center; gap: 6px; background: var(--bg); padding: 4px 8px; border-radius: 30px; border: 1px solid var(--border); margin-bottom: 14px; width: fit-content; }
-        .size-btn { width: 28px; height: 28px; border-radius: 50%; border: none; background: var(--card-bg); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; transition: var(--transition); box-shadow: var(--shadow-sm); }
-        .size-btn:hover { background: var(--primary); color: white; }
-        #fontSizeValue { min-width: 32px; text-align: center; font-weight: 600; font-size: 0.85rem; }
-        .preview-box { background: var(--bg); border-radius: var(--radius-md); padding: 12px; border: 1px solid var(--border); text-align: center; margin: 16px 0; }
-        .preview-box p { color: var(--text-light); font-size: 0.75rem; margin-bottom: 6px; }
-        .preview-text { font-size: 22px; line-height: 1.5; color: var(--primary); font-weight: 600; transition: font-family 0.2s, font-size 0.2s; word-break: break-word; }
-        .mode-cards { display: flex; gap: 8px; margin-bottom: 18px; }
-        .mode-card { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 4px; text-align: center; cursor: pointer; transition: var(--transition); }
-        .mode-card i { font-size: 1.5rem; color: var(--primary); margin-bottom: 4px; }
-        .mode-card span { display: block; font-weight: 600; font-size: 0.7rem; }
-        @media (min-width: 480px) { .mode-card span { font-size: 0.75rem; } }
-        .mode-card.active { border: 2px solid var(--primary); background: color-mix(in srgb, var(--primary) 8%, var(--bg)); transform: translateY(-2px); }
-        .speed-section { margin-bottom: 18px; }
-        .speed-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .speed-label span { font-size: 0.8rem; font-weight: 600; color: var(--text-light); }
-        .speed-value { font-size: 1.6rem; font-weight: 700; color: var(--primary); }
-        input[type=range] { width: 100%; height: 5px; background: var(--border); border-radius: 10px; -webkit-appearance: none; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--primary); cursor: pointer; box-shadow: var(--shadow-sm); transition: var(--transition); }
-        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
-        .filter-section { margin-bottom: 18px; }
-        .filter-title { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 700; color: var(--text); margin-bottom: 10px; }
-        .filter-title i { color: var(--primary); font-size: 0.9rem; }
-        .semester-buttons { display: flex; gap: 12px; }
-        .semester-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 10px; border-radius: 50px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: var(--transition); box-shadow: var(--shadow-sm); }
-        .semester-btn i { font-size: 0.9rem; color: var(--primary); }
-        .semester-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-        .semester-btn.active i { color: white; }
-        .grade-section { display: none; }
-        .grade-section.show { display: block; }
-        .grade-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-        .grade-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 6px 2px; border-radius: 16px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 0.65rem; font-weight: 600; cursor: pointer; transition: var(--transition); box-shadow: var(--shadow-sm); }
-        .grade-btn .grade-number { font-size: 1.2rem; font-weight: 700; color: var(--primary); line-height: 1; }
-        .grade-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-        .grade-btn.active .grade-number { color: white; }
-        .lessons-column { background: var(--card-bg); border-radius: var(--radius-lg); padding: 18px; box-shadow: var(--shadow-md); border: 1px solid var(--border); display: flex; flex-direction: column; height: fit-content; }
-        .lessons-header { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
-        @media (min-width: 480px) { .lessons-header { flex-direction: row; justify-content: space-between; align-items: center; } }
-        .lessons-header h3 { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
-        .search-box { display: flex; align-items: center; gap: 6px; background: var(--bg); padding: 6px 12px; border-radius: 40px; border: 1px solid var(--border); width: 100%; }
-        @media (min-width: 480px) { .search-box { width: auto; } }
-        .search-box i { color: var(--text-light); font-size: 0.9rem; }
-        .search-box input { border: none; background: transparent; color: var(--text); outline: none; width: 100%; font-size: 0.85rem; }
-        .search-box input::placeholder { color: var(--text-light); }
-        .lessons-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; max-height: 400px; overflow-y: auto; padding: 4px; scrollbar-width: thin; }
-        .lessons-grid::-webkit-scrollbar { width: 4px; }
-        .lessons-grid::-webkit-scrollbar-track { background: var(--border); border-radius: 10px; }
-        .lessons-grid::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
-        .lesson-item { background: var(--bg); padding: 10px 4px; border-radius: var(--radius-sm); border: 1px solid var(--border); cursor: pointer; transition: var(--transition); text-align: center; position: relative; box-shadow: var(--shadow-sm); }
-        .lesson-item:hover { transform: translateY(-3px); border-color: var(--primary); box-shadow: var(--shadow-md); }
-        .lesson-item.selected { border: 2px solid var(--primary); background: color-mix(in srgb, var(--primary) 10%, var(--bg)); }
-        .lesson-item i { font-size: 1.5rem; color: var(--primary); margin-bottom: 4px; opacity: 0.9; }
-        .word-count-badge { position: absolute; top: 3px; left: 3px; background: var(--primary); color: white; padding: 2px 5px; border-radius: 40px; font-size: 0.55rem; font-weight: 600; }
-        .lesson-title { font-weight: 700; font-size: 0.7rem; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        @media (min-width: 768px) { .lesson-item i { font-size: 1.8rem; } .lesson-title { font-size: 0.8rem; } .word-count-badge { font-size: 0.6rem; } }
-        .start-btn-container { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border); }
-        .btn-launch { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border: none; border-radius: 60px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: var(--transition); box-shadow: 0 10px 20px -5px var(--primary-dark); display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-launch:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 15px 25px -5px var(--primary-dark); }
-        .btn-launch:disabled { background: var(--border); color: var(--text-light); box-shadow: none; cursor: not-allowed; opacity: 0.7; }
-        .btn-launch i { font-size: 1.1rem; }
-        .admin-link { text-align: center; margin-top: 16px; font-size: 0.7rem; }
-        .admin-link a { color: var(--text-light); text-decoration: none; transition: var(--transition); }
-        .admin-link a:hover { color: var(--primary); }
-        .loading-spinner { grid-column: 1/-1; text-align: center; padding: 40px; color: var(--primary); font-size: 1.2rem; }
-        .help-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; visibility: hidden; transition: var(--transition); padding: 20px; }
-        .help-modal.show { opacity: 1; visibility: visible; }
-        .help-content { background: var(--card-bg); border-radius: var(--radius-lg); padding: 24px; max-width: 500px; width: 100%; box-shadow: var(--shadow-lg); border: 1px solid var(--border); position: relative; max-height: 90vh; overflow-y: auto; }
-        .help-content h2 { color: var(--primary); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; font-size: 1.3rem; }
-        .help-content ul { list-style: none; padding: 0; }
-        .help-content li { margin-bottom: 14px; display: flex; gap: 12px; align-items: flex-start; font-size: 0.9rem; }
-        .help-content li i { color: var(--primary); font-size: 1.1rem; margin-top: 2px; }
-        .help-content p { color: var(--text-light); margin-top: 10px; font-size: 0.85rem; }
-        .close-help { position: absolute; top: 15px; left: 15px; background: transparent; border: none; font-size: 1.2rem; color: var(--text-light); cursor: pointer; transition: var(--transition); }
-        .close-help:hover { color: var(--accent); }
+
+        /* معلومات المستخدم */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: var(--bg);
+            padding: 5px 15px;
+            border-radius: 40px;
+            border: 1px solid var(--border);
+        }
+
+        .username-display {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            color: var(--accent);
+        }
+
+        /* باقي الأنماط كما هي من التصميم السابق */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            body { padding: 24px; }
+            .header { padding: 16px 28px; }
+            .header h1 { font-size: 1.6rem; }
+            .header p { font-size: 0.85rem; }
+            .school-logo { height: 64px; }
+            .theme-btn, .help-header-btn { width: 44px; height: 44px; font-size: 1.2rem; }
+            .main-grid { grid-template-columns: 0.8fr 1.5fr; }
+        }
+
+        .settings-card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 18px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            position: relative;
+            top: 0;
+        }
+
+        @media (min-width: 768px) {
+            .settings-card {
+                position: sticky;
+                top: 20px;
+            }
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
+        }
+
+        .section-title i {
+            font-size: 1.1rem;
+        }
+
+        .font-scroll-bar {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding: 2px 0 10px;
+            margin-bottom: 12px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) var(--border);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .font-scroll-bar::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .font-scroll-bar::-webkit-scrollbar-track {
+            background: var(--border);
+            border-radius: 10px;
+        }
+
+        .font-scroll-bar::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .font-mini-btn {
+            white-space: nowrap;
+            padding: 6px 12px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            color: var(--text);
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            flex-shrink: 0;
+        }
+
+        .font-mini-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: scale(1.02);
+        }
+
+        .size-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg);
+            padding: 4px 8px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            margin-bottom: 14px;
+            width: fit-content;
+        }
+
+        .size-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            background: var(--card-bg);
+            color: var(--text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .size-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        #fontSizeValue {
+            min-width: 32px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .preview-box {
+            background: var(--bg);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+            margin: 16px 0;
+        }
+
+        .preview-box p {
+            color: var(--text-light);
+            font-size: 0.75rem;
+            margin-bottom: 6px;
+        }
+
+        .preview-text {
+            font-size: 22px;
+            line-height: 1.5;
+            color: var(--primary);
+            font-weight: 600;
+            transition: font-family 0.2s, font-size 0.2s;
+            word-break: break-word;
+        }
+
+        .mode-cards {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .mode-card {
+            flex: 1;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .mode-card i {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .mode-card span {
+            display: block;
+            font-weight: 600;
+            font-size: 0.7rem;
+        }
+
+        @media (min-width: 480px) {
+            .mode-card span { font-size: 0.75rem; }
+        }
+
+        .mode-card.active {
+            border: 2px solid var(--primary);
+            background: color-mix(in srgb, var(--primary) 8%, var(--bg));
+            transform: translateY(-2px);
+        }
+
+        .speed-section {
+            margin-bottom: 18px;
+        }
+
+        .speed-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .speed-label span {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .speed-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        input[type=range] {
+            width: 100%;
+            height: 5px;
+            background: var(--border);
+            border-radius: 10px;
+            -webkit-appearance: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .filter-section {
+            margin-bottom: 18px;
+        }
+
+        .filter-title {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        .filter-title i {
+            color: var(--primary);
+            font-size: 0.9rem;
+        }
+
+        .semester-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .semester-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 10px;
+            border-radius: 50px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .semester-btn i {
+            font-size: 0.9rem;
+            color: var(--primary);
+        }
+
+        .semester-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .semester-btn.active i {
+            color: white;
+        }
+
+        .grade-section {
+            display: none;
+        }
+
+        .grade-section.show {
+            display: block;
+        }
+
+        .grade-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .grade-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            padding: 6px 2px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 0.65rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .grade-btn .grade-number {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .grade-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .grade-btn.active .grade-number {
+            color: white;
+        }
+
+        .lessons-column {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 18px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            height: fit-content;
+        }
+
+        .lessons-header {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        @media (min-width: 480px) {
+            .lessons-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        .lessons-header h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg);
+            padding: 6px 12px;
+            border-radius: 40px;
+            border: 1px solid var(--border);
+            width: 100%;
+        }
+
+        @media (min-width: 480px) {
+            .search-box { width: auto; }
+        }
+
+        .search-box i {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .search-box input {
+            border: none;
+            background: transparent;
+            color: var(--text);
+            outline: none;
+            width: 100%;
+            font-size: 0.85rem;
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-light);
+        }
+
+        .lessons-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 4px;
+            scrollbar-width: thin;
+        }
+
+        .lessons-grid::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .lessons-grid::-webkit-scrollbar-track {
+            background: var(--border);
+            border-radius: 10px;
+        }
+
+        .lessons-grid::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .lesson-item {
+            background: var(--bg);
+            padding: 10px 4px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            position: relative;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .lesson-item:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .lesson-item.selected {
+            border: 2px solid var(--primary);
+            background: color-mix(in srgb, var(--primary) 10%, var(--bg));
+        }
+
+        .lesson-item i {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 4px;
+            opacity: 0.9;
+        }
+
+        .word-count-badge {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            background: var(--primary);
+            color: white;
+            padding: 2px 5px;
+            border-radius: 40px;
+            font-size: 0.55rem;
+            font-weight: 600;
+        }
+
+        .lesson-title {
+            font-weight: 700;
+            font-size: 0.7rem;
+            color: var(--text);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .lesson-item i { font-size: 1.8rem; }
+            .lesson-title { font-size: 0.8rem; }
+            .word-count-badge { font-size: 0.6rem; }
+        }
+
+        .start-btn-container {
+            margin-top: auto;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn-launch {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 60px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 10px 20px -5px var(--primary-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-launch:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px -5px var(--primary-dark);
+        }
+
+        .btn-launch:disabled {
+            background: var(--border);
+            color: var(--text-light);
+            box-shadow: none;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .btn-launch i {
+            font-size: 1.1rem;
+        }
+
+        .admin-link {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 0.7rem;
+        }
+
+        .admin-link a {
+            color: var(--text-light);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .admin-link a:hover {
+            color: var(--primary);
+        }
+
+        .loading-spinner {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 40px;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .help-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            padding: 20px;
+        }
+
+        .help-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .help-content {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .help-content h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+        }
+
+        .help-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .help-content li {
+            margin-bottom: 14px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            font-size: 0.9rem;
+        }
+
+        .help-content li i {
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin-top: 2px;
+        }
+
+        .help-content p {
+            color: var(--text-light);
+            margin-top: 10px;
+            font-size: 0.85rem;
+        }
+
+        .close-help {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: transparent;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .close-help:hover {
+            color: var(--accent);
+        }
     </style>
 </head>
 <body data-theme="light">
@@ -268,13 +859,10 @@
             </div>
         </div>
         
-        <!-- معلومات المستخدم -->
-        <div class="user-info" id="userInfo">
-            <span id="usernameDisplay"></span>
-            <button id="logoutBtn" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i> خروج</button>
-        </div>
-
         <div class="header-actions">
+            <!-- معلومات المستخدم ستظهر هنا ديناميكياً -->
+            <div class="user-info" id="userInfo"></div>
+            
             <div class="theme-buttons">
                 <div class="theme-btn light" onclick="setTheme('light')" title="الوضع النهاري"><i class="fas fa-sun"></i></div>
                 <div class="theme-btn dark" onclick="setTheme('dark')" title="الوضع الليلي"><i class="fas fa-moon"></i></div>
@@ -286,7 +874,7 @@
 
     <!-- المحتوى الرئيسي -->
     <div class="main-grid">
-        <!-- العمود الأيمن: الإعدادات (نفس السابق) -->
+        <!-- العمود الأيمن: الإعدادات -->
         <div class="settings-card">
             <h3 class="section-title"><i class="fas fa-sliders-h"></i> الإعدادات</h3>
             
@@ -337,6 +925,7 @@
                 <input type="range" id="speedSlider" min="10" max="400" step="10" value="150">
             </div>
 
+            <!-- قسم الفصل الدراسي -->
             <div class="filter-section">
                 <div class="filter-title">
                     <i class="fas fa-calendar-alt"></i>
@@ -354,6 +943,7 @@
                 </div>
             </div>
 
+            <!-- قسم الصفوف (مخفي افتراضيًا) -->
             <div class="filter-section grade-section" id="gradeSection">
                 <div class="filter-title">
                     <i class="fas fa-graduation-cap"></i>
@@ -421,35 +1011,37 @@
         <button class="close-help" id="closeHelp"><i class="fas fa-times"></i></button>
         <h2><i class="fas fa-lightbulb"></i> طريقة الاستخدام</h2>
         <ul>
-            <li><i class="fas fa-paint-brush"></i> <strong>الخط والحجم:</strong> اختر الخط المناسب وحجمه من شريط الخطوط.</li>
-            <li><i class="fas fa-bolt"></i> <strong>وضع القراءة:</strong> حدد الوضع: كلمة بكلمة، تمرير انسيابي، أو نص ثابت.</li>
-            <li><i class="fas fa-tachometer-alt"></i> <strong>السرعة:</strong> اضبط السرعة التي تريدها.</li>
-            <li><i class="fas fa-filter"></i> <strong>تصفية النصوص:</strong> اختر الفصل أولاً، ثم اختر الصف، ثم ابحث عن النص.</li>
-            <li><i class="fas fa-file-alt"></i> <strong>اختيار النص:</strong> انقر على أي نص ليتم تحديده.</li>
-            <li><i class="fas fa-play"></i> <strong>بدء القراءة:</strong> بعد اختيار النص، اضغط على زر "ابدأ القراءة".</li>
+            <li><i class="fas fa-paint-brush"></i> <strong>الخط والحجم:</strong> اختر الخط المناسب وحجمه من شريط الخطوط، ويمكنك معاينة التغيير مباشرة.</li>
+            <li><i class="fas fa-bolt"></i> <strong>وضع القراءة:</strong> حدد الوضع: كلمة بكلمة (RSVP)، تمرير انسيابي، أو نص ثابت.</li>
+            <li><i class="fas fa-tachometer-alt"></i> <strong>السرعة:</strong> اضبط السرعة التي تريدها (كلمة/دقيقة).</li>
+            <li><i class="fas fa-filter"></i> <strong>تصفية النصوص:</strong> اختر الفصل أولاً، ثم اختر الصف، ثم ابحث عن النص المطلوب أو تصفح القائمة.</li>
+            <li><i class="fas fa-file-alt"></i> <strong>اختيار النص:</strong> انقر على أي نص ليتم تحديده (يظهر بإطار ملون).</li>
+            <li><i class="fas fa-play"></i> <strong>بدء القراءة:</strong> بعد اختيار النص، اضغط على زر "ابدأ القراءة" في الأسفل.</li>
         </ul>
-        <p>استمتع بالقراءة! 📚</p>
+        <p>يمكنك تغيير الثيم (نهاري/ليلي/مريح) من الأعلى. استمتع بالقراءة! 📚</p>
     </div>
 </div>
 
 <script src="database.js"></script>
 <script>
-    // التحقق من تسجيل الدخول
-    (function checkLogin() {
-        const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
-        if (!currentUser) {
-            window.location.href = 'login.html';
-            return;
-        }
-        // عرض اسم المستخدم
-        document.getElementById('usernameDisplay').textContent = currentUser.username;
-    })();
-
     // دالة تحويل الأرقام الغربية إلى هندية
     function toIndianNumbers(num) {
         const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
         return num.toString().replace(/\d/g, (d) => arabicNumbers[d]);
     }
+
+    // ========== التحقق من تسجيل الدخول ==========
+    const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+    if (!currentUser) {
+        window.location.href = 'login.html';
+        return; // نوقف تنفيذ باقي الكود
+    }
+
+    // عرض معلومات المستخدم في الهيدر
+    document.getElementById('userInfo').innerHTML = `
+        <span class="username-display"><i class="fas fa-user-circle"></i> ${currentUser.username}</span>
+        <button class="logout-btn" onclick="logoutUser()" title="تسجيل الخروج"><i class="fas fa-sign-out-alt"></i></button>
+    `;
 
     // ========== بيانات الدروس ==========
     let lessonsData = [];
@@ -520,7 +1112,7 @@
         speedVal.textContent = toIndianNumbers(currentSpeed);
     }
 
-    // ========== تحميل الدروس وحفظها في localStorage (باستخدام Promise.allSettled) ==========
+    // ========== تحميل الدروس ==========
     async function loadAllLessons() {
         const files = [
             'primary_first.json',
@@ -558,6 +1150,7 @@
 
     // عرض الدروس في الشبكة مع فلترة
     function renderLessons() {
+        // إذا لم يتم اختيار الفصل والصف بعد، لا نعرض دروس
         if (!currentSemester || !currentGrade) {
             lessonsGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-light);">
                 <i class="fas fa-hand-point-up fa-3x"></i>
@@ -574,6 +1167,7 @@
             l.grade === targetGradeName && l.semester === targetSemesterName
         );
 
+        // تطبيق البحث
         if (searchTerm.trim() !== '') {
             const term = searchTerm.trim().toLowerCase();
             filteredLessons = filteredLessons.filter(l => l.title.toLowerCase().includes(term));
@@ -588,6 +1182,7 @@
             return;
         }
 
+        // استخدام DocumentFragment لتحسين الأداء
         const fragment = document.createDocumentFragment();
         filteredLessons.forEach(l => {
             const wordCount = l.content.split(/\s+/).length;
@@ -628,7 +1223,8 @@
             mode: currentMode,
             font: currentFont,
             theme: document.body.getAttribute('data-theme'),
-            fontSize: currentFontSize
+            fontSize: currentFontSize,
+            username: currentUser.username // إضافة اسم المستخدم
         };
 
         sessionStorage.setItem('reader_config', JSON.stringify(config));
@@ -649,6 +1245,7 @@
     function loadUserPrefs() {
         const prefs = JSON.parse(localStorage.getItem('USER_PREFS_KEY')) || {};
         
+        // استعادة الخط مع التحقق من وجود الزر
         if (prefs.font) {
             const matchingBtn = document.querySelector(`.font-mini-btn[data-font="${prefs.font}"]`);
             if (matchingBtn) {
@@ -751,7 +1348,7 @@
             document.querySelectorAll('.grade-btn').forEach(b => b.classList.remove('active'));
             selectedLessonId = null;
             renderLessons();
-            saveUserPrefs();
+            saveUserPrefs(); // لا يحفظ الفصل والصف لكن لا بأس
         });
     });
 
