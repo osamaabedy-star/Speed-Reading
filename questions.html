@@ -7,36 +7,41 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <style>
-        /* === تصميم مضغوط وواضح === */
+        /* نفس الأنماط السابقة مع تحسين الألوان حسب الثيم */
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Cairo',Tahoma,sans-serif; }
 
         :root {
-            --bg: #f4f7fb;
+            --bg: #f8fafc;
             --card-bg: #ffffff;
-            --text: #1e2b3c;
-            --text-light: #64748b;
-            --primary: #2563eb;
+            --text: #0f172a;
+            --text-light: #475569;
+            --primary: #4361ee;
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
-            --border: #e9eef2;
+            --border: #e2e8f0;
             --shadow: 0 4px 10px rgba(0,0,0,0.03);
+            --radius-lg: 32px;
+            --radius-md: 24px;
+            --radius-sm: 16px;
         }
 
         [data-theme="dark"] {
-            --bg: #1a1a2e;
-            --card-bg: #16213e;
-            --text: #e9eef2;
-            --text-light: #a0aec0;
-            --border: #2d3748;
+            --bg: #0b1120;
+            --card-bg: #1e293b;
+            --text: #f1f5f9;
+            --text-light: #94a3b8;
+            --primary: #667eea;
+            --border: #334155;
             --shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
 
         [data-theme="comfort"] {
             --bg: #e6d5b8;
-            --card-bg: #faf0e6;
+            --card-bg: #fff7ed;
             --text: #5e4b3c;
-            --text-light: #7d6b5a;
+            --text-light: #8b7a6b;
+            --primary: #b38b5d;
             --border: #d4b89c;
             --shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
@@ -54,7 +59,7 @@
 
         .header {
             background: var(--card-bg);
-            border-radius: 40px;
+            border-radius: var(--radius-lg);
             padding: 10px 20px;
             margin-bottom: 15px;
             box-shadow: var(--shadow);
@@ -76,7 +81,7 @@
         .lesson-name {
             background: var(--bg);
             padding: 5px 15px;
-            border-radius: 40px;
+            border-radius: var(--radius-sm);
             font-size: 0.9rem;
             font-weight: 600;
             color: var(--primary);
@@ -88,7 +93,7 @@
             color: var(--text);
             border: 2px solid var(--border);
             padding: 6px 14px;
-            border-radius: 40px;
+            border-radius: var(--radius-sm);
             text-decoration: none;
             display: inline-flex;
             align-items: center;
@@ -111,7 +116,7 @@
             align-items: center;
             gap: 12px;
             background: var(--card-bg);
-            border-radius: 50px;
+            border-radius: var(--radius-sm);
             padding: 10px 15px;
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
@@ -166,7 +171,7 @@
         .option {
             background: var(--card-bg);
             border: 2px solid var(--border);
-            border-radius: 40px;
+            border-radius: var(--radius-sm);
             padding: 10px 8px;
             text-align: center;
             cursor: pointer;
@@ -193,7 +198,7 @@
 
         .question-box {
             background: var(--card-bg);
-            border-radius: 30px;
+            border-radius: var(--radius-md);
             padding: 18px;
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
@@ -217,7 +222,7 @@
             background: var(--primary);
             color: white;
             padding: 3px 12px;
-            border-radius: 30px;
+            border-radius: var(--radius-sm);
             font-size: 0.8rem;
             font-weight: 600;
         }
@@ -232,7 +237,7 @@
         .nav-btn {
             padding: 8px 18px;
             border: none;
-            border-radius: 40px;
+            border-radius: var(--radius-sm);
             font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
@@ -252,7 +257,7 @@
             color: white;
             border: none;
             padding: 12px 25px;
-            border-radius: 40px;
+            border-radius: var(--radius-sm);
             font-size: 1.1rem;
             font-weight: 700;
             cursor: pointer;
@@ -263,6 +268,7 @@
         .submit-btn:hover:not(:disabled) { transform: scale(1.01); box-shadow: 0 5px 15px rgba(16,185,129,0.3); }
         .submit-btn:disabled { background: var(--border); cursor: not-allowed; opacity: 0.6; }
 
+        /* تحسين المودال */
         .modal {
             display: none;
             position: fixed;
@@ -272,6 +278,7 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
             align-items: center;
             justify-content: center;
             padding: 15px;
@@ -280,16 +287,16 @@
 
         .modal-content {
             background: var(--card-bg);
-            padding: 20px;
-            border-radius: 30px;
-            max-width: 550px;
+            padding: 25px;
+            border-radius: var(--radius-lg);
+            max-width: 600px;
             width: 100%;
-            max-height: 80vh;
+            max-height: 85vh;
             overflow-y: auto;
             text-align: center;
             position: relative;
             box-shadow: var(--shadow);
-            border: 1px solid var(--border);
+            border: 2px solid var(--primary);
         }
 
         .close-modal {
@@ -306,84 +313,98 @@
             background: var(--primary);
             color: white;
             border: none;
-            padding: 8px 25px;
-            border-radius: 40px;
-            font-size: 0.95rem;
+            padding: 10px 30px;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
             cursor: pointer;
             margin: 10px 0;
+            transition: 0.2s;
         }
+        .modal-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px var(--primary); }
 
         .report-header {
             display: flex;
             justify-content: space-around;
             background: var(--bg);
-            border-radius: 40px;
-            padding: 10px;
+            border-radius: var(--radius-md);
+            padding: 15px;
             margin: 15px 0;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 10px;
         }
 
         .report-stat {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        .report-stat i { color: var(--primary); font-size: 1.2rem; }
+
+        .result-emoji { font-size: 3rem; margin: 10px 0; }
+        .result-score { font-size: 2.5rem; font-weight: 700; color: var(--primary); }
+
+        .pie {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: conic-gradient(var(--success) 0deg, var(--border) 0deg);
+            transition: background 0.5s;
+            margin: 10px auto;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 10px 0;
             font-size: 0.9rem;
         }
+        .legend-item { display: flex; align-items: center; gap: 5px; }
 
         .error-details {
             text-align: right;
             margin: 15px 0;
-            max-height: 180px;
+            max-height: 200px;
             overflow-y: auto;
         }
 
         .error-item {
             background: var(--bg);
-            border-radius: 20px;
-            padding: 8px 12px;
-            margin-bottom: 6px;
+            border-radius: var(--radius-sm);
+            padding: 10px 15px;
+            margin-bottom: 8px;
             border-right: 4px solid var(--danger);
         }
 
         .error-question {
             font-weight: 600;
             font-size: 0.9rem;
-            margin-bottom: 3px;
+            margin-bottom: 5px;
         }
 
         .error-answers {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             display: flex;
-            gap: 12px;
+            gap: 15px;
             color: var(--text-light);
         }
 
-        .result-emoji { font-size: 2.5rem; }
-        .result-score { font-size: 2rem; font-weight: 700; color: var(--primary); }
-
-        .pie {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: conic-gradient(var(--success) 0deg, var(--border) 0deg);
-            transition: background 0.5s;
-        }
-
-        .legend { font-size: 0.8rem; }
-
-        #readingInfoBar { display: none; }
-        .result-card { display: none; }
-
-        .nav-btn, .submit-btn, .btn-home, .modal-btn {
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .nav-btn {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
+        .btn-home-modal {
+            display: inline-block;
+            background: var(--bg);
             color: var(--text);
+            border: 1px solid var(--border);
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            margin-top: 10px;
         }
+        .btn-home-modal:hover { background: var(--border); }
+
+        .reading-info-bar { display: none; }
+        .result-card { display: none; }
     </style>
 </head>
 <body data-theme="light">
@@ -410,6 +431,7 @@
         <button class="submit-btn" id="submitBtn" disabled>سلم الإجابات</button>
     </div>
 
+    <!-- مودال التقرير المحسن -->
     <div id="reportModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" id="closeModalBtn">&times;</span>
@@ -425,25 +447,23 @@
             <div class="result-score" id="modalResultScore">0%</div>
             <div class="result-message" id="modalResultMessage"></div>
             
-            <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin: 10px 0;">
-                <div class="pie" id="modalPieChart"></div>
-                <div class="legend">
-                    <div><span style="background:var(--success); width:12px; height:12px; border-radius:50%; display:inline-block;"></span> <span id="modalCorrectCount">0</span> صحيح</div>
-                    <div><span style="background:var(--border); width:12px; height:12px; border-radius:50%; display:inline-block;"></span> <span id="modalWrongCount">0</span> خطأ</div>
-                </div>
+            <div class="pie" id="modalPieChart"></div>
+            <div class="legend">
+                <div class="legend-item"><span style="background:var(--success); width:16px; height:16px; border-radius:50%; display:inline-block;"></span> <span id="modalCorrectCount">0</span> صحيح</div>
+                <div class="legend-item"><span style="background:var(--border); width:16px; height:16px; border-radius:50%; display:inline-block;"></span> <span id="modalWrongCount">0</span> خطأ</div>
             </div>
 
             <div id="errorDetailsContainer" class="error-details"></div>
 
             <button class="modal-btn" id="modalCloseBtn">إغلاق</button>
-            <a href="index.html" class="btn-home" style="display: inline-block; margin-top: 8px;"><i class="fas fa-book"></i> نص آخر</a>
+            <a href="index.html" class="btn-home-modal"><i class="fas fa-book"></i> نص آخر</a>
         </div>
     </div>
 </div>
 
+<script src="database.js"></script>
 <script>
     (function() {
-        const STORAGE_SESSIONS = 'reading_sessions';
         const sessionData = JSON.parse(sessionStorage.getItem('currentReadingSession'));
 
         if (!sessionData) {
@@ -460,13 +480,11 @@
 
         document.getElementById('headerLessonName').textContent = lessonTitle;
 
-        // دالة تحويل الأرقام (اختياري)
         function toIndianNumbers(num) {
             const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
             return num.toString().replace(/\d/g, (d) => arabicNumbers[d]);
         }
 
-        // التحقق من صحة السؤال
         function validateQuestion(q) {
             if (!q) return false;
             if (q.type === 'order') {
@@ -486,7 +504,6 @@
             return;
         }
 
-        // اختيار الأسئلة دون تكرار
         function selectQuestions(questionsArray, count = 10) {
             if (questionsArray.length <= count) {
                 return [...questionsArray];
@@ -640,7 +657,7 @@
             }
         });
 
-        function submitAnswers() {
+        async function submitAnswers() {
             if (quizSubmitted) return;
             if (!confirm('هل أنت متأكد من تسليم الإجابات؟')) return;
 
@@ -713,6 +730,7 @@
                 errorDetailsContainer.innerHTML = '<p style="color:var(--success);">🎉 لا توجد أخطاء! كل الإجابات صحيحة.</p>';
             }
 
+            // عرض المودال بدلاً من أي شيء آخر
             reportModal.classList.add('show');
 
             quizSubmitted = true;
@@ -721,7 +739,44 @@
             prevBtn.disabled = true;
             nextBtn.disabled = true;
 
-            saveFinalSession({ correct: correctAnswersCount, total, score });
+            // حفظ البيانات في API عبر database.js
+            try {
+                const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+                if (!currentUser) throw new Error('لا يوجد مستخدم مسجل');
+
+                // حفظ جلسة القراءة (إذا لم تكن محفوظة مسبقاً، نتأكد)
+                if (sessionData) {
+                    await saveReadingSession({
+                        lessonId: sessionData.lessonId,
+                        lessonTitle: sessionData.lessonTitle,
+                        speed: sessionData.speed,
+                        errors: sessionData.errors,
+                        duration: sessionData.duration,
+                        wordsRead: sessionData.wordsRead || 0,
+                        totalWords: sessionData.totalWords || 0,
+                        completed: sessionData.completed || false,
+                        errorWordsJson: sessionData.errorWordsJson || ''
+                    });
+                }
+
+                // حفظ نتيجة الاختبار
+                await saveQuizResult({
+                    lessonId: sessionData.lessonId,
+                    lessonTitle: sessionData.lessonTitle,
+                    score: score,
+                    correct: correctAnswersCount,
+                    total: total
+                });
+
+                console.log('تم حفظ البيانات بنجاح في Google Sheets عبر API');
+            } catch (error) {
+                console.error('خطأ في حفظ البيانات:', error);
+                // يمكن عرض رسالة خطأ داخل المودال أو تنبيه
+                alert('حدث خطأ أثناء حفظ النتائج، ولكن سيتم عرض التقرير.');
+            }
+
+            // إزالة بيانات الجلسة من sessionStorage
+            sessionStorage.removeItem('currentReadingSession');
         }
 
         submitBtn.addEventListener('click', submitAnswers);
@@ -735,29 +790,6 @@
             if (e.target === reportModal) closeModal();
         });
 
-        function saveFinalSession(quizResult) {
-            const sessions = JSON.parse(localStorage.getItem(STORAGE_SESSIONS)) || [];
-            const newSession = {
-                id: Date.now().toString(),
-                lessonId: sessionData.lessonId,
-                lessonTitle: sessionData.lessonTitle,
-                grade: sessionData.grade,
-                semester: sessionData.semester,
-                startTime: sessionData.startTime,
-                endTime: sessionData.endTime,
-                duration: sessionData.duration,
-                speed: sessionData.speed,
-                errors: sessionData.errors,
-                status: 'completed',
-                questionsAnswered: quizResult.total,
-                questionsCorrect: quizResult.correct,
-                comprehensionLevel: quizResult.score >= 85 ? 'متقدم' : (quizResult.score >= 65 ? 'متوسط' : 'مبتدئ')
-            };
-            sessions.push(newSession);
-            localStorage.setItem(STORAGE_SESSIONS, JSON.stringify(sessions));
-            sessionStorage.removeItem('currentReadingSession');
-        }
-
         function escapeHtml(unsafe) {
             if (typeof unsafe !== 'string') return '';
             return unsafe.replace(/[&<>"]/g, function(m) {
@@ -769,6 +801,7 @@
             });
         }
 
+        // تطبيق الثيم المحفوظ
         if (sessionData.theme) {
             document.body.setAttribute('data-theme', sessionData.theme);
         } else {
