@@ -7,35 +7,42 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Amiri&family=Tajawal:wght@400;700&family=Almarai:wght@400;700&family=Readex+Pro:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* الأنماط الأساسية مع تحسين المسافات */
+        /* الأنماط الأساسية مع تحسين المسافات والألوان حسب الثيم */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
         body * { font-family: inherit; }
 
         :root {
-            --bg: #f8f9fa;
+            --bg: #f8fafc;
             --panel: rgba(255, 255, 255, 0.9);
-            --text: #2b2d42;
+            --text: #0f172a;
+            --text-light: #475569;
             --primary: #4361ee;
+            --primary-dark: #3f37c9;
             --accent: #f72585;
-            --border: #e9eef2;
+            --border: #e2e8f0;
             --shadow: 0 10px 30px rgba(0,0,0,0.05);
             --success: #10b981;
+            --danger: #ef4444;
         }
 
         [data-theme="dark"] {
-            --bg: #1a1a2e;
-            --panel: rgba(22, 33, 62, 0.95);
-            --text: #e9eef2;
+            --bg: #0b1120;
+            --panel: rgba(30, 41, 59, 0.95);
+            --text: #f1f5f9;
+            --text-light: #94a3b8;
             --primary: #667eea;
+            --primary-dark: #5a67d8;
             --accent: #f472b6;
-            --border: #2d3748;
+            --border: #334155;
         }
 
         [data-theme="comfort"] {
             --bg: #e6d5b8;
             --panel: rgba(250, 240, 230, 0.95);
             --text: #5e4b3c;
+            --text-light: #8b7a6b;
             --primary: #b38b5d;
+            --primary-dark: #9d7a4e;
             --accent: #c44536;
             --border: #d4b89c;
         }
@@ -105,12 +112,8 @@
             z-index: 150;
             margin-right: 10px;
         }
-        .error-toast-top.show {
-            opacity: 1;
-        }
-        .error-toast-top i {
-            font-size: 1rem;
-        }
+        .error-toast-top.show { opacity: 1; }
+        .error-toast-top i { font-size: 1rem; }
 
         .stats {
             display: flex;
@@ -131,10 +134,7 @@
             color: var(--text);
         }
 
-        .stat-item i {
-            color: var(--primary);
-            font-size: 1.2rem;
-        }
+        .stat-item i { color: var(--primary); font-size: 1.2rem; }
 
         .progress-container {
             position: absolute;
@@ -172,7 +172,7 @@
         }
         .pivot { color: var(--accent); }
 
-        /* تحسين وضع التمرير - الآن نستخدم .line لكل سطر */
+        /* تحسين وضع التمرير */
         #scroll-container {
             width: calc(100% - 100px);
             max-width: 1200px;
@@ -190,9 +190,7 @@
             direction: rtl;
         }
 
-        .line {
-            margin-bottom: 0.5em;
-        }
+        .line { margin-bottom: 0.5em; }
 
         #static-container {
             width: calc(100% - 100px);
@@ -211,9 +209,7 @@
             margin-right: 70px;
         }
 
-        .static-content {
-            white-space: pre-wrap;
-        }
+        .static-content { white-space: pre-wrap; }
 
         .word {
             cursor: pointer;
@@ -366,9 +362,7 @@
             box-shadow: 0 6px 20px rgba(247, 37, 133, 0.6);
         }
 
-        .error-left-btn i {
-            font-size: 1.3rem;
-        }
+        .error-left-btn i { font-size: 1.3rem; }
 
         .loading {
             position: fixed;
@@ -489,6 +483,7 @@
                 <p><strong>الكلمات الخاطئة:</strong></p>
                 <div class="error-list" id="reportErrorWords"></div>
             </div>
+            <p><strong>✅ اكتمل الدرس:</strong> <span id="reportCompleted">لا</span></p>
         </div>
         <div class="modal-buttons">
             <button class="modal-btn primary" id="reportQuestionsBtn">انتقل إلى الأسئلة</button>
@@ -556,6 +551,7 @@
     <span>سجل خطأ</span>
 </button>
 
+<script src="database.js"></script>
 <script>
     (function() {
         // إخفاء شاشة التحميل
@@ -598,6 +594,15 @@
             return;
         }
 
+        // التحقق من المستخدم الحالي (للتأكد من صلاحية الحفظ)
+        const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+        if (!currentUser) {
+            alert('الرجاء تسجيل الدخول أولاً');
+            window.location.href = 'login.html';
+            return;
+        }
+
+        // جلب النص من localStorage مؤقتاً (يمكن تحسينه لاحقاً بجلبه من API)
         const allLessons = JSON.parse(localStorage.getItem('reading_app_lessons')) || [];
         const lesson = allLessons.find(l => l.id === config.lessonId);
         if (!lesson) {
@@ -624,13 +629,17 @@
         let currentWordsPerLine = 10;
         
         let totalErrors = 0;
-        let errorIndices = []; // استخدام فهارس بدلاً من الكلمات
+        let errorIndices = []; // تخزين فهارس الكلمات الخاطئة
 
         let currentFontSize = parseInt(config.fontSize) || 32;
         let currentLineHeight = 1.8;
 
+        // تطبيق الثيم من الإعدادات
         if (config.theme) {
             document.body.setAttribute('data-theme', config.theme);
+        } else {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
         }
         document.body.style.fontFamily = config.font;
 
@@ -676,6 +685,7 @@
         const reportErrors = document.getElementById('reportErrors');
         const reportErrorWordsContainer = document.getElementById('reportErrorWordsContainer');
         const reportErrorWords = document.getElementById('reportErrorWords');
+        const reportCompleted = document.getElementById('reportCompleted');
         const reportQuestionsBtn = document.getElementById('reportQuestionsBtn');
         const reportHomeBtn = document.getElementById('reportHomeBtn');
 
@@ -735,7 +745,7 @@
             scrollPixelsPerSecond = scrollTotalDistance / ((words.length / currentSpeed) * 60);
             
             // نبدأ من الأسفل: النص بأكمله أسفل الشاشة
-           scrollCurrentY = window.innerHeight;
+            scrollCurrentY = window.innerHeight;
             scrollContainer.style.transform = `translateY(${scrollCurrentY}px)`;
             
             errorBtn.style.display = 'none';
@@ -759,8 +769,8 @@
             const wasPlaying = isPlaying;
             if (wasPlaying) togglePlay();
 
-            // حفظ المسافة المقطوعة الحالية (كم بكسل تم تمريره للأعلى)
-            const oldScrolledDistance = -scrollCurrentY; // قد تكون 0 أو موجبة
+            // حفظ المسافة المقطوعة الحالية
+            const oldScrolledDistance = -scrollCurrentY;
             const oldTotalDistance = scrollTotalDistance;
 
             // إعادة بناء المحتوى
@@ -781,7 +791,6 @@
                 const progress = oldScrolledDistance / oldTotalDistance;
                 newScrolledDistance = progress * newTotalDistance;
             }
-            // نطبق الحدود: لا تتجاوز totalDistance
             newScrolledDistance = Math.min(newTotalDistance, Math.max(0, newScrolledDistance));
             scrollCurrentY = -newScrolledDistance;
             scrollContainer.style.transform = `translateY(${scrollCurrentY}px)`;
@@ -940,9 +949,13 @@
             totalErrors++;
             
             if (config.mode === 'rsvp' && currentIndex > 0) {
+                // في وضع RSVP، نضيف الكلمة الحالية إلى قائمة الأخطاء
                 const errorWord = words[currentIndex - 1];
-                // لا نستخدم errorIndices هنا لأننا لا نعرف فهرس الكلمة في النص الأصلي بسهولة
-                // نكتفي بعد الأخطاء الكلي
+                // نبحث عن فهرس الكلمة في النص الأصلي (قد يكون مكرراً، لكننا نأخذ أول ظهور)
+                const indexInOriginal = words.findIndex(w => w === errorWord); // تقريبي
+                if (indexInOriginal !== -1 && !errorIndices.includes(indexInOriginal)) {
+                    errorIndices.push(indexInOriginal);
+                }
                 const wordElement = rsvpWordEl;
                 wordElement.style.transition = 'color 0.2s';
                 wordElement.style.color = 'var(--accent)';
@@ -1035,11 +1048,14 @@
             const duration = Math.floor((endTime - startTime) / 1000);
             
             let wordsRead;
+            let completed = false;
             if (config.mode === 'scroll') {
                 const progress = Math.min(1, Math.max(0, (-scrollCurrentY) / scrollTotalDistance));
                 wordsRead = Math.round(words.length * progress);
+                completed = wordsRead >= words.length;
             } else {
                 wordsRead = currentIndex;
+                completed = wordsRead >= words.length;
             }
             const minutes = duration / 60;
             const avgSpeed = minutes > 0 ? Math.round(wordsRead / minutes) : 0;
@@ -1047,6 +1063,7 @@
             reportSpeed.textContent = toIndianNumbers(avgSpeed);
             reportWords.textContent = toIndianNumbers(words.length);
             reportErrors.textContent = toIndianNumbers(totalErrors);
+            reportCompleted.textContent = completed ? 'نعم' : 'لا';
             
             if (errorIndices.length > 0) {
                 reportErrorWordsContainer.style.display = 'block';
@@ -1058,6 +1075,7 @@
 
             reportModal.classList.add('show');
 
+            // تحضير بيانات الجلسة للحفظ
             const sessionData = {
                 lessonId: config.lessonId,
                 lessonTitle: lesson.title,
@@ -1067,6 +1085,9 @@
                 duration: duration,
                 speed: currentSpeed,
                 errors: totalErrors,
+                wordsRead: wordsRead,
+                completed: completed,
+                errorWordsJson: JSON.stringify(errorIndices), // حفظ الفهارس
                 startTime: startTime,
                 endTime: endTime,
                 theme: config.theme,
@@ -1212,4 +1233,3 @@
 </script>
 </body>
 </html>
-
