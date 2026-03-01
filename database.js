@@ -1,6 +1,6 @@
 // database.js - نسخة متصلة بـ Google Sheets
 
-const API_URL = 'https://script.google.com/u/0/home/projects/1lXvFa_7fAk5SmL7rdVHI_J8_6pr57uCdbje2ixnl-e4uTZZqZRd1_gOK/edit'; // ضع رابط الـ Web App هنا
+const API_URL = 'https://script.google.com/macros/s/AKfycbw-DXZc_1y00FZJEI6ylCsIMudJ81sttHRL_bzGnwsjtmWFOcCQcLEJtmWNkFZgNvJtcQ/exec'; // ضع رابط الـ Web App هنا
 
 // ================== دوال مساعدة ==================
 async function apiCall(action, params = {}) {
