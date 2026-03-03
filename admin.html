@@ -6,6 +6,7 @@
     <title>إدارة المحتوى والمستخدمين - القراءة السريعة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        /* ========== المتغيرات والثيمات ========== */
         :root {
             --primary: #4361ee;
             --primary-light: #4895ef;
@@ -59,7 +60,10 @@
             transition: var(--transition);
             line-height: 1.6;
         }
-        .container { max-width: 1200px; margin: 0 auto; }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
         .header {
             display: flex;
             justify-content: space-between;
@@ -73,7 +77,12 @@
             flex-wrap: wrap;
             gap: 15px;
         }
-        .logo { display: flex; align-items: center; gap: 15px; color: var(--primary); }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--primary);
+        }
         .stats-bar {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -113,10 +122,22 @@
             color: white;
             border-color: var(--primary);
         }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .main-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; }
-        @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 30px;
+        }
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
         .card {
             background: var(--card-bg);
             padding: 25px;
@@ -135,7 +156,9 @@
             align-items: center;
             gap: 10px;
         }
-        .form-group { margin-bottom: 15px; }
+        .form-group {
+            margin-bottom: 15px;
+        }
         label {
             display: block;
             margin-bottom: 8px;
@@ -152,7 +175,10 @@
             background: var(--bg);
             color: var(--text);
         }
-        input:focus, textarea:focus { border-color: var(--primary); outline: none; }
+        input:focus, textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
         .btn {
             padding: 12px 25px;
             border: none;
@@ -164,14 +190,32 @@
             gap: 8px;
             transition: 0.3s;
         }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px var(--primary); }
-        .btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
-        .btn-secondary:hover { background: var(--border); }
-        .btn-success { background: var(--success); color: white; }
-        .btn-danger { background: var(--danger); color: white; }
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--primary);
+        }
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
 
-        /* أنماط الأسئلة (كما كانت مع تحسينات) */
+        /* ========== أنماط الأسئلة الديناميكية ========== */
         .question-item {
             background: var(--bg);
             padding: 20px;
@@ -187,7 +231,9 @@
             margin-bottom: 10px;
             gap: 10px;
         }
-        .question-type { width: 200px; }
+        .question-type {
+            width: 200px;
+        }
         .remove-question {
             background: none;
             border: none;
@@ -206,8 +252,12 @@
             align-items: center;
             gap: 5px;
         }
-        .option-input { flex: 1; }
-        .dynamic-fields { margin-top: 10px; }
+        .option-input {
+            flex: 1;
+        }
+        .dynamic-fields {
+            margin-top: 10px;
+        }
         .items-list {
             display: flex;
             flex-direction: column;
@@ -219,7 +269,9 @@
             align-items: center;
             gap: 5px;
         }
-        .item-input { flex: 1; }
+        .item-input {
+            flex: 1;
+        }
         .remove-item {
             background: none;
             border: none;
@@ -241,9 +293,12 @@
             gap: 5px;
             margin-top: 10px;
         }
-        .order-select { width: 100%; padding: 8px; }
+        .order-select {
+            width: 100%;
+            padding: 8px;
+        }
 
-        /* أنماط جدول المستخدمين */
+        /* ========== جدول المستخدمين ========== */
         .users-table {
             width: 100%;
             border-collapse: collapse;
@@ -264,7 +319,9 @@
             text-align: center;
             font-size: 0.85rem;
         }
-        .users-table tr:last-child td { border-bottom: none; }
+        .users-table tr:last-child td {
+            border-bottom: none;
+        }
         .badge {
             padding: 4px 10px;
             border-radius: 40px;
@@ -272,8 +329,14 @@
             font-weight: 600;
             display: inline-block;
         }
-        .badge-success { background: var(--success); color: white; }
-        .badge-warning { background: var(--warning); color: white; }
+        .badge-success {
+            background: var(--success);
+            color: white;
+        }
+        .badge-warning {
+            background: var(--warning);
+            color: white;
+        }
         .action-btn {
             background: transparent;
             border: none;
@@ -282,10 +345,16 @@
             margin: 0 3px;
             transition: 0.2s;
         }
-        .action-btn.approve { color: var(--success); }
+        .action-btn.approve {
+            color: var(--success);
+        }
         .action-btn.reject,
-        .action-btn.delete { color: var(--danger); }
-        .action-btn:hover { transform: scale(1.1); }
+        .action-btn.delete {
+            color: var(--danger);
+        }
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
         .refresh-btn {
             background: var(--bg);
             border: 1px solid var(--border);
@@ -315,9 +384,15 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .lesson-card .actions .edit-btn { color: var(--primary); }
-        .lesson-card .actions .delete-btn { color: var(--danger); }
-        .lesson-card .actions button:hover { transform: scale(1.1); }
+        .lesson-card .actions .edit-btn {
+            color: var(--primary);
+        }
+        .lesson-card .actions .delete-btn {
+            color: var(--danger);
+        }
+        .lesson-card .actions button:hover {
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body data-theme="light">
@@ -335,6 +410,7 @@
         </div>
     </div>
 
+    <!-- بطاقات الإحصائيات -->
     <div class="stats-bar">
         <div class="stat-card">
             <i class="fas fa-book-open" style="color: var(--primary)"></i>
@@ -363,6 +439,7 @@
     <!-- تبويب إدارة النصوص -->
     <div id="tabLessons" class="tab-content active">
         <div class="main-grid">
+            <!-- نموذج إضافة/تعديل النص -->
             <div class="card">
                 <h3 class="card-title"><i class="fas fa-pen"></i> إضافة / تعديل نص</h3>
                 <form id="lessonForm">
@@ -399,6 +476,7 @@
                         <label style="margin-top: 20px;">الأسئلة</label>
                     </div>
 
+                    <!-- أزرار إضافة الأسئلة -->
                     <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
                         <button type="button" class="btn btn-secondary" id="addMcqBtn">
                             <i class="fas fa-plus-circle"></i> اختيار من متعدد
@@ -427,6 +505,7 @@
                 </div>
             </div>
 
+            <!-- قائمة النصوص الحالية -->
             <div class="card">
                 <h3 class="card-title"><i class="fas fa-list-ul"></i> النصوص الحالية</h3>
                 <div id="lessonsList"></div>
@@ -466,13 +545,13 @@
 
 <script src="database.js"></script>
 <script>
-    // ========== التحقق من صلاحية المسؤول ==========
-    const STORAGE_KEY = 'reading_app_lessons'; // لم نعد نستخدمه ولكن نحتفظ به للتوافق
+    // ========== متغيرات عامة ==========
     const ADMIN_AUTH_KEY = 'admin_auth';
     const DEFAULT_PASSWORD = 'admin';
     let editingId = null;
-    let lessonsData = []; // سنخزن النصوص هنا بعد جلبها من API
+    let lessonsData = [];
 
+    // ========== دوال التجزئة (مطابقة للسكربت) ==========
     async function hashString(str) {
         const encoder = new TextEncoder();
         const data = encoder.encode(str);
@@ -520,6 +599,7 @@
         sessionStorage.setItem(ADMIN_AUTH_KEY, newHash);
     };
 
+    // ========== التهيئة بعد التحقق ==========
     (async function() {
         const authorized = await checkAuth();
         if (authorized) {
@@ -527,9 +607,8 @@
         }
     })();
 
-    // ========== دوال التهيئة ==========
     function init() {
-        loadLessonsFromAPI(); // تحميل النصوص من API
+        loadLessonsFromAPI();
         renderUsers();
         document.getElementById('lessonForm').addEventListener('submit', saveLesson);
         document.getElementById('addMcqBtn').addEventListener('click', () => addQuestionField('mcq'));
@@ -550,7 +629,7 @@
             document.getElementById('tabLessonsBtn').classList.remove('active');
             document.getElementById('tabUsers').classList.add('active');
             document.getElementById('tabLessons').classList.remove('active');
-            renderUsers(); // تحديث القائمة عند الدخول
+            renderUsers();
         });
 
         document.getElementById('refreshUsersBtn').addEventListener('click', renderUsers);
@@ -560,7 +639,7 @@
         document.body.setAttribute('data-theme', savedTheme);
     }
 
-    // ========== دوال النصوص مع API ==========
+    // ========== دوال إدارة النصوص ==========
     async function loadLessonsFromAPI() {
         try {
             lessonsData = await getAllLessons();
@@ -601,10 +680,10 @@
     }
 
     function updateStats() {
-        // تحديث إحصائيات المستخدمين يتم في renderUsers
+        // الإحصائيات يتم تحديثها في renderUsers
     }
 
-    // دوال الأسئلة (كما هي من النسخة السابقة مع بعض التحسينات) - لم تتغير كثيراً
+    // ========== دوال الأسئلة ==========
     function addQuestionField(type = 'mcq', data = null) {
         const container = document.getElementById('questionsContainer');
         const div = document.createElement('div');
@@ -631,7 +710,7 @@
         
         div.querySelector('.remove-question').addEventListener('click', () => div.remove());
         div.querySelector('.question-type').addEventListener('change', function(e) {
-            changeQuestionType(e.target);
+            changeQuestionType(this);
         });
         container.appendChild(div);
     }
@@ -716,6 +795,7 @@
         container.innerHTML = html;
     }
 
+    // دوال إضافة العناصر الديناميكية (مع إصلاح مشكلة this)
     window.addOrderItem = function(btn) {
         const container = btn.closest('.dynamic-fields');
         const itemsList = container.querySelector('#order-items');
@@ -798,6 +878,7 @@
         questionItem.querySelector('.q-type').value = newType;
     };
 
+    // ========== حفظ النص ==========
     async function saveLesson(e) {
         e.preventDefault();
 
@@ -848,7 +929,7 @@
                     alert('خطأ في تحديد الترتيب');
                     return;
                 }
-                questionData.items = items;
+                questionData.items = items; // استخدام items بدلاً من events
                 questionData.correctOrder = orderSelects;
             } else if (type === 'missing_letter') {
                 const word = item.querySelector('.word-input')?.value.trim();
@@ -874,7 +955,7 @@
                     alert('خطأ في تحديد الترتيب');
                     return;
                 }
-                questionData.items = items;
+                questionData.items = items; // استخدام items بدلاً من events
                 questionData.correctOrder = orderSelects;
             }
 
@@ -892,15 +973,16 @@
         };
 
         try {
-            await saveLesson(newLesson); // استخدام دالة API
+            await saveLesson(newLesson);
             alert('تم الحفظ بنجاح!');
             resetForm();
-            await loadLessonsFromAPI(); // إعادة تحميل القائمة
+            await loadLessonsFromAPI();
         } catch (error) {
             alert('خطأ في الحفظ: ' + error);
         }
     }
 
+    // ========== دوال التعديل والحذف ==========
     window.editLesson = async function(id) {
         const lesson = lessonsData.find(l => l.id === id);
         if (!lesson) return;
@@ -939,7 +1021,7 @@
         document.getElementById('questionsContainer').innerHTML = '';
     }
 
-    // ========== دوال إدارة المستخدمين (تستخدم API بالفعل) ==========
+    // ========== دوال إدارة المستخدمين ==========
     async function renderUsers() {
         try {
             const users = await getAllUsers();
@@ -1009,6 +1091,7 @@
         }
     };
 
+    // ========== دالة escapeHtml للوقاية من XSS ==========
     function escapeHtml(unsafe) {
         if (typeof unsafe !== 'string') return unsafe;
         return unsafe.replace(/[&<>"]/g, function(m) {
