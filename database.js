@@ -1,7 +1,7 @@
 // database.js - نسخة محسنة للتواصل مع Google Sheets عبر JSON
 
-const API_URL = 'https://script.google.com/macros/s/AKfycbw-DXZc_1y00FZJEI6ylCsIMudJ81sttHRL_bzGnwsjtmWFOcCQcLEJtmWNkFZgNvJtcQ/exec';
-const API_KEY = 'your-secret-api-key-change-this'; // يجب مطابقته مع المفتاح في السكربت
+const API_URL = 'https://script.google.com/macros/s/AKfycbxmQUpQQVNOwos7BWRNISQ98Ut_7AYnlpTsMO0qEdpiuWS_nnSRbO88PfnLWa-6kmdauQ/exec';
+const API_KEY = '123456'; // يجب مطابقته مع المفتاح في السكربت
 
 async function apiCall(action, params = {}) {
   const payload = {
