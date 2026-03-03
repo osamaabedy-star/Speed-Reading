@@ -1,14 +1,10 @@
-// database.js - نسخة محسنة للتواصل مع Google Sheets عبر JSON
+// database.js - الاتصال مع Google Sheets عبر API
 
-const API_URL = 'https://script.google.com/macros/s/AKfycbxmQUpQQVNOwos7BWRNISQ98Ut_7AYnlpTsMO0qEdpiuWS_nnSRbO88PfnLWa-6kmdauQ/exec';
-const API_KEY = '123456'; // يجب مطابقته مع المفتاح في السكربت
+const API_URL = 'https://script.google.com/macros/s/AKfycbwrupQNDoHN7OAn-EpuXnlwQ8newqNC_PRzJK-Q5nhS3D_fhS8LC3O0Xa9PeAzHzMUWkg/exec'; // ⚠️ غيّر هذا إلى الرابط بعد النشر
+const API_KEY = '123456'; // ⚠️ يجب مطابقته مع المفتاح في Code.gs
 
 async function apiCall(action, params = {}) {
-  const payload = {
-    action,
-    apiKey: API_KEY,
-    ...params
-  };
+  const payload = { action, apiKey: API_KEY, ...params };
   try {
     const response = await fetch(API_URL, {
       method: 'POST',
@@ -67,7 +63,6 @@ async function getLessonById(id) {
 }
 
 async function saveLesson(lesson) {
-  // تأكد من أن lesson يحتوي على questionsJson إذا لزم
   await apiCall('saveLesson', lesson);
 }
 
@@ -122,5 +117,3 @@ function escapeHtml(unsafe) {
     return m;
   });
 }
-
-console.log('✅ database.js محدث وجاهز');
