@@ -921,23 +921,74 @@
         return semesterNumber === '1' ? 'الفصل الدراسي الأول' : 'الفصل الدراسي الثاني';
     }
 
-    // ========== تحميل الدروس من API ==========
+    // ========== تحميل الدروس من ملفات JSON مع التحويل ==========
     async function loadAllLessons() {
+        const files = [
+            'primary_first.json',
+            'primary_second.json',
+            'upper_first.json',
+            'upper_second.json'
+        ];
+
         try {
-            lessonsData = await getAllLessons();
-            // تخزين في localStorage لاستخدام read.html
+            const promises = files.map(file => fetch(file).then(res => {
+                if (!res.ok) throw new Error(`فشل تحميل ${file}`);
+                return res.json();
+            }));
+            const results = await Promise.allSettled(promises);
+
+            lessonsData = [];
+            results.forEach((result, index) => {
+                if (result.status === 'fulfilled') {
+                    const importedLessons = result.value;
+                    importedLessons.forEach(lesson => {
+                        if (lesson.questions && Array.isArray(lesson.questions)) {
+                            // تحويل كل سؤال
+                            lesson.questions = lesson.questions.map(q => {
+                                let newQ = { ...q };
+                                
+                                // تحويل أسئلة الترتيب: events -> items
+                                if (newQ.type === 'order' && newQ.events) {
+                                    newQ.items = newQ.events;
+                                    delete newQ.events;
+                                }
+                                
+                                // تحويل أسئلة صح/خطأ من tf إلى truefalse
+                                if (newQ.type === 'tf') {
+                                    newQ.type = 'truefalse';
+                                    newQ.options = ['صح', 'خطأ'];
+                                    newQ.correct = newQ.answer === true ? 0 : 1;
+                                    delete newQ.answer;
+                                }
+                                
+                                return newQ;
+                            });
+                        }
+                        lessonsData.push(lesson);
+                    });
+                } else {
+                    console.warn(`⚠️ الملف ${files[index]} لم يتم تحميله:`, result.reason);
+                }
+            });
+
             localStorage.setItem('reading_app_lessons', JSON.stringify(lessonsData));
             renderLessons();
         } catch (error) {
-            console.error('فشل تحميل الدروس:', error);
-            lessonsGrid.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle fa-3x"></i><p>فشل تحميل الدروس. تأكد من الاتصال بالإنترنت.</p></div>`;
+            console.error('خطأ في تحميل الدروس:', error);
+            lessonsGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--danger);">
+                <i class="fas fa-exclamation-triangle fa-3x"></i>
+                <p>فشل تحميل الدروس. تأكد من وجود الملفات الأربعة في نفس المجلد.</p>
+            </div>`;
         }
     }
 
     // ========== عرض الدروس مع الفلترة ==========
     function renderLessons() {
         if (!currentSemester || !currentGrade) {
-            lessonsGrid.innerHTML = `<div class="no-data"><i class="fas fa-hand-point-up fa-3x"></i><p>الرجاء اختيار الفصل والصف أولاً</p></div>`;
+            lessonsGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-light);">
+                <i class="fas fa-hand-point-up fa-3x"></i>
+                <p>الرجاء اختيار الفصل والصف أولاً</p>
+            </div>`;
             startBtn.disabled = true;
             return;
         }
@@ -955,7 +1006,10 @@
         }
 
         if (filteredLessons.length === 0) {
-            lessonsGrid.innerHTML = `<div class="no-data"><i class="fas fa-folder-open fa-3x"></i><p>لا توجد نصوص تطابق البحث</p></div>`;
+            lessonsGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-light);">
+                <i class="fas fa-folder-open fa-3x"></i>
+                <p>لا توجد نصوص تطابق البحث</p>
+            </div>`;
             startBtn.disabled = true;
             return;
         }
@@ -1150,7 +1204,7 @@
         }
     });
 
-    // دالة escapeHtml (مكررة لكنها مفيدة)
+    // دالة escapeHtml للأمان
     function escapeHtml(unsafe) {
         if (typeof unsafe !== 'string') return unsafe;
         return unsafe.replace(/[&<>"]/g, function(m) {
