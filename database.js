@@ -1,17 +1,20 @@
-// database.js - نسخة متصلة بـ Google Sheets
+// database.js - نسخة محسنة للتواصل مع Google Sheets عبر JSON
 
-const API_URL = 'https://script.google.com/macros/s/AKfycbw-DXZc_1y00FZJEI6ylCsIMudJ81sttHRL_bzGnwsjtmWFOcCQcLEJtmWNkFZgNvJtcQ/exec'; // ضع رابط الـ Web App هنا
+const API_URL = 'https://script.google.com/macros/s/AKfycbw-DXZc_1y00FZJEI6ylCsIMudJ81sttHRL_bzGnwsjtmWFOcCQcLEJtmWNkFZgNvJtcQ/exec';
+const API_KEY = 'your-secret-api-key-change-this'; // يجب مطابقته مع المفتاح في السكربت
 
-// ================== دوال مساعدة ==================
 async function apiCall(action, params = {}) {
-  const url = new URL(API_URL);
-  url.searchParams.append('action', action);
-  Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
-
+  const payload = {
+    action,
+    apiKey: API_KEY,
+    ...params
+  };
   try {
-    const response = await fetch(url.toString(), {
-      method: 'POST', // استخدام POST لتجاوز قيود طول URL
-      mode: 'cors'
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      mode: 'cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
     });
     const data = await response.json();
     if (!data.success) throw new Error(data.message);
@@ -24,15 +27,12 @@ async function apiCall(action, params = {}) {
 
 // ================== دوال المستخدمين ==================
 async function registerUser(username, password, fullName, phone, grade, semester) {
-  const data = await apiCall('register', {
-    username, password, fullName, phone, grade, semester
-  });
+  const data = await apiCall('register', { username, password, fullName, phone, grade, semester });
   return data.user;
 }
 
 async function loginUser(username, password) {
   const data = await apiCall('login', { username, password });
-  // حفظ المستخدم في sessionStorage
   sessionStorage.setItem('currentUser', JSON.stringify(data.user));
   return data.user;
 }
@@ -48,25 +48,26 @@ async function getAllUsers() {
 }
 
 async function updateUserApproval(username, approved) {
-  await apiCall('updateUserApproval', { username, approved: approved ? 'true' : 'false' });
+  await apiCall('updateUserApproval', { username, approved });
 }
 
 async function deleteUser(username) {
   await apiCall('deleteUser', { username });
 }
 
-// ================== دوال النصوص ==================
+// ================== دوال الدروس ==================
 async function getAllLessons() {
   const data = await apiCall('getAllLessons');
   return data.lessons;
 }
 
+async function getLessonById(id) {
+  const data = await apiCall('getLessonById', { id });
+  return data.lesson;
+}
+
 async function saveLesson(lesson) {
-  // تحويل الأسئلة إلى JSON string إذا كانت موجودة
-  if (lesson.questions) {
-    lesson.questionsJson = JSON.stringify(lesson.questions);
-    delete lesson.questions;
-  }
+  // تأكد من أن lesson يحتوي على questionsJson إذا لزم
   await apiCall('saveLesson', lesson);
 }
 
@@ -74,39 +75,14 @@ async function deleteLesson(id) {
   await apiCall('deleteLesson', { id });
 }
 
-// ================== دوال جلسات القراءة ==================
+// ================== جلسات القراءة ==================
 async function saveReadingSession(sessionData) {
   const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
   if (!currentUser) throw new Error('لا يوجد مستخدم مسجل');
-
-  const params = {
+  await apiCall('saveReadingSession', {
     username: currentUser.username,
-    lessonId: sessionData.lessonId,
-    lessonTitle: sessionData.lessonTitle,
-    speed: sessionData.speed,
-    errors: sessionData.errors,
-    duration: sessionData.duration,
-    wordsRead: sessionData.wordsRead,
-    totalWords: sessionData.totalWords,
-    completed: sessionData.completed ? 'true' : 'false',
-    errorWordsJson: sessionData.errorWordsJson || ''
-  };
-  await apiCall('saveReadingSession', params);
-}
-
-async function saveQuizResult(quizData) {
-  const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
-  if (!currentUser) throw new Error('لا يوجد مستخدم مسجل');
-
-  const params = {
-    username: currentUser.username,
-    lessonId: quizData.lessonId,
-    lessonTitle: quizData.lessonTitle,
-    score: quizData.score,
-    correctAnswers: quizData.correct,
-    totalQuestions: quizData.total
-  };
-  await apiCall('saveQuizResult', params);
+    ...sessionData
+  });
 }
 
 async function getReadingSessions(username) {
@@ -114,9 +90,37 @@ async function getReadingSessions(username) {
   return data.sessions;
 }
 
+// ================== نتائج الاختبارات ==================
+async function saveQuizResult(quizData) {
+  const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+  if (!currentUser) throw new Error('لا يوجد مستخدم مسجل');
+  await apiCall('saveQuizResult', {
+    username: currentUser.username,
+    ...quizData
+  });
+}
+
 async function getQuizResults(username) {
   const data = await apiCall('getUserQuizzes', { username });
   return data.quizzes;
 }
 
-console.log('✅ database.js متصل بـ Google Sheets');
+// ================== دوال مساعدة عامة ==================
+function toIndianNumbers(num) {
+  if (num === undefined || num === null) return '٠';
+  const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+  return num.toString().replace(/\d/g, (d) => arabicNumbers[d]);
+}
+
+function escapeHtml(unsafe) {
+  if (typeof unsafe !== 'string') return unsafe;
+  return unsafe.replace(/[&<>"]/g, function(m) {
+    if (m === '&') return '&amp;';
+    if (m === '<') return '&lt;';
+    if (m === '>') return '&gt;';
+    if (m === '"') return '&quot;';
+    return m;
+  });
+}
+
+console.log('✅ database.js محدث وجاهز');
