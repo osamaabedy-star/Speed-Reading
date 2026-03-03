@@ -7,63 +7,549 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <style>
-        /* الأنماط من ملفك الأصلي مع إضافة شريط التقدم */
-        :root { --bg: #f8fafc; --card-bg: #ffffff; --text: #0f172a; --text-light: #475569; --primary: #4361ee; --success: #10b981; --danger: #ef4444; --warning: #f59e0b; --border: #e2e8f0; --shadow: 0 4px 10px rgba(0,0,0,0.03); --radius-lg: 32px; --radius-md: 24px; --radius-sm: 16px; }
-        [data-theme="dark"] { --bg: #0b1120; --card-bg: #1e293b; --text: #f1f5f9; --text-light: #94a3b8; --primary: #667eea; --border: #334155; }
-        [data-theme="comfort"] { --bg: #e6d5b8; --card-bg: #fff7ed; --text: #5e4b3c; --text-light: #8b7a6b; --primary: #b38b5d; --border: #d4b89c; }
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Cairo',Tahoma,sans-serif; }
-        body { background:var(--bg); color:var(--text); padding:15px; min-height:100vh; transition:background 0.3s,color 0.3s; font-size:14px; }
-        .container { max-width:950px; margin:0 auto; }
-        .header { background:var(--card-bg); border-radius:var(--radius-lg); padding:10px 20px; margin-bottom:15px; box-shadow:var(--shadow); display:flex; justify-content:space-between; align-items:center; border:1px solid var(--border); }
-        .progress-bar-container { width:100%; height:8px; background:var(--border); border-radius:10px; margin:10px 0; }
-        .progress-bar-fill { height:100%; background:var(--primary); border-radius:10px; width:0%; transition:width 0.3s; }
-        /* باقي الأنماط من ملفك الأصلي (option, order-item-row, etc.) */
+        /* ========== المتغيرات والثيمات ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Cairo', Tahoma, sans-serif;
+        }
+        :root {
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #0f172a;
+            --text-light: #475569;
+            --primary: #4361ee;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 10px rgba(0,0,0,0.03);
+            --radius-lg: 32px;
+            --radius-md: 24px;
+            --radius-sm: 16px;
+            --transition: all 0.2s ease;
+        }
+        [data-theme="dark"] {
+            --bg: #0b1120;
+            --card-bg: #1e293b;
+            --text: #f1f5f9;
+            --text-light: #94a3b8;
+            --primary: #667eea;
+            --border: #334155;
+            --shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        [data-theme="comfort"] {
+            --bg: #e6d5b8;
+            --card-bg: #fff7ed;
+            --text: #5e4b3c;
+            --text-light: #8b7a6b;
+            --primary: #b38b5d;
+            --border: #d4b89c;
+            --shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            padding: 15px;
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+            font-size: 14px;
+        }
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+        }
+
+        /* ========== الهيدر ========== */
+        .header {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 10px 20px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+        .lesson-name {
+            background: var(--bg);
+            padding: 5px 15px;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary);
+            border: 1px solid var(--border);
+        }
+        .btn-home {
+            background: transparent;
+            color: var(--text);
+            border: 2px solid var(--border);
+            padding: 6px 14px;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        .btn-home:hover {
+            background: var(--border);
+        }
+
+        /* ========== شريط التقدم ========== */
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 10px;
+            margin: 10px 0 20px;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        /* ========== أسئلة الاختيار ========== */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .option {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .option:hover {
+            border-color: var(--primary);
+            background: color-mix(in srgb, var(--primary) 8%, var(--bg));
+        }
+        .option.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .option.correct {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        .option.wrong {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        /* ========== أسئلة الترتيب ========== */
+        .order-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .order-item-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--card-bg);
+            border-radius: var(--radius-sm);
+            padding: 10px 15px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            cursor: grab;
+            transition: background 0.2s, transform 0.1s;
+            background-color: color-mix(in srgb, var(--bg) 70%, black 5%);
+        }
+        .order-item-row.dragging {
+            opacity: 0.7;
+            cursor: grabbing;
+            transform: scale(1.01);
+        }
+        .order-item-row.drag-over {
+            border-color: var(--primary);
+            border-width: 2px;
+        }
+        .order-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .order-item-text {
+            flex: 1;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        .drag-handle {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            cursor: grab;
+            padding: 0 5px;
+        }
+
+        /* ========== هيكل الأسئلة ========== */
+        .question-box {
+            background: var(--card-bg);
+            border-radius: var(--radius-md);
+            padding: 18px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            margin-bottom: 15px;
+        }
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .questions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .question-counter {
+            background: var(--primary);
+            color: white;
+            padding: 3px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* ========== أزرار التنقل ========== */
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .nav-btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .nav-btn:hover:not(:disabled) {
+            background: var(--primary);
+            color: white;
+        }
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* ========== زر التسليم ========== */
+        .submit-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: var(--radius-sm);
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            margin: 10px 0 5px;
+            transition: var(--transition);
+        }
+        .submit-btn:hover:not(:disabled) {
+            transform: scale(1.01);
+            box-shadow: 0 5px 15px rgba(16,185,129,0.3);
+        }
+        .submit-btn:disabled {
+            background: var(--border);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* ========== المودال ========== */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+        .modal.show {
+            display: flex;
+        }
+        .modal-content {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: var(--radius-lg);
+            max-width: 600px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            text-align: center;
+            position: relative;
+            box-shadow: var(--shadow);
+            border: 2px solid var(--primary);
+        }
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: var(--transition);
+        }
+        .close-modal:hover {
+            color: var(--danger);
+        }
+        .modal-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: var(--transition);
+        }
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--primary);
+        }
+        .report-header {
+            display: flex;
+            justify-content: space-around;
+            background: var(--bg);
+            border-radius: var(--radius-md);
+            padding: 15px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .report-stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        .report-stat i {
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+        .result-emoji {
+            font-size: 3rem;
+            margin: 10px 0;
+        }
+        .result-score {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .pie {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: conic-gradient(var(--success) 0deg, var(--border) 0deg);
+            transition: background 0.5s;
+            margin: 10px auto;
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 10px 0;
+            font-size: 0.9rem;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .error-details {
+            text-align: right;
+            margin: 15px 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .error-item {
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-right: 4px solid var(--danger);
+        }
+        .error-question {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        .error-answers {
+            font-size: 0.85rem;
+            display: flex;
+            gap: 15px;
+            color: var(--text-light);
+        }
+        .btn-home-modal {
+            display: inline-block;
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            margin-top: 10px;
+            transition: var(--transition);
+        }
+        .btn-home-modal:hover {
+            background: var(--border);
+        }
+        .no-questions {
+            text-align: center;
+            padding: 40px;
+            color: var(--danger);
+        }
     </style>
 </head>
 <body data-theme="light">
 <div class="container">
+    <!-- الهيدر -->
     <div class="header">
-        <div class="logo"><i class="fas fa-question-circle"></i><span>اختبر نفسك</span></div>
+        <div class="logo">
+            <i class="fas fa-question-circle"></i>
+            <span>اختبر نفسك</span>
+        </div>
         <div class="lesson-name" id="headerLessonName"></div>
         <a href="index.html" class="btn-home"><i class="fas fa-home"></i> الرئيسية</a>
     </div>
 
+    <!-- قسم الأسئلة -->
     <div id="questionsSection">
         <div class="questions-header">
             <h3><i class="fas fa-pencil-alt"></i> أجب عن الأسئلة</h3>
             <span class="question-counter" id="questionCounter">1 / 0</span>
         </div>
-        <div class="progress-bar-container"><div class="progress-bar-fill" id="progressBarFill"></div></div>
+
+        <!-- شريط التقدم -->
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="progressBarFill"></div>
+        </div>
+
+        <!-- حاوية السؤال الحالي -->
         <div id="questionContainer" class="question-box"></div>
+
+        <!-- أزرار التنقل -->
         <div class="navigation-buttons">
             <button class="nav-btn" id="prevBtn" disabled><i class="fas fa-arrow-right"></i> السابق</button>
             <button class="nav-btn" id="nextBtn">التالي <i class="fas fa-arrow-left"></i></button>
         </div>
+
+        <!-- زر التسليم -->
         <button class="submit-btn" id="submitBtn" disabled>سلم الإجابات</button>
     </div>
 
-    <!-- مودال التقرير (نفس السابق) -->
-    <div id="reportModal" class="modal">...</div>
+    <!-- مودال التقرير المحسن -->
+    <div id="reportModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeModalBtn">&times;</span>
+            <h2>📊 تقرير الأداء</h2>
+            
+            <div class="report-header">
+                <div class="report-stat"><i class="fas fa-tachometer-alt"></i> السرعة: <span id="reportSpeed">0</span> ك/د</div>
+                <div class="report-stat"><i class="fas fa-exclamation-triangle" style="color:var(--danger);"></i> الأخطاء: <span id="reportErrors">0</span></div>
+                <div class="report-stat"><i class="fas fa-clock"></i> الزمن: <span id="reportDuration">00</span> ث</div>
+            </div>
+            
+            <div class="result-emoji" id="modalResultEmoji">🏆</div>
+            <div class="result-score" id="modalResultScore">0%</div>
+            <div class="result-message" id="modalResultMessage"></div>
+            
+            <div class="pie" id="modalPieChart"></div>
+            <div class="legend">
+                <div class="legend-item"><span style="background:var(--success); width:16px; height:16px; border-radius:50%; display:inline-block;"></span> <span id="modalCorrectCount">0</span> صحيح</div>
+                <div class="legend-item"><span style="background:var(--border); width:16px; height:16px; border-radius:50%; display:inline-block;"></span> <span id="modalWrongCount">0</span> خطأ</div>
+            </div>
+
+            <div id="errorDetailsContainer" class="error-details"></div>
+
+            <button class="modal-btn" id="modalCloseBtn">إغلاق</button>
+            <a href="index.html" class="btn-home-modal"><i class="fas fa-book"></i> نص آخر</a>
+        </div>
+    </div>
 </div>
 
 <script src="database.js"></script>
 <script>
     (function() {
+        // استرجاع بيانات الجلسة من sessionStorage
         const sessionData = JSON.parse(sessionStorage.getItem('currentReadingSession'));
-        if (!sessionData) { alert('لا توجد بيانات جلسة قراءة'); window.location.href = 'index.html'; return; }
+        if (!sessionData) {
+            alert('لا توجد بيانات جلسة قراءة، سيتم تحويلك للرئيسية');
+            window.location.href = 'index.html';
+            return;
+        }
 
         const lessonTitle = sessionData.lessonTitle;
         const speed = sessionData.speed || 0;
         const errorsCount = sessionData.errors || 0;
         const duration = sessionData.duration || 0;
-        let allQuestions = sessionData.questions || [];
+        const allQuestions = sessionData.questions || [];
 
         document.getElementById('headerLessonName').textContent = lessonTitle;
+
+        // دالة تحويل الأرقام إلى هندية (للعرض)
+        function toIndianNumbers(num) {
+            const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+            return num.toString().replace(/\d/g, (d) => arabicNumbers[d]);
+        }
 
         // دالة التحقق من صحة السؤال (مع items بدلاً من events)
         function validateQuestion(q) {
             if (!q) return false;
             if (q.type === 'order') {
+                // تأكد من وجود items وليس events
                 if (!Array.isArray(q.items) || q.items.length === 0) return false;
                 if (!Array.isArray(q.correctOrder)) return false;
                 return q.correctOrder.every(idx => typeof idx === 'number' && idx >= 0 && idx < q.items.length);
@@ -74,15 +560,18 @@
             }
         }
 
+        // تصفية الأسئلة الصالحة فقط
         const validQuestions = allQuestions.filter(q => validateQuestion(q));
         if (validQuestions.length === 0) {
             document.getElementById('questionsSection').innerHTML = '<div class="no-questions"><i class="fas fa-exclamation-triangle fa-4x"></i><h3>الأسئلة غير صالحة</h3></div>';
             return;
         }
 
-        // اختيار 10 أسئلة عشوائياً
+        // اختيار 10 أسئلة عشوائياً (إذا كان العدد أكبر من 10)
         function selectQuestions(questionsArray, count = 10) {
-            if (questionsArray.length <= count) return [...questionsArray];
+            if (questionsArray.length <= count) {
+                return [...questionsArray];
+            }
             const shuffled = [...questionsArray];
             for (let i = shuffled.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -97,6 +586,7 @@
         let quizSubmitted = false;
         let correctAnswersCount = 0;
 
+        // عناصر DOM
         const questionContainer = document.getElementById('questionContainer');
         const questionCounter = document.getElementById('questionCounter');
         const prevBtn = document.getElementById('prevBtn');
@@ -104,8 +594,20 @@
         const submitBtn = document.getElementById('submitBtn');
         const progressBarFill = document.getElementById('progressBarFill');
         const reportModal = document.getElementById('reportModal');
-        // باقي عناصر المودال...
+        const modalResultEmoji = document.getElementById('modalResultEmoji');
+        const modalResultScore = document.getElementById('modalResultScore');
+        const modalResultMessage = document.getElementById('modalResultMessage');
+        const modalPieChart = document.getElementById('modalPieChart');
+        const modalCorrectCount = document.getElementById('modalCorrectCount');
+        const modalWrongCount = document.getElementById('modalWrongCount');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+        const reportSpeed = document.getElementById('reportSpeed');
+        const reportErrors = document.getElementById('reportErrors');
+        const reportDuration = document.getElementById('reportDuration');
+        const errorDetailsContainer = document.getElementById('errorDetailsContainer');
 
+        // تحديث العداد وشريط التقدم
         function updateCounter() {
             questionCounter.textContent = `${currentQuestionIndex + 1} / ${questions.length}`;
             const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
@@ -114,6 +616,7 @@
 
         let sortableInstance = null;
 
+        // دالة عرض السؤال الحالي
         function renderQuestion() {
             const q = questions[currentQuestionIndex];
             if (!q) return;
@@ -122,13 +625,15 @@
 
             if (q.type === 'order') {
                 const items = q.items || [];
-                if (items.length === 0) html += `<p>لا توجد أحداث</p>`;
-                else {
+                if (items.length === 0) {
+                    html += `<p>لا توجد أحداث</p>`;
+                } else {
                     let currentOrder = userAnswers[currentQuestionIndex];
                     if (!currentOrder) {
                         currentOrder = [...items];
                         userAnswers[currentQuestionIndex] = currentOrder;
                     }
+
                     html += `<div class="order-container" id="sortable-container">`;
                     currentOrder.forEach((itemText, idx) => {
                         html += `
@@ -143,8 +648,9 @@
                 }
             } else {
                 const options = q.options || [];
-                if (options.length === 0) html += `<p>⚠️ لا توجد خيارات</p>`;
-                else {
+                if (options.length === 0) {
+                    html += `<p>⚠️ لا توجد خيارات</p>`;
+                } else {
                     html += `<div class="options-grid">`;
                     options.forEach((opt, idx) => {
                         let cls = 'option';
@@ -161,17 +667,19 @@
 
             questionContainer.innerHTML = html;
 
+            // إضافة مستمعات للخيارات (لغير الترتيب)
             if (q.type !== 'order') {
                 document.querySelectorAll('.option').forEach(optEl => {
                     optEl.addEventListener('click', () => {
                         if (quizSubmitted) return;
                         const optIdx = parseInt(optEl.dataset.optIndex, 10);
                         userAnswers[currentQuestionIndex] = optIdx;
-                        renderQuestion();
+                        renderQuestion(); // إعادة الرسم لتحديث التحديد
                     });
                 });
             }
 
+            // تفعيل Sortable لأسئلة الترتيب
             if (q.type === 'order' && !quizSubmitted) {
                 const container = document.getElementById('sortable-container');
                 if (container) {
@@ -195,6 +703,7 @@
                 sortableInstance = null;
             }
 
+            // تحديث حالة الأزرار
             prevBtn.disabled = (currentQuestionIndex === 0) || quizSubmitted;
             nextBtn.disabled = (currentQuestionIndex === questions.length - 1) || quizSubmitted;
 
@@ -205,6 +714,7 @@
             submitBtn.disabled = !allAnswered || quizSubmitted;
         }
 
+        // أزرار التنقل
         prevBtn.addEventListener('click', () => {
             if (currentQuestionIndex > 0 && !quizSubmitted) {
                 currentQuestionIndex--;
@@ -221,6 +731,7 @@
             }
         });
 
+        // دالة تسليم الإجابات
         async function submitAnswers() {
             if (quizSubmitted) return;
             if (!confirm('هل أنت متأكد من تسليم الإجابات؟')) return;
@@ -235,7 +746,9 @@
                 if (q.type === 'order') {
                     if (ans && Array.isArray(ans)) {
                         const correctOrderTexts = q.correctOrder.map(i => q.items[i]);
-                        if (JSON.stringify(ans) === JSON.stringify(correctOrderTexts)) isCorrect = true;
+                        if (JSON.stringify(ans) === JSON.stringify(correctOrderTexts)) {
+                            isCorrect = true;
+                        }
                     }
                 } else {
                     if (ans === q.correct) isCorrect = true;
@@ -260,9 +773,49 @@
             const total = questions.length;
             const score = Math.round((correctAnswersCount / total) * 100);
 
-            // عرض المودال (تفاصيل مشابهة للسابق)
-            // ... (يمكنك ترك الكود القديم)
-            // ثم حفظ النتائج
+            // تحديث محتوى المودال
+            modalResultScore.textContent = `${score}%`;
+            modalResultEmoji.textContent = score >= 85 ? '🏆' : (score >= 65 ? '👍' : '💪');
+            modalResultMessage.textContent = `أجبت صحيحاً على ${correctAnswersCount} من ${total}`;
+            
+            const wrongCount = total - correctAnswersCount;
+            const correctDeg = (correctAnswersCount / total) * 360;
+            modalPieChart.style.background = `conic-gradient(var(--success) ${correctDeg}deg, var(--border) ${correctDeg}deg)`;
+            modalCorrectCount.textContent = toIndianNumbers(correctAnswersCount);
+            modalWrongCount.textContent = toIndianNumbers(wrongCount);
+
+            reportSpeed.textContent = toIndianNumbers(speed);
+            reportErrors.textContent = toIndianNumbers(errorsCount);
+            reportDuration.textContent = toIndianNumbers(duration);
+
+            if (wrongDetails.length > 0) {
+                let html = '<h4>❌ تفاصيل الأخطاء</h4>';
+                wrongDetails.forEach(err => {
+                    html += `
+                        <div class="error-item">
+                            <div class="error-question">${escapeHtml(err.question)}</div>
+                            <div class="error-answers">
+                                <span style="color:var(--danger);">إجابتك: ${escapeHtml(err.userAnswer)}</span>
+                                <span style="color:var(--success);">الصحيح: ${escapeHtml(err.correctAnswer)}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                errorDetailsContainer.innerHTML = html;
+            } else {
+                errorDetailsContainer.innerHTML = '<p style="color:var(--success);">🎉 لا توجد أخطاء! كل الإجابات صحيحة.</p>';
+            }
+
+            // إظهار المودال
+            reportModal.classList.add('show');
+
+            quizSubmitted = true;
+            renderQuestion(); // إعادة الرسم لإظهار الألوان (صحيح/خطأ)
+            submitBtn.disabled = true;
+            prevBtn.disabled = true;
+            nextBtn.disabled = true;
+
+            // حفظ النتائج في API عبر database.js
             try {
                 await saveQuizResult({
                     lessonId: sessionData.lessonId,
@@ -271,26 +824,54 @@
                     correctAnswers: correctAnswersCount,
                     totalQuestions: total
                 });
+                console.log('تم حفظ نتيجة الاختبار بنجاح');
             } catch (error) {
-                console.error('فشل حفظ نتيجة الاختبار:', error);
+                console.error('خطأ في حفظ نتيجة الاختبار:', error);
+                // يمكن عرض رسالة خطأ داخل المودال أو تنبيه
+                alert('حدث خطأ أثناء حفظ النتائج، ولكن سيتم عرض التقرير.');
             }
 
-            quizSubmitted = true;
-            renderQuestion();
-            submitBtn.disabled = true;
-            prevBtn.disabled = true;
-            nextBtn.disabled = true;
-
-            // إظهار المودال
-            // ... (كما في ملفك الأصلي مع إضافة البيانات)
+            // إزالة بيانات الجلسة من sessionStorage (اختياري)
+            // sessionStorage.removeItem('currentReadingSession');
         }
 
         submitBtn.addEventListener('click', submitAnswers);
 
-        // تطبيق الثيم
+        // إغلاق المودال
+        function closeModal() {
+            reportModal.classList.remove('show');
+        }
+        closeModalBtn.addEventListener('click', closeModal);
+        modalCloseBtn.addEventListener('click', closeModal);
+        window.addEventListener('click', (e) => {
+            if (e.target === reportModal) closeModal();
+        });
+
+        // دالة escapeHtml للأمان
+        function escapeHtml(unsafe) {
+            if (typeof unsafe !== 'string') return '';
+            return unsafe.replace(/[&<>"]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                if (m === '"') return '&quot;';
+                return m;
+            });
+        }
+
+        // تطبيق الثيم المحفوظ
         const savedTheme = localStorage.getItem('theme') || 'light';
         document.body.setAttribute('data-theme', savedTheme);
 
+        // منع إغلاق الصفحة إذا لم يتم تسليم الإجابات بعد
+        window.addEventListener('beforeunload', (e) => {
+            if (!quizSubmitted && userAnswers.some(ans => ans !== null)) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        // بدء العرض
         renderQuestion();
         updateCounter();
     })();
